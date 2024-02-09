@@ -11,6 +11,7 @@
     "eas-build-dev": "eas build --profile development --platform ios"
   },
   "dependencies": {
+    "@expo/vector-icons": "^14.0.0",
     "@react-navigation/bottom-tabs": "^6.5.12",
     "@react-navigation/native": "^6.1.9",
     "expo": "~50.0.6",
