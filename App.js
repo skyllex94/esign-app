@@ -1,3 +1,4 @@
+import "react-native-gesture-handler";
 import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -5,7 +6,7 @@ import HomeScreen from "./components/tabs/Home";
 import SettingsScreen from "./components/tabs/Settings";
 // Icons and other UI
 import Ionicons from "@expo/vector-icons/Ionicons";
-import SignScreen from "./components/tabs/Sign";
+import AddScreen from "./components/tabs/Add";
 
 const Tab = createBottomTabNavigator();
 
@@ -29,21 +30,21 @@ export default function App() {
               backgroundColor: "white",
             },
             tabBarIcon: ({ color, size }) => (
-              <Ionicons name="home" size={32} color="black" />
+              <Ionicons name="home" size={24} color="black" />
             ),
           }}
           component={HomeScreen}
         />
 
         <Tab.Screen
-          name="Sign"
+          name="Add"
           options={{
             headerShown: false,
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="add-sharp" size={32} color="black" />
+            tabBarIcon: ({ color }) => (
+              <Ionicons name="add-sharp" size={24} color="black" />
             ),
           }}
-          component={SignScreen}
+          component={AddScreen}
         />
 
         <Tab.Screen
