@@ -12,7 +12,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Context } from "../contexts/Global";
 
-export default function AddScreen() {
+export default function ScanScreen() {
   const { bottomSheetModalRef, handlePresentModalPress } = useContext(Context);
   const snapPoints = useMemo(() => ["50%"], []);
 
