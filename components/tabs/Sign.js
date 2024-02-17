@@ -13,6 +13,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 // Stack Navigation
 import { createStackNavigator } from "@react-navigation/stack";
 import DrawSign from "../Sign/DrawSign";
+import DrawSignCapture from "../Sign/DrawSignCapture";
 
 const Stack = createStackNavigator();
 
@@ -22,7 +23,7 @@ export default function SignScreen() {
       <Stack.Screen name="SignBottomSheet" component={SignBottomSheet} />
       <Stack.Screen
         name="DrawSign"
-        component={DrawSign}
+        component={DrawSignCapture}
         options={{ presentation: "card" }}
       />
     </Stack.Navigator>
