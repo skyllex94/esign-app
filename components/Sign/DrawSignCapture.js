@@ -2,6 +2,7 @@ import { View, Text, SafeAreaView, Button } from "react-native";
 import React, { useRef } from "react";
 // Signature Imports
 import SignatureCapture from "react-native-signature-capture";
+import RNFetchBlob from "rn-fetch-blob";
 
 export default function DrawSignCapture() {
   const signature = useRef();
@@ -14,9 +15,25 @@ export default function DrawSignCapture() {
   function saveSignature(result) {
     // result.encoded - for the base64 encoded png
     // result.pathName - for the file path name
-    console.log(result.pathName);
-    console.log(result.encoded);
-    alert("Signature Captured");
+
+    const dirs = RNFetchBlob.fs.dirs;
+    // console.log(dirs);
+
+    const filePath =
+      dirs.DocumentDir + "/signature" + new Date().getMilliseconds() + ".png";
+
+    RNFetchBlob.fs
+      .writeFile(filePath, result.encoded, "base64")
+      .then((res) => {
+        console.log(res);
+        // RNFetchBlob.ios.openDocument(filePath);
+        RNFetchBlob.ios.previewDocument("file://" + filePath);
+
+        console.log("Successfully saved to: " + filePath);
+      })
+      .catch((errorMessage) => {
+        console.log(errorMessage);
+      });
   }
 
   return (
