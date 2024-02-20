@@ -92,6 +92,22 @@ function SignBottomSheet({ navigation }) {
             <Text>Import Photo</Text>
           </TouchableOpacity>
         </View>
+
+        <View className="flex-row items-center justify-between px-3 py-6 z-[10]">
+          <Text className="text-lg font-semibold">Open a Document</Text>
+        </View>
+
+        <View className="flex-row px-3 h-16">
+          <TouchableOpacity
+            onPress={openDrawSign}
+            className="flex-1 bg-gray-200 rounded-md mr-3 p-2"
+          >
+            <Text>PDF File</Text>
+          </TouchableOpacity>
+          <TouchableOpacity className="flex-1 bg-gray-200 rounded-md p-2">
+            <Text>Google Drive</Text>
+          </TouchableOpacity>
+        </View>
       </BottomSheetModal>
 
       <View className="flex-row justify-center mb-4 z-5">

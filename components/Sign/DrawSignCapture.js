@@ -3,24 +3,39 @@ import React, { useRef } from "react";
 // Signature Imports
 import SignatureCapture from "react-native-signature-capture";
 import RNFetchBlob from "rn-fetch-blob";
+import * as MediaLibrary from "expo-media-library";
 
 export default function DrawSignCapture() {
   const signature = useRef();
+  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
 
   const _onDragEvent = () => {
     // This callback will be called when the user enters signature
     console.log("dragged");
   };
 
-  function saveSignature(result) {
+  async function saveSignature(result) {
     // result.encoded - for the base64 encoded png
     // result.pathName - for the file path name
 
+    // Append the path with file:// to use it for further operations.
+
+    const resp = MediaLibrary.requestPermissionsAsync();
+    console.log("resp:", resp);
+    const per = permissionResponse;
+    console.log("per:", per);
+
     const dirs = RNFetchBlob.fs.dirs;
-    // console.log(dirs);
+    console.log(dirs);
 
     const filePath =
-      dirs.DocumentDir + "/signature" + new Date().getMilliseconds() + ".png";
+      dirs.DocumentDir +
+      "/SimpleSign" +
+      "/signature" +
+      new Date().getMilliseconds() +
+      ".png";
+
+    console.log("filePath:", filePath);
 
     RNFetchBlob.fs
       .writeFile(filePath, result.encoded, "base64")
