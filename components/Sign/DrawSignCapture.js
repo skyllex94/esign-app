@@ -1,9 +1,11 @@
 import { View, Text, SafeAreaView, Button } from "react-native";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 // Signature Imports
 import SignatureCapture from "react-native-signature-capture";
 import RNFetchBlob from "rn-fetch-blob";
 import * as MediaLibrary from "expo-media-library";
+import * as FileSystem from "expo-file-system";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function DrawSignCapture() {
   const signature = useRef();
@@ -31,7 +33,7 @@ export default function DrawSignCapture() {
     const filePath =
       dirs.DocumentDir +
       "/SimpleSign" +
-      "/signature" +
+      "signature" +
       new Date().getMilliseconds() +
       ".png";
 
@@ -49,6 +51,36 @@ export default function DrawSignCapture() {
       .catch((errorMessage) => {
         console.log(errorMessage);
       });
+  }
+
+  const [docList, setDocList] = useState([]);
+
+  useEffect(() => {
+    getAllFilesFromAppDirectory();
+  }, []);
+
+  async function getAllFilesFromAppDirectory() {
+    let dir = await FileSystem.readDirectoryAsync(
+      FileSystem.documentDirectory + "SimpleSign"
+    );
+
+    dir.forEach((val) => {
+      docList.push(FileSystem.documentDirectory + "/" + val);
+    });
+
+    setDocList(docList);
+  }
+
+  async function readSignature() {
+    const filePath =
+      "/var/mobile/Containers/Data/Application/B663545B-1B1F-4538-89AD-8586D121D815/Documents/SimpleSign/signature906.png";
+
+    // RNFetchBlob.fs.readFile(filePath, "base64").then((res) => {
+    //   console.log("READING FILE:", res);
+    // });
+
+    const result = await FileSystem.getInfoAsync(filePath);
+    console.log("result:", result);
   }
 
   return (
@@ -78,8 +110,19 @@ export default function DrawSignCapture() {
             onPress={() => signature.current.resetImage()}
             title="Clear Signature"
           />
+          <Button
+            className="p-3"
+            color="#007AFF"
+            onPress={readSignature}
+            title="Read File"
+          />
         </View>
       </View>
+      <ScrollView className="flex-1">
+        {docList.map((val, key) => (
+          <Text key={key}>{val}</Text>
+        ))}
+      </ScrollView>
     </SafeAreaView>
   );
 }
