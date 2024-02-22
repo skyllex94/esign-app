@@ -1,5 +1,13 @@
-import { View, Text, SafeAreaView, Button } from "react-native";
+import {
+  View,
+  SafeAreaView,
+  Button,
+  Image,
+  TouchableOpacity,
+} from "react-native";
 import React, { useEffect, useRef, useState } from "react";
+// UI Imports
+import { FontAwesome6 } from "@expo/vector-icons";
 // Signature Imports
 import SignatureCapture from "react-native-signature-capture";
 import RNFetchBlob from "rn-fetch-blob";
@@ -9,7 +17,7 @@ import { ScrollView } from "react-native-gesture-handler";
 
 export default function DrawSignCapture() {
   const signature = useRef();
-  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
+  const [signatureList, setSignatureList] = useState([]);
 
   const _onDragEvent = () => {
     // This callback will be called when the user enters signature
@@ -24,8 +32,6 @@ export default function DrawSignCapture() {
 
     const resp = MediaLibrary.requestPermissionsAsync();
     console.log("resp:", resp);
-    const per = permissionResponse;
-    console.log("per:", per);
 
     const dirs = RNFetchBlob.fs.dirs;
     console.log(dirs);
@@ -33,7 +39,7 @@ export default function DrawSignCapture() {
     const filePath =
       dirs.DocumentDir +
       "/SimpleSign" +
-      "signature" +
+      "/signature" +
       new Date().getMilliseconds() +
       ".png";
 
@@ -53,27 +59,25 @@ export default function DrawSignCapture() {
       });
   }
 
-  const [docList, setDocList] = useState([]);
-
   useEffect(() => {
-    getAllFilesFromAppDirectory();
+    displayStoredSignatures();
   }, []);
 
-  async function getAllFilesFromAppDirectory() {
+  async function displayStoredSignatures() {
     let dir = await FileSystem.readDirectoryAsync(
       FileSystem.documentDirectory + "SimpleSign"
     );
 
     dir.forEach((val) => {
-      docList.push(FileSystem.documentDirectory + "/" + val);
+      signatureList.push(FileSystem.documentDirectory + "SimpleSign/" + val);
     });
 
-    setDocList(docList);
+    setSignatureList(() => [...signatureList]);
   }
 
   async function readSignature() {
     const filePath =
-      "/var/mobile/Containers/Data/Application/B663545B-1B1F-4538-89AD-8586D121D815/Documents/SimpleSign/signature906.png";
+      "/var/mobile/Containers/Data/Application/1B2A4A62-7CF1-4FF2-B75B-93420F938CE3/Documents/SimpleSign/signature959.png";
 
     // RNFetchBlob.fs.readFile(filePath, "base64").then((res) => {
     //   console.log("READING FILE:", res);
@@ -82,6 +86,12 @@ export default function DrawSignCapture() {
     const result = await FileSystem.getInfoAsync(filePath);
     console.log("result:", result);
   }
+
+  function hideSignatures() {
+    setSignatureList(() => []);
+  }
+
+  console.log(signatureList);
 
   return (
     <SafeAreaView className="flex-1">
@@ -117,11 +127,39 @@ export default function DrawSignCapture() {
             title="Read File"
           />
         </View>
+        <View className="flex-row justify-center">
+          <Button
+            className="p-3"
+            color="#007AFF"
+            onPress={displayStoredSignatures}
+            title="Display All Signatures"
+          />
+          <Button
+            className="p-3"
+            color="#007AFF"
+            onPress={hideSignatures}
+            title="Hide Signatures"
+          />
+        </View>
       </View>
-      <ScrollView className="flex-1">
-        {docList.map((val, key) => (
-          <Text key={key}>{val}</Text>
-        ))}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className="flex-row"
+      >
+        <View className="flex-row items-center">
+          <TouchableOpacity className="border-2 p-2 mt-6 mx-2 rounded-full">
+            <FontAwesome6 name="add" size={24} color="black" />
+          </TouchableOpacity>
+          {signatureList.map((val, key) => (
+            <TouchableOpacity
+              key={key}
+              className="p-1 mx-1 mt-6 bg-slate-50 border-slate-300 border-2 rounded-lg"
+            >
+              <Image className="h-10 w-20 " source={{ uri: val }} />
+            </TouchableOpacity>
+          ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
