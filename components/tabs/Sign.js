@@ -12,20 +12,26 @@ import { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 // Stack Navigation
 import { createStackNavigator } from "@react-navigation/stack";
-import DrawSign from "../Sign/DrawSign";
 import DrawSignCapture from "../Sign/DrawSignCapture";
+import SelectFile from "../Sign/SelectFile";
+// Other Dependency Imports
+import * as DocumentPicker from "expo-document-picker";
 
 const Stack = createStackNavigator();
 
 export default function SignScreen() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      initialRouteName="SignBottomSheet"
+      screenOptions={{ headerShown: false }}
+    >
       <Stack.Screen name="SignBottomSheet" component={SignBottomSheet} />
       <Stack.Screen
         name="DrawSign"
         component={DrawSignCapture}
         options={{ presentation: "card" }}
       />
+      <Stack.Screen name="SelectFile" component={SelectFile} />
     </Stack.Navigator>
   );
 }
@@ -43,6 +49,20 @@ function SignBottomSheet({ navigation }) {
   function openDrawSign() {
     bottomSheetModalRef.current.close();
     navigation.navigate("DrawSign");
+  }
+
+  async function selectFile() {
+    const pickedFile = await DocumentPicker.getDocumentAsync({
+      type: "application/pdf",
+      copyToCacheDirectory: true, // enabled to be found by FileSystem
+    });
+
+    if (pickedFile.canceled === true) return;
+
+    console.log(pickedFile);
+
+    bottomSheetModalRef.current.close();
+    navigation.navigate("SelectFile");
   }
 
   return (
@@ -99,10 +119,10 @@ function SignBottomSheet({ navigation }) {
 
         <View className="flex-row px-3 h-16">
           <TouchableOpacity
-            onPress={openDrawSign}
+            onPress={selectFile}
             className="flex-1 bg-gray-200 rounded-md mr-3 p-2"
           >
-            <Text>PDF File</Text>
+            <Text>Files</Text>
           </TouchableOpacity>
           <TouchableOpacity className="flex-1 bg-gray-200 rounded-md p-2">
             <Text>Google Drive</Text>

@@ -19,6 +19,10 @@ export default function DrawSignCapture() {
   const signature = useRef();
   const [signatureList, setSignatureList] = useState([]);
 
+  useEffect(() => {
+    displayStoredSignatures();
+  }, []);
+
   const _onDragEvent = () => {
     // This callback will be called when the user enters signature
     console.log("dragged");
@@ -27,8 +31,6 @@ export default function DrawSignCapture() {
   async function saveSignature(result) {
     // result.encoded - for the base64 encoded png
     // result.pathName - for the file path name
-
-    // Append the path with file:// to use it for further operations.
 
     const resp = MediaLibrary.requestPermissionsAsync();
     console.log("resp:", resp);
@@ -47,8 +49,7 @@ export default function DrawSignCapture() {
 
     RNFetchBlob.fs
       .writeFile(filePath, result.encoded, "base64")
-      .then((res) => {
-        console.log(res);
+      .then(() => {
         // RNFetchBlob.ios.openDocument(filePath);
         RNFetchBlob.ios.previewDocument("file://" + filePath);
 
@@ -58,10 +59,6 @@ export default function DrawSignCapture() {
         console.log(errorMessage);
       });
   }
-
-  useEffect(() => {
-    displayStoredSignatures();
-  }, []);
 
   async function displayStoredSignatures() {
     let dir = await FileSystem.readDirectoryAsync(
@@ -79,10 +76,6 @@ export default function DrawSignCapture() {
     const filePath =
       "/var/mobile/Containers/Data/Application/1B2A4A62-7CF1-4FF2-B75B-93420F938CE3/Documents/SimpleSign/signature959.png";
 
-    // RNFetchBlob.fs.readFile(filePath, "base64").then((res) => {
-    //   console.log("READING FILE:", res);
-    // });
-
     const result = await FileSystem.getInfoAsync(filePath);
     console.log("result:", result);
   }
@@ -91,7 +84,11 @@ export default function DrawSignCapture() {
     setSignatureList(() => []);
   }
 
-  console.log(signatureList);
+  async function selectSignature(signatureFilePath) {
+    const info = await FileSystem.getInfoAsync(signatureFilePath);
+    console.log(info);
+    alert(signatureFilePath);
+  }
 
   return (
     <SafeAreaView className="flex-1">
@@ -145,15 +142,16 @@ export default function DrawSignCapture() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        className="flex-row"
+        className="flex-1"
       >
-        <View className="flex-row items-center">
-          <TouchableOpacity className="border-2 p-2 mt-6 mx-2 rounded-full">
+        <View className="flex-row items-start">
+          <TouchableOpacity className="border-2 p-2 mt-7 mx-2 rounded-full">
             <FontAwesome6 name="add" size={24} color="black" />
           </TouchableOpacity>
           {signatureList.map((val, key) => (
             <TouchableOpacity
               key={key}
+              onPress={() => selectSignature(val)}
               className="p-1 mx-1 mt-6 bg-slate-50 border-slate-300 border-2 rounded-lg"
             >
               <Image className="h-10 w-20 " source={{ uri: val }} />
