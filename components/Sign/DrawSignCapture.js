@@ -4,13 +4,14 @@ import {
   Button,
   Image,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 // UI Imports
-import { FontAwesome6 } from "@expo/vector-icons";
+import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 // Signature Imports
 import SignatureCapture from "react-native-signature-capture";
-import RNFetchBlob from "rn-fetch-blob";
+import ReactNativeBlobUtil from "react-native-blob-util";
 import * as MediaLibrary from "expo-media-library";
 import * as FileSystem from "expo-file-system";
 import { ScrollView } from "react-native-gesture-handler";
@@ -28,15 +29,11 @@ export default function DrawSignCapture() {
     console.log("dragged");
   };
 
-  async function saveSignature(result) {
-    // result.encoded - for the base64 encoded png
-    // result.pathName - for the file path name
+  async function saveSignature(signature) {
+    // signature.encoded - for the base64 encoded png
+    // signature.pathName - for the file path name
 
-    const resp = MediaLibrary.requestPermissionsAsync();
-    console.log("resp:", resp);
-
-    const dirs = RNFetchBlob.fs.dirs;
-    console.log(dirs);
+    const dirs = ReactNativeBlobUtil.fs.dirs;
 
     const filePath =
       dirs.DocumentDir +
@@ -45,19 +42,21 @@ export default function DrawSignCapture() {
       new Date().getMilliseconds() +
       ".png";
 
-    console.log("filePath:", filePath);
-
-    RNFetchBlob.fs
-      .writeFile(filePath, result.encoded, "base64")
+    ReactNativeBlobUtil.fs
+      .writeStream(filePath, "base64")
+      .then((data) => data.write(signature.encoded))
       .then(() => {
-        // RNFetchBlob.ios.openDocument(filePath);
-        RNFetchBlob.ios.previewDocument("file://" + filePath);
-
+        // ReactNativeBlobUtil.ios.openDocument(filePath);
+        // ReactNativeBlobUtil.ios.previewDocument("file://" + filePath);
         console.log("Successfully saved to: " + filePath);
       })
       .catch((errorMessage) => {
         console.log(errorMessage);
       });
+
+    // Include filePath into the signature array
+    signatureList.push(filePath);
+    setSignatureList([...signatureList]);
   }
 
   async function displayStoredSignatures() {
@@ -76,18 +75,54 @@ export default function DrawSignCapture() {
     const filePath =
       "/var/mobile/Containers/Data/Application/1B2A4A62-7CF1-4FF2-B75B-93420F938CE3/Documents/SimpleSign/signature959.png";
 
-    const result = await FileSystem.getInfoAsync(filePath);
-    console.log("result:", result);
+    const signature = await FileSystem.getInfoAsync(filePath);
+    console.log("signature:", signature);
   }
 
   function hideSignatures() {
     setSignatureList(() => []);
   }
 
+  function deleteSignature(fileWtPath) {
+    const path = fileWtPath.split("//");
+
+    // Updating signature array list for the UI
+    const updatedSignatureList = signatureList.filter(
+      (signature) => signature !== fileWtPath
+    );
+
+    ReactNativeBlobUtil.fs
+      .unlink(path[1])
+      .then(() => {
+        console.log("Deleted File from - ", path[1]);
+      })
+      .catch((err) => console.log(err));
+
+    setSignatureList(() => [...updatedSignatureList]);
+
+    // return Alert.alert(
+    //   "Are your sure?",
+    //   "Are you sure you want to delete this signature?",
+    //   [
+    //     // The "Yes" button
+    //     {
+    //       text: "Yes",
+    //       onPress: () => {
+
+    //       },
+    //     },
+
+    //     {
+    //       text: "No",
+    //     },
+    //   ]
+    // );
+  }
+
   async function selectSignature(signatureFilePath) {
     const info = await FileSystem.getInfoAsync(signatureFilePath);
+    ReactNativeBlobUtil.ios.openDocument(signatureFilePath);
     console.log(info);
-    alert(signatureFilePath);
   }
 
   return (
@@ -148,14 +183,24 @@ export default function DrawSignCapture() {
           <TouchableOpacity className="border-2 p-2 mt-7 mx-2 rounded-full">
             <FontAwesome6 name="add" size={24} color="black" />
           </TouchableOpacity>
-          {signatureList.map((val, key) => (
-            <TouchableOpacity
-              key={key}
-              onPress={() => selectSignature(val)}
-              className="p-1 mx-1 mt-6 bg-slate-50 border-slate-300 border-2 rounded-lg"
+          {signatureList.map((path, idx) => (
+            <View
+              key={idx}
+              className="flex-row items-start mx-1 mt-6 bg-slate-50 border-slate-300 border-2 rounded-lg"
             >
-              <Image className="h-10 w-20 " source={{ uri: val }} />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => selectSignature(path)}
+                className="flex-row p-1 "
+              >
+                <Image className="h-12 w-24" source={{ uri: path }} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="absolute"
+                onPress={() => deleteSignature(path)}
+              >
+                <Ionicons name="close" size={20} color="black" />
+              </TouchableOpacity>
+            </View>
           ))}
         </View>
       </ScrollView>

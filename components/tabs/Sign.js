@@ -13,7 +13,7 @@ import { BottomSheetModal } from "@gorhom/bottom-sheet";
 // Stack Navigation
 import { createStackNavigator } from "@react-navigation/stack";
 import DrawSignCapture from "../Sign/DrawSignCapture";
-import SelectFile from "../Sign/SelectFile";
+import SelectFile from "../Sign/DocumentEditor";
 // Other Dependency Imports
 import * as DocumentPicker from "expo-document-picker";
 
@@ -62,7 +62,7 @@ function SignBottomSheet({ navigation }) {
     console.log(pickedFile);
 
     bottomSheetModalRef.current.close();
-    navigation.navigate("SelectFile");
+    navigation.navigate("SelectFile", { pickedFile });
   }
 
   return (

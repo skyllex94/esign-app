@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "esign-app",
+    "name": "SimpleSign",
     "slug": "esign-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -22,6 +22,8 @@
       }
     },
     "plugins": [
+      "@config-plugins/react-native-blob-util",
+      "@config-plugins/react-native-pdf",
       [
         "expo-media-library",
         {
