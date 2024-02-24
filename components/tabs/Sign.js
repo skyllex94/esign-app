@@ -7,15 +7,16 @@ import {
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 // Bottom Sheet Imports
-import React, { useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useContext, useMemo, useRef } from "react";
 import { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 // Stack Navigation
 import { createStackNavigator } from "@react-navigation/stack";
 import DrawSignCapture from "../Sign/DrawSignCapture";
-import SelectFile from "../Sign/DocumentEditor";
+import DocumentEditor from "../Sign/DocumentEditor";
 // Other Dependency Imports
 import * as DocumentPicker from "expo-document-picker";
+import { Context } from "../contexts/Global";
 
 const Stack = createStackNavigator();
 
@@ -31,27 +32,30 @@ export default function SignScreen() {
         component={DrawSignCapture}
         options={{ presentation: "card" }}
       />
-      <Stack.Screen name="SelectFile" component={SelectFile} />
+      <Stack.Screen
+        name="DocumentEditor"
+        component={DocumentEditor}
+        options={{ presentation: "card" }}
+      />
     </Stack.Navigator>
   );
 }
 
 function SignBottomSheet({ navigation }) {
-  const bottomSheetModalRef = useRef();
-
+  const { bottomSheetChooseDocument } = useContext(Context);
   const snapPoints = useMemo(() => ["50%"], []);
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
-    bottomSheetModalRef.current?.present();
+    bottomSheetChooseDocument.current?.present();
   }, []);
 
   function openDrawSign() {
-    bottomSheetModalRef.current.close();
+    bottomSheetChooseDocument.current.close();
     navigation.navigate("DrawSign");
   }
 
-  async function selectFile() {
+  async function openSelectDocument() {
     const pickedFile = await DocumentPicker.getDocumentAsync({
       type: "application/pdf",
       copyToCacheDirectory: true, // enabled to be found by FileSystem
@@ -61,8 +65,8 @@ function SignBottomSheet({ navigation }) {
 
     console.log(pickedFile);
 
-    bottomSheetModalRef.current.close();
-    navigation.navigate("SelectFile", { pickedFile });
+    bottomSheetChooseDocument.current.close();
+    navigation.navigate("DocumentEditor", { pickedFile });
   }
 
   return (
@@ -76,7 +80,7 @@ function SignBottomSheet({ navigation }) {
       </View>
 
       <BottomSheetModal
-        ref={bottomSheetModalRef}
+        ref={bottomSheetChooseDocument}
         index={0}
         snapPoints={snapPoints}
         backdropComponent={(props) => (
@@ -95,7 +99,7 @@ function SignBottomSheet({ navigation }) {
           <Text className="text-lg font-semibold">E-Sign Document</Text>
           <TouchableOpacity
             className="bg-gray-200 rounded-full p-2"
-            onPress={() => bottomSheetModalRef.current.close()}
+            onPress={() => bottomSheetChooseDocument.current.close()}
           >
             <AntDesign name="close" size={20} color="black" />
           </TouchableOpacity>
@@ -119,7 +123,7 @@ function SignBottomSheet({ navigation }) {
 
         <View className="flex-row px-3 h-16">
           <TouchableOpacity
-            onPress={selectFile}
+            onPress={openSelectDocument}
             className="flex-1 bg-gray-200 rounded-md mr-3 p-2"
           >
             <Text>Files</Text>

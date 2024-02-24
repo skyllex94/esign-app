@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 // UI Imports
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 // Signature Imports
@@ -15,13 +15,17 @@ import ReactNativeBlobUtil from "react-native-blob-util";
 import * as MediaLibrary from "expo-media-library";
 import * as FileSystem from "expo-file-system";
 import { ScrollView } from "react-native-gesture-handler";
+import { Context } from "../contexts/Global";
 
 export default function DrawSignCapture() {
   const signature = useRef();
-  const [signatureList, setSignatureList] = useState([]);
+
+  const { signatureList, setSignatureList, bottomSheetChooseDocument } =
+    useContext(Context);
 
   useEffect(() => {
     displayStoredSignatures();
+    bottomSheetChooseDocument.current.dismiss();
   }, []);
 
   const _onDragEvent = () => {

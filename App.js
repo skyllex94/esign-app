@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import * as React from "react";
+import { useRef, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import SettingsScreen from "./components/tabs/Settings";
@@ -30,8 +30,15 @@ export default function App() {
 }
 
 function Main() {
+  // Ref used in Sign & DrawSign
+  const bottomSheetChooseDocument = useRef();
+  // Shared state for DrawSign & DocumentEditor
+  const [signatureList, setSignatureList] = useState([]);
+
   return (
-    <Context.Provider value={{}}>
+    <Context.Provider
+      value={{ signatureList, setSignatureList, bottomSheetChooseDocument }}
+    >
       <GestureHandlerRootView className="flex-1">
         <BottomSheetModalProvider>
           <Tab.Navigator
