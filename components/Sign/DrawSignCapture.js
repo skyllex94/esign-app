@@ -6,16 +6,21 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 // UI Imports
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 // Signature Imports
 import SignatureCapture from "react-native-signature-capture";
 import ReactNativeBlobUtil from "react-native-blob-util";
-import * as MediaLibrary from "expo-media-library";
 import * as FileSystem from "expo-file-system";
 import { ScrollView } from "react-native-gesture-handler";
 import { Context } from "../contexts/Global";
+import {
+  deleteSignature,
+  displayStoredSignatures,
+  hideSignatures,
+  selectSignature,
+} from "./functions";
 
 export default function DrawSignCapture() {
   const signature = useRef();
@@ -24,7 +29,8 @@ export default function DrawSignCapture() {
     useContext(Context);
 
   useEffect(() => {
-    displayStoredSignatures();
+    displayStoredSignatures(setSignatureList);
+    console.log("USEEFFECTsignatureList", signatureList);
     bottomSheetChooseDocument.current.dismiss();
   }, []);
 
@@ -41,10 +47,12 @@ export default function DrawSignCapture() {
 
     const filePath =
       dirs.DocumentDir +
-      "/SimpleSign" +
+      "/Signatures" +
       "/signature" +
       new Date().getMilliseconds() +
       ".png";
+
+    console.log("filePath:", filePath);
 
     ReactNativeBlobUtil.fs
       .writeStream(filePath, "base64")
@@ -59,74 +67,16 @@ export default function DrawSignCapture() {
       });
 
     // Include filePath into the signature array
-    signatureList.push(filePath);
-    setSignatureList([...signatureList]);
-  }
-
-  async function displayStoredSignatures() {
-    let dir = await FileSystem.readDirectoryAsync(
-      FileSystem.documentDirectory + "SimpleSign"
-    );
-
-    dir.forEach((val) => {
-      signatureList.push(FileSystem.documentDirectory + "SimpleSign/" + val);
-    });
-
-    setSignatureList(() => [...signatureList]);
+    setSignatureList([...signatureList, filePath]);
+    displayStoredSignatures(setSignatureList);
   }
 
   async function readSignature() {
     const filePath =
-      "/var/mobile/Containers/Data/Application/1B2A4A62-7CF1-4FF2-B75B-93420F938CE3/Documents/SimpleSign/signature959.png";
+      "/var/mobile/Containers/Data/Application/1B2A4A62-7CF1-4FF2-B75B-93420F938CE3/Documents/Signatures/signature959.png";
 
     const signature = await FileSystem.getInfoAsync(filePath);
     console.log("signature:", signature);
-  }
-
-  function hideSignatures() {
-    setSignatureList(() => []);
-  }
-
-  function deleteSignature(fileWtPath) {
-    const path = fileWtPath.split("//");
-
-    // Updating signature array list for the UI
-    const updatedSignatureList = signatureList.filter(
-      (signature) => signature !== fileWtPath
-    );
-
-    ReactNativeBlobUtil.fs
-      .unlink(path[1])
-      .then(() => {
-        console.log("Deleted File from - ", path[1]);
-      })
-      .catch((err) => console.log(err));
-
-    setSignatureList(() => [...updatedSignatureList]);
-
-    // return Alert.alert(
-    //   "Are your sure?",
-    //   "Are you sure you want to delete this signature?",
-    //   [
-    //     // The "Yes" button
-    //     {
-    //       text: "Yes",
-    //       onPress: () => {
-
-    //       },
-    //     },
-
-    //     {
-    //       text: "No",
-    //     },
-    //   ]
-    // );
-  }
-
-  async function selectSignature(signatureFilePath) {
-    const info = await FileSystem.getInfoAsync(signatureFilePath);
-    ReactNativeBlobUtil.ios.openDocument(signatureFilePath);
-    console.log(info);
   }
 
   return (
@@ -167,13 +117,13 @@ export default function DrawSignCapture() {
           <Button
             className="p-3"
             color="#007AFF"
-            onPress={displayStoredSignatures}
+            onPress={() => displayStoredSignatures(setSignatureList)}
             title="Display All Signatures"
           />
           <Button
             className="p-3"
             color="#007AFF"
-            onPress={hideSignatures}
+            onPress={() => hideSignatures(setSignatureList)}
             title="Hide Signatures"
           />
         </View>
@@ -200,7 +150,9 @@ export default function DrawSignCapture() {
               </TouchableOpacity>
               <TouchableOpacity
                 className="absolute"
-                onPress={() => deleteSignature(path)}
+                onPress={() =>
+                  deleteSignature(path, signatureList, setSignatureList)
+                }
               >
                 <Ionicons name="close" size={20} color="black" />
               </TouchableOpacity>

@@ -17,6 +17,11 @@ import * as FileSystem from "expo-file-system";
 // BottomSheet
 import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
+import {
+  deleteSignature,
+  displayStoredSignatures,
+  selectSignature,
+} from "./functions";
 
 const html = `
     <html>
@@ -42,7 +47,7 @@ export default function DocumentEditor({ navigation, route }) {
   const { signatureList, setSignatureList } = useContext(Context);
 
   useEffect(() => {
-    displayStoredSignatures();
+    displayStoredSignatures(setSignatureList);
   }, []);
 
   // Passed path name for the documents picked
@@ -52,7 +57,7 @@ export default function DocumentEditor({ navigation, route }) {
 
   // Bottomsheet refs and values
   const editingPalette = useRef();
-  const snapPoints = useMemo(() => ["22%"], []);
+  const snapPoints = useMemo(() => ["14%"], []);
 
   // Bottomsheet callbacks
   const handlePresentModalPress = useCallback(() => {
@@ -88,21 +93,10 @@ export default function DocumentEditor({ navigation, route }) {
     navigation.navigate("DrawSign");
   }
 
-  async function displayStoredSignatures() {
-    let dir = await FileSystem.readDirectoryAsync(
-      FileSystem.documentDirectory + "SimpleSign"
-    );
-
-    dir.forEach((val) => {
-      signatureList.push(FileSystem.documentDirectory + "SimpleSign/" + val);
-    });
-
-    setSignatureList(() => [...signatureList]);
-  }
-
   return (
     <SafeAreaView className="flex-1">
       <Button title="Print" onPress={print} />
+      <Button title="Back" onPress={() => navigation.goBack()} />
       <Button title="OpenBottomSheet" onPress={handlePresentModalPress} />
       <View />
       <Button title="Print to PDF file" onPress={printToFile} />
@@ -149,33 +143,38 @@ export default function DocumentEditor({ navigation, route }) {
           >
             {showSignatures ? (
               <View className="flex-1 justify-between">
-                <View>
-                  <TouchableOpacity
-                    onPress={() => setShowSignatures((curr) => !curr)}
-                    className="h-10 w-10 items-center justify-center border-2 rounded-full"
-                  >
-                    <Ionicons name="arrow-back" size={24} color="black" />
-                  </TouchableOpacity>
-                </View>
-                <View className="flex-row items-start">
+                <View className="flex-row items-start mt-4">
+                  <View>
+                    <TouchableOpacity
+                      onPress={() => setShowSignatures((curr) => !curr)}
+                      className="h-10 w-10 items-center justify-center border-2 rounded-full"
+                    >
+                      <Ionicons name="arrow-back" size={24} color="black" />
+                    </TouchableOpacity>
+                  </View>
+
                   <TouchableOpacity
                     onPress={addNewSignature}
-                    className="border-2 p-2 mt-7 mx-2 rounded-full"
+                    className="border-2 p-2 mx-2 rounded-full"
                   >
                     <FontAwesome6 name="add" size={24} color="black" />
                   </TouchableOpacity>
                   {signatureList.map((path, idx) => (
                     <View
                       key={idx}
-                      className="flex-row items-start mx-1 mt-6 bg-slate-50 border-slate-300 border-2 rounded-lg"
+                      className="flex-row items-start mx-1 bg-slate-50 border-slate-300 border-2 rounded-lg"
                     >
                       <TouchableOpacity
                         onPress={() => selectSignature(path)}
-                        className="flex-row p-1 "
+                        className="flex-row p-1"
                       >
                         <Image className="h-10 w-20" source={{ uri: path }} />
                       </TouchableOpacity>
-                      <TouchableOpacity onPress={() => deleteSignature(path)}>
+                      <TouchableOpacity
+                        onPress={() =>
+                          deleteSignature(path, signatureList, setSignatureList)
+                        }
+                      >
                         <Ionicons name="close" size={20} color="black" />
                       </TouchableOpacity>
                     </View>
