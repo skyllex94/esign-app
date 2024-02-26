@@ -17,6 +17,7 @@ import DocumentEditor from "../Sign/DocumentEditor";
 // Other Dependency Imports
 import * as DocumentPicker from "expo-document-picker";
 import { Context } from "../contexts/Global";
+import DragSignature from "../Sign/DragSignature";
 
 const Stack = createStackNavigator();
 
@@ -35,6 +36,11 @@ export default function SignScreen() {
       <Stack.Screen
         name="DocumentEditor"
         component={DocumentEditor}
+        options={{ presentation: "card" }}
+      />
+      <Stack.Screen
+        name="DragSignature"
+        component={DragSignature}
         options={{ presentation: "card" }}
       />
     </Stack.Navigator>

@@ -16,7 +16,13 @@ import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import * as FileSystem from "expo-file-system";
 // BottomSheet
 import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
-import { FontAwesome6, Ionicons } from "@expo/vector-icons";
+import {
+  FontAwesome,
+  FontAwesome6,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import {
   deleteSignature,
   displayStoredSignatures,
@@ -57,14 +63,14 @@ export default function DocumentEditor({ navigation, route }) {
 
   // Bottomsheet refs and values
   const editingPalette = useRef();
-  const snapPoints = useMemo(() => ["14%"], []);
+  const snapPoints = useMemo(() => ["16%", "26%"], []);
 
   // Bottomsheet callbacks
   const handlePresentModalPress = useCallback(() => {
     editingPalette.current?.present();
   }, []);
 
-  const print = async () => {
+  const printDocument = async () => {
     // On iOS/android prints the given html. On web prints the HTML from the current page.
     await Print.printAsync({
       html,
@@ -93,24 +99,49 @@ export default function DocumentEditor({ navigation, route }) {
     navigation.navigate("DrawSign");
   }
 
+  function toggleSignatureList() {
+    // if (showSignatures) editingPalette.current.collapse();
+    // else editingPalette.current.expand();
+
+    setShowSignatures((curr) => !curr);
+  }
+
   return (
     <SafeAreaView className="flex-1">
-      <Button title="Print" onPress={print} />
-      <Button title="Back" onPress={() => navigation.goBack()} />
-      <Button title="OpenBottomSheet" onPress={handlePresentModalPress} />
-      <View />
-      <Button title="Print to PDF file" onPress={printToFile} />
+      <View className="flex-row items-center justify-between m-2">
+        <TouchableOpacity
+          className="flex-row items-center mx-1"
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color="black" />
+          <Text className="text-lg mx-1">Back</Text>
+        </TouchableOpacity>
+        <View className="flex-row">
+          <TouchableOpacity className="mx-1" onPress={printToFile}>
+            <MaterialIcons name="save-alt" size={24} color="black" />
+          </TouchableOpacity>
 
-      <View />
-      <Button title="Select printer" onPress={selectPrinter} />
-      <View />
+          <TouchableOpacity className="mx-1" onPress={selectPrinter}>
+            <MaterialCommunityIcons
+              name="printer-eye"
+              size={24}
+              color="black"
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity className="mx-1" onPress={printDocument}>
+            <FontAwesome name="print" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
       {selectedPrinter ? (
         <Text>{`Selected printer: ${selectedPrinter.name}`}</Text>
       ) : undefined}
 
       <Pdf
         source={source}
-        className="flex-1 h-full w-full"
+        className="flex-1 pb-10 w-full"
         onLoadComplete={(numberOfPages, filePath) => {
           console.log(`Number of pages: ${numberOfPages}`);
         }}
@@ -129,43 +160,43 @@ export default function DocumentEditor({ navigation, route }) {
         ref={editingPalette}
         index={0}
         snapPoints={snapPoints}
+        enableHandlePanningGesture={false}
         backdropComponent={(props) => (
           <BottomSheetBackdrop {...props} enableTouchThrough={true} />
         )}
         enableOverDrag={false}
         enablePanDownToClose={false}
       >
-        <View className="flex-row items-center justify-between px-3 pb-6 z-[10]">
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="flex-1"
-          >
-            {showSignatures ? (
-              <View className="flex-1 justify-between">
-                <View className="flex-row items-start mt-4">
-                  <View>
-                    <TouchableOpacity
-                      onPress={() => setShowSignatures((curr) => !curr)}
-                      className="h-10 w-10 items-center justify-center border-2 rounded-full"
-                    >
-                      <Ionicons name="arrow-back" size={24} color="black" />
-                    </TouchableOpacity>
-                  </View>
+        <View className="flex-row items-center justify-between px-3 pb-6">
+          {showSignatures ? (
+            <View className="flex-1">
+              <View className="flex-row justify-between">
+                <Text className="text-lg">My Signatures</Text>
 
+                <TouchableOpacity
+                  onPress={() => setShowSignatures((curr) => !curr)}
+                  className="bg-gray-200 rounded-full p-1"
+                >
+                  <Ionicons name="arrow-back" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View className="flex-row items-start mt-2">
                   <TouchableOpacity
                     onPress={addNewSignature}
-                    className="border-2 p-2 mx-2 rounded-full"
+                    className="bg-slate-50 border-slate-400 border-solid border-2 rounded-lg p-3 mx-1"
                   >
                     <FontAwesome6 name="add" size={24} color="black" />
                   </TouchableOpacity>
+
                   {signatureList.map((path, idx) => (
                     <View
                       key={idx}
-                      className="flex-row items-start mx-1 bg-slate-50 border-slate-300 border-2 rounded-lg"
+                      className="flex-row items-start mx-1 bg-slate-50 border-slate-300 border-dashed border-2 rounded-lg"
                     >
                       <TouchableOpacity
-                        onPress={() => selectSignature(path)}
+                        onPress={() => selectSignature(path, navigation)}
                         className="flex-row p-1"
                       >
                         <Image className="h-10 w-20" source={{ uri: path }} />
@@ -180,19 +211,19 @@ export default function DocumentEditor({ navigation, route }) {
                     </View>
                   ))}
                 </View>
-              </View>
-            ) : (
-              <View className="items-center justify-center">
-                <TouchableOpacity
-                  className="bg-gray-200 rounded-full py-3 px-10"
-                  onPress={() => setShowSignatures((curr) => !curr)}
-                >
-                  <FontAwesome6 name="signature" size={24} color="black" />
-                  <Text>eSign</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-          </ScrollView>
+              </ScrollView>
+            </View>
+          ) : (
+            <View className="flex-row items-center justify-center">
+              <TouchableOpacity
+                className="bg-gray-200 rounded-full mt-3 py-3 px-10"
+                onPress={toggleSignatureList}
+              >
+                <FontAwesome6 name="signature" size={24} color="black" />
+                <Text>eSign</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
       </BottomSheetModal>
     </SafeAreaView>
