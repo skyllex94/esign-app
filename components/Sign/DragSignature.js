@@ -51,15 +51,6 @@ let FlatItem = ({ item }) => {
   };
   return (
     <View>
-      <PanGestureHandler onGestureEvent={onGestureTopEvent}>
-        <Animated.View
-          style={{
-            height,
-            backgroundColor: "blue",
-            transform: [{ translateX }, { translateY }],
-          }}
-        />
-      </PanGestureHandler>
       <PanGestureHandler
         onGestureEvent={onGestureEvent}
         onHandlerStateChange={onHandlerStateChange}
@@ -69,6 +60,16 @@ let FlatItem = ({ item }) => {
         >
           <Text>{item.id}</Text>
         </Animated.View>
+      </PanGestureHandler>
+
+      <PanGestureHandler onGestureEvent={onGestureTopEvent}>
+        <Animated.View
+          style={{
+            height,
+            backgroundColor: "blue",
+            transform: [{ translateX }, { translateY }],
+          }}
+        />
       </PanGestureHandler>
     </View>
   );

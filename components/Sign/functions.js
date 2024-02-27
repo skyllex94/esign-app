@@ -1,12 +1,18 @@
 import * as FileSystem from "expo-file-system";
 import ReactNativeBlobUtil from "react-native-blob-util";
 
-export const selectSignature = async (signatureFilePath, navigation) => {
+export const selectSignature = async (
+  signatureFilePath,
+  navigation,
+  setInputSignature
+) => {
+  console.log("setInputSignature:", setInputSignature);
   // const info = await FileSystem.getInfoAsync(signatureFilePath);
   // ReactNativeBlobUtil.ios.openDocument(signatureFilePath);
   // alert(info.uri);
+  // navigation.navigate("DragSignature");
 
-  navigation.navigate("DragSignature");
+  setInputSignature((curr) => !curr);
 };
 
 export const deleteSignature = (
