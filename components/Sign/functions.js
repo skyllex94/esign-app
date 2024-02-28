@@ -4,14 +4,15 @@ import ReactNativeBlobUtil from "react-native-blob-util";
 export const selectSignature = async (
   signatureFilePath,
   navigation,
-  setInputSignature
+  setInputSignature,
+  setSelectedSignaturePath
 ) => {
-  console.log("setInputSignature:", setInputSignature);
   // const info = await FileSystem.getInfoAsync(signatureFilePath);
   // ReactNativeBlobUtil.ios.openDocument(signatureFilePath);
   // alert(info.uri);
   // navigation.navigate("DragSignature");
 
+  setSelectedSignaturePath(() => signatureFilePath);
   setInputSignature((curr) => !curr);
 };
 

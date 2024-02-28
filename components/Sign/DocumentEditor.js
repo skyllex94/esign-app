@@ -40,7 +40,8 @@ import {
   displayStoredSignatures,
   selectSignature,
 } from "./functions";
-import { Button } from "react-native-paper";
+
+import DraggableElement from "../Sign/DraggableElement";
 
 const html = `
     <html>
@@ -64,6 +65,8 @@ export default function DocumentEditor({ navigation, route }) {
   const [showSignatures, setShowSignatures] = useState(false);
   // Input chosen signature into the pdf
   const [inputSignature, setInputSignature] = useState(false);
+  // Selected signature path
+  const [selectedSignaturePath, setSelectedSignaturePath] = useState(null);
   // Signature list context
   const { signatureList, setSignatureList } = useContext(Context);
 
@@ -121,78 +124,6 @@ export default function DocumentEditor({ navigation, route }) {
     setShowSignatures((curr) => !curr);
   }
 
-  let data = [
-    { key: 1, id: 1 },
-    { key: 2, id: 2 },
-    { key: 3, id: 3 },
-    { key: 4, id: 4 },
-  ];
-
-  let FlatItem = ({ item }) => {
-    let translateX = new Animated.Value(0);
-    let translateY = new Animated.Value(0);
-    let height = new Animated.Value(20);
-    let width = new Animated.Value(100);
-    let onGestureEvent = Animated.event(
-      [
-        {
-          nativeEvent: {
-            translationX: translateX,
-            translationY: translateY,
-          },
-        },
-      ],
-      { useNativeDriver: false }
-    );
-    let onGestureTopEvent = Animated.event(
-      [
-        {
-          nativeEvent: {
-            translationY: height,
-            translationX: width,
-          },
-        },
-      ],
-      { useNativeDriver: false }
-    );
-    let _lastOffset = { x: 0, y: 0 };
-    let onHandlerStateChange = (event) => {
-      if (event.nativeEvent.oldState === State.ACTIVE) {
-        _lastOffset.x += event.nativeEvent.translationX;
-        _lastOffset.y += event.nativeEvent.translationY;
-        translateX.setOffset(_lastOffset.x);
-        translateX.setValue(0);
-        translateY.setOffset(_lastOffset.y);
-        translateY.setValue(0);
-      }
-    };
-    return (
-      <View>
-        <PanGestureHandler onGestureEvent={onGestureTopEvent}>
-          <Animated.Image
-            style={[
-              styles.item,
-              { transform: [{ translateX }, { translateY }] },
-            ]}
-            source={require("../../assets/snack-icon.png")}
-          />
-        </PanGestureHandler>
-        <PanGestureHandler
-          onGestureEvent={onGestureEvent}
-          onHandlerStateChange={onHandlerStateChange}
-        >
-          <Animated.View
-            style={{
-              height,
-              backgroundColor: "blue",
-              transform: [{ translateX }, { translateY }],
-            }}
-          />
-        </PanGestureHandler>
-      </View>
-    );
-  };
-
   return (
     <SafeAreaView className="flex-1">
       <View className="flex-row items-center justify-between m-2">
@@ -202,10 +133,6 @@ export default function DocumentEditor({ navigation, route }) {
         >
           <Ionicons name="arrow-back" size={24} color="black" />
           <Text className="text-lg mx-1">Back</Text>
-        </TouchableOpacity>
-        <TouchableOpacity className="flex-row items-center mx-1">
-          <Ionicons name="arrow-back" size={24} color="black" />
-          <Text className="text-lg mx-1">Resize</Text>
         </TouchableOpacity>
 
         <View className="flex-row">
@@ -249,15 +176,10 @@ export default function DocumentEditor({ navigation, route }) {
       >
         <View>
           {inputSignature && (
-            <FlatItem className="flex-1 z-100" item={data[0]}>
-              <View style={styles.container}>
-                <Image
-                  source={
-                    "https://s3.amazonaws.com/static.abstractapi.com/test-images/dog.jpg"
-                  }
-                />
-              </View>
-            </FlatItem>
+            <DraggableElement
+              className="flex-1 z-100"
+              selectedSignaturePath={selectedSignaturePath}
+            />
           )}
         </View>
       </Pdf>
@@ -303,7 +225,12 @@ export default function DocumentEditor({ navigation, route }) {
                     >
                       <TouchableOpacity
                         onPress={() =>
-                          selectSignature(path, navigation, setInputSignature)
+                          selectSignature(
+                            path,
+                            navigation,
+                            setInputSignature,
+                            setSelectedSignaturePath
+                          )
                         }
                         className="flex-row p-1"
                       >
@@ -337,22 +264,3 @@ export default function DocumentEditor({ navigation, route }) {
     </SafeAreaView>
   );
 }
-
-let dropzoneHeight = 200;
-let itemHeight = 100;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ecf0f1",
-    padding: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  item: {
-    width: itemHeight,
-    height: itemHeight,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-});

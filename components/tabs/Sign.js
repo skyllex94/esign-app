@@ -38,11 +38,6 @@ export default function SignScreen() {
         component={DocumentEditor}
         options={{ presentation: "card" }}
       />
-      <Stack.Screen
-        name="DragSignature"
-        component={DragSignature}
-        options={{ presentation: "card" }}
-      />
     </Stack.Navigator>
   );
 }
