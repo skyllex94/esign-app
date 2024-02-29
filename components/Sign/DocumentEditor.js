@@ -1,31 +1,20 @@
-import {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   SafeAreaView,
   Text,
   View,
   Image,
-  Animated,
   StyleSheet,
+  Dimensions,
 } from "react-native";
 import { Context } from "../contexts/Global";
 // PDF Imports
 import Pdf from "react-native-pdf";
 import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
-import {
-  PanGestureHandler,
-  ScrollView,
-  State,
-  TouchableOpacity,
-} from "react-native-gesture-handler";
-import * as FileSystem from "expo-file-system";
+import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
+import RNFS from "react-native-fs";
+import { decode, encode } from "base-64";
 // BottomSheet
 import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 import {
@@ -42,22 +31,7 @@ import {
 } from "./functions";
 
 import DraggableElement from "../Sign/DraggableElement";
-
-const html = `
-    <html>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-      </head>
-      <body style="text-align: center;">
-        <h1 style="font-size: 50px; font-family: Helvetica Neue; font-weight: normal;">
-          Hello Expo!
-        </h1>
-        <img
-          src="https://d30j33t1r58ioz.cloudfront.net/static/guides/sdk.png"
-          style="width: 90vw;" />
-      </body>
-    </html>
-  `;
+import { PDFDocument } from "pdf-lib";
 
 export default function DocumentEditor({ navigation, route }) {
   const [selectedPrinter, setSelectedPrinter] = useState();
@@ -70,23 +44,24 @@ export default function DocumentEditor({ navigation, route }) {
   // Signature list context
   const { signatureList, setSignatureList } = useContext(Context);
 
+  // PDF Editing states and variables
+  const [pdfArrayBuffer, setPdfArrayBuffer] = useState(null);
+  // The raw data of the pdf file
+  const [pdfRawData, setPdfRawData] = useState(null);
+
+  // Populate the stored signatures in the app's private storage
   useEffect(() => {
     displayStoredSignatures(setSignatureList);
+    editingPalette.current.present();
   }, []);
 
   // Passed path name for the documents picked
-  const { pickedFile } = route.params;
-  const source = { uri: pickedFile.assets[0].uri };
-  console.log("pickedFile:", pickedFile);
+  const { pickedDocument } = route.params;
+  const source = { uri: pickedDocument.assets[0].uri, cache: true };
 
   // Bottomsheet refs and values
   const editingPalette = useRef();
-  const snapPoints = useMemo(() => ["16%", "26%"], []);
-
-  // Bottomsheet callbacks
-  const handlePresentModalPress = useCallback(() => {
-    editingPalette.current?.present();
-  }, []);
+  const snapPoints = useMemo(() => ["16%"], []);
 
   const printDocument = async () => {
     // On iOS/android prints the given html. On web prints the HTML from the current page.
@@ -96,15 +71,11 @@ export default function DocumentEditor({ navigation, route }) {
     });
   };
 
-  useEffect(() => {
-    editingPalette.current.present();
-  }, []);
+  const saveEditedDocument = async () => {
+    // Sharing navigation once complete
+    // await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
 
-  const printToFile = async () => {
-    // On iOS/android prints the given html. On web prints the HTML from the current page.
-    const { uri } = await Print.printToFileAsync({ html });
-    console.log("File has been saved to:", uri);
-    await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
+    readPdf();
   };
 
   const selectPrinter = async () => {
@@ -118,10 +89,29 @@ export default function DocumentEditor({ navigation, route }) {
   }
 
   function toggleSignatureList() {
-    // if (showSignatures) editingPalette.current.collapse();
-    // else editingPalette.current.expand();
-
     setShowSignatures((curr) => !curr);
+  }
+
+  async function readPdf() {
+    const readDocument = await RNFS.readFile(
+      pickedDocument.assets[0].uri,
+      "base64"
+    );
+
+    setPdfRawData(readDocument);
+    setPdfArrayBuffer(_base64ToArrayBuffer(readDocument));
+  }
+
+  console.log(pdfArrayBuffer);
+
+  function _base64ToArrayBuffer(base64) {
+    const binary_string = decode(base64);
+    const len = binary_string.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) bytes[i] = binary_string.charCodeAt(i);
+
+    console.log(bytes.buffer);
+    return bytes.buffer;
   }
 
   return (
@@ -136,7 +126,7 @@ export default function DocumentEditor({ navigation, route }) {
         </TouchableOpacity>
 
         <View className="flex-row">
-          <TouchableOpacity className="mx-1" onPress={printToFile}>
+          <TouchableOpacity className="mx-1" onPress={saveEditedDocument}>
             <MaterialIcons name="save-alt" size={24} color="black" />
           </TouchableOpacity>
 
@@ -158,37 +148,53 @@ export default function DocumentEditor({ navigation, route }) {
         <Text>{`Selected printer: ${selectedPrinter.name}`}</Text>
       ) : undefined}
 
-      <Pdf
-        source={source}
-        className="flex-1 pb-10 w-full"
-        onLoadComplete={(numberOfPages, filePath) => {
-          console.log(`Number of pages: ${numberOfPages}`);
-        }}
-        onPageChanged={(page, numberOfPages) => {
-          console.log(`Current page: ${page}`);
-        }}
-        onError={(error) => {
-          console.log(error);
-        }}
-        onPressLink={(uri) => {
-          console.log(`Link pressed: ${uri}`);
-        }}
-      >
-        <View>
-          {inputSignature && (
-            <DraggableElement
-              className="flex-1 z-100"
-              selectedSignaturePath={selectedSignaturePath}
-            />
-          )}
-        </View>
-      </Pdf>
+      <View style={styles.container}>
+        <Pdf
+          source={source}
+          minScale={1.0}
+          maxScale={1.0}
+          scale={1.0}
+          spacing={0}
+          fitPolicy={0}
+          enablePaging={true}
+          style={styles.pdf}
+          onLoadComplete={(numberOfPages, filePath) => {
+            console.log(`Number of pages: ${numberOfPages}`);
+          }}
+          onPageSingleTap={async (page, x, y) => {
+            console.log(`tapPage: ${page}`);
+            console.log(`x: ${x}`);
+            console.log(`y: ${y}`);
+
+            const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
+          }}
+          onPageChanged={(page, numberOfPages) => {
+            console.log(`Current page: ${page}`);
+          }}
+          onError={(error) => {
+            console.log(error);
+          }}
+          onPressLink={(uri) => {
+            console.log(`Link pressed: ${uri}`);
+          }}
+        >
+          <View>
+            {inputSignature && (
+              <DraggableElement
+                className="flex-1"
+                selectedSignaturePath={selectedSignaturePath}
+              />
+            )}
+          </View>
+        </Pdf>
+      </View>
 
       <BottomSheetModal
         ref={editingPalette}
         index={0}
         snapPoints={snapPoints}
         enableHandlePanningGesture={false}
+        enableDynamicSizing={false}
         backdropComponent={(props) => (
           <BottomSheetBackdrop {...props} enableTouchThrough={true} />
         )}
@@ -264,3 +270,16 @@ export default function DocumentEditor({ navigation, route }) {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    marginTop: 25,
+    backgroundColor: "#f4f4f4",
+  },
+  pdf: {
+    width: Dimensions.get("window").width,
+    height: 540,
+  },
+});

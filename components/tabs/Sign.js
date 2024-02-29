@@ -57,17 +57,17 @@ function SignBottomSheet({ navigation }) {
   }
 
   async function openSelectDocument() {
-    const pickedFile = await DocumentPicker.getDocumentAsync({
+    const pickedDocument = await DocumentPicker.getDocumentAsync({
       type: "application/pdf",
       copyToCacheDirectory: true, // enabled to be found by FileSystem
     });
 
-    if (pickedFile.canceled === true) return;
+    if (pickedDocument.canceled === true) return;
 
-    console.log(pickedFile);
+    console.log(pickedDocument);
 
     bottomSheetChooseDocument.current.close();
-    navigation.navigate("DocumentEditor", { pickedFile });
+    navigation.navigate("DocumentEditor", { pickedDocument });
   }
 
   return (

@@ -14,8 +14,8 @@ let data = [
 ];
 
 export default function DraggableElement({ item, selectedSignaturePath }) {
-  const [signHeight, setSignHeight] = useState("60%");
-  const [signWidth, setSignWidth] = useState("30%");
+  const [signHeight, setSignHeight] = useState("80");
+  const [signWidth, setSignWidth] = useState("100");
 
   let translateX = new Animated.Value(0);
   let translateY = new Animated.Value(0);
@@ -55,23 +55,21 @@ export default function DraggableElement({ item, selectedSignaturePath }) {
     }
   };
 
-  function changeSignatureScale() {
-    setSignHeight(() => "60%");
-    setSignWidth(() => "40px");
-  }
-
   return (
     <View>
-      <Button title="Resize" onPress={changeSignatureScale} />
-
       <PanGestureHandler
         onGestureEvent={onGestureEvent}
         onHandlerStateChange={onHandlerStateChange}
       >
         <View>
           <Animated.Image
-            className={`items-center justify-center h-[${signHeight}] w-[${signWidth}] border-2`}
-            style={[{ transform: [{ translateX }, { translateY }] }]}
+            // className={`border-2 min-h-[${signHeight}] max-w-[${signWidth}]`}
+            style={[
+              {
+                transform: [{ translateX }, { translateY }],
+              },
+              { minHeight: 80, maxWidth: 100 },
+            ]}
             source={{ uri: selectedSignaturePath }}
           />
         </View>
