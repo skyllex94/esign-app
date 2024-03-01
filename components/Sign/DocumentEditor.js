@@ -28,6 +28,7 @@ import {
   deleteSignature,
   displayStoredSignatures,
   selectSignature,
+  uint8ToBase64Conversion,
 } from "./functions";
 
 import DraggableElement from "../Sign/DraggableElement";
@@ -46,14 +47,33 @@ export default function DocumentEditor({ navigation, route }) {
 
   // PDF Editing states and variables
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState(null);
-  // The raw data of the pdf file
-  const [pdfRawData, setPdfRawData] = useState(null);
+  // The raw Base 64 data of the pdf file
+  const [pdfBase64, setPdfBase64] = useState(null);
+  // Signature's array buffer state
+  const [signatureArrayBuffer, setSignatureArrayBuffer] = useState(null);
+  // Signature's Base64 data state
+  const [signatureBase64Data, setSignatureBase64Data] = useState(null);
+  // PDF page dimension states
+  const [pageHeight, setPageHeight] = useState();
+  const [pageWidth, setPageWidth] = useState();
+  // Edited PDF file path
+  const [editedPdfPath, setEditedPdfPath] = useState();
 
   // Populate the stored signatures in the app's private storage
   useEffect(() => {
     displayStoredSignatures(setSignatureList);
     editingPalette.current.present();
   }, []);
+
+  useEffect(() => {
+    // Reads the raw data from the chosen PDF
+    readPdf();
+
+    if (signatureBase64Data) {
+      console.log("Triggered useEffect signatureBase64");
+      setSignatureArrayBuffer(base64ToArrayBuffer(signatureBase64Data));
+    }
+  }, [signatureBase64Data]);
 
   // Passed path name for the documents picked
   const { pickedDocument } = route.params;
@@ -74,8 +94,6 @@ export default function DocumentEditor({ navigation, route }) {
   const saveEditedDocument = async () => {
     // Sharing navigation once complete
     // await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
-
-    readPdf();
   };
 
   const selectPrinter = async () => {
@@ -98,21 +116,18 @@ export default function DocumentEditor({ navigation, route }) {
       "base64"
     );
 
-    setPdfRawData(readDocument);
-    setPdfArrayBuffer(_base64ToArrayBuffer(readDocument));
+    setPdfBase64(readDocument);
+    setPdfArrayBuffer(base64ToArrayBuffer(readDocument));
   }
 
-  console.log(pdfArrayBuffer);
-
-  function _base64ToArrayBuffer(base64) {
+  const base64ToArrayBuffer = (base64) => {
     const binary_string = decode(base64);
     const len = binary_string.length;
     const bytes = new Uint8Array(len);
     for (let i = 0; i < len; i++) bytes[i] = binary_string.charCodeAt(i);
 
-    console.log(bytes.buffer);
-    return bytes.buffer;
-  }
+    return bytes;
+  };
 
   return (
     <SafeAreaView className="flex-1">
@@ -158,15 +173,57 @@ export default function DocumentEditor({ navigation, route }) {
           fitPolicy={0}
           enablePaging={true}
           style={styles.pdf}
-          onLoadComplete={(numberOfPages, filePath) => {
-            console.log(`Number of pages: ${numberOfPages}`);
+          onLoadComplete={(numberOfPages, filePath, { height, width }) => {
+            setPageHeight(height);
+            setPageWidth(width);
           }}
           onPageSingleTap={async (page, x, y) => {
             console.log(`tapPage: ${page}`);
-            console.log(`x: ${x}`);
-            console.log(`y: ${y}`);
+            console.log(`x coordinate Peter: ${x}`);
+            console.log(`y Don't use 3 fingers: ${y}`);
 
             const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
+            console.log("pdfDoc:", pdfDoc);
+
+            const pages = pdfDoc.getPages();
+            const firstPage = pages[page - 1];
+            console.log("firstPage:", firstPage);
+
+            // Inputting the signature inside the PDF document
+            if (signatureArrayBuffer) {
+              const signatureImage = await pdfDoc.embedPng(
+                signatureArrayBuffer
+              );
+
+              firstPage.drawImage(signatureImage, {
+                x: (pageWidth * (x - 12)) / Dimensions.get("window").width,
+                y: pageHeight - (pageHeight * (y + 12)) / 540,
+                width: 50,
+                height: 50,
+              });
+              console.log("signatureImage:", signatureImage);
+
+              // Saving the new editted document
+              const pdfEditedBytes = await pdfDoc.save();
+              const pdfBase64 = uint8ToBase64Conversion(pdfEditedBytes);
+              // console.log("pdfBase64:", pdfBase64);
+
+              const editedDocPath = `${
+                RNFS.DocumentDirectoryPath
+              }/SignedDocuments/Document_${Date.now()}`;
+
+              console.log("editedDocPath", editedDocPath);
+
+              try {
+                await RNFS.writeFile(editedDocPath, pdfBase64, "base64");
+
+                setEditedPdfPath(editedDocPath);
+                setPdfBase64(pdfBase64);
+                console.log("Success, you have your newly edited document");
+              } catch (error) {
+                console.log(error);
+              }
+            }
           }}
           onPageChanged={(page, numberOfPages) => {
             console.log(`Current page: ${page}`);
@@ -233,9 +290,9 @@ export default function DocumentEditor({ navigation, route }) {
                         onPress={() =>
                           selectSignature(
                             path,
-                            navigation,
                             setInputSignature,
-                            setSelectedSignaturePath
+                            setSelectedSignaturePath,
+                            setSignatureBase64Data
                           )
                         }
                         className="flex-row p-1"
