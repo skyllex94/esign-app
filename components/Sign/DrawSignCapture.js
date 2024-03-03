@@ -58,7 +58,6 @@ export default function DrawSignCapture() {
       .writeStream(filePath, "base64")
       .then((data) => data.write(signature.encoded))
       .then(() => {
-        // ReactNativeBlobUtil.ios.openDocument(filePath);
         // ReactNativeBlobUtil.ios.previewDocument("file://" + filePath);
         console.log("Successfully saved to: " + filePath);
       })

@@ -13,10 +13,12 @@ let data = [
   { key: 4, id: 4 },
 ];
 
-export default function DraggableElement({ item, selectedSignaturePath }) {
-  const [signHeight, setSignHeight] = useState("80");
-  const [signWidth, setSignWidth] = useState("100");
-
+export default function DraggableElement({
+  item,
+  selectedSignaturePath,
+  setHeightElement,
+  setWidthElement,
+}) {
   let translateX = new Animated.Value(0);
   let translateY = new Animated.Value(0);
   let height = new Animated.Value(40);
@@ -55,11 +57,18 @@ export default function DraggableElement({ item, selectedSignaturePath }) {
     }
   };
 
+  const onRelease = (event) => {
+    console.log("Event", event.nativeEvent);
+    setWidthElement(event.nativeEvent.x);
+    setHeightElement(event.nativeEvent.y);
+  };
+
   return (
     <View>
       <PanGestureHandler
         onGestureEvent={onGestureEvent}
         onHandlerStateChange={onHandlerStateChange}
+        onEnded={onRelease}
       >
         <View>
           <Animated.Image
@@ -92,7 +101,3 @@ export default function DraggableElement({ item, selectedSignaturePath }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  item: {},
-});

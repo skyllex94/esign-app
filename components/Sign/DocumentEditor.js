@@ -6,12 +6,15 @@ import {
   Image,
   StyleSheet,
   Dimensions,
+  UIManager,
 } from "react-native";
 import { Context } from "../contexts/Global";
 // PDF Imports
 import Pdf from "react-native-pdf";
 import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
+import * as IntentLauncher from "expo-intent-launcher";
+import * as FileSystem from "expo-file-system";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import RNFS from "react-native-fs";
 import { decode, encode } from "base-64";
@@ -44,6 +47,10 @@ export default function DocumentEditor({ navigation, route }) {
   const [selectedSignaturePath, setSelectedSignaturePath] = useState(null);
   // Signature list context
   const { signatureList, setSignatureList } = useContext(Context);
+
+  // Relative width and height of inputed element
+  const [widthElement, setWidthElement] = useState(0);
+  const [heightElement, setHeightElement] = useState(0);
 
   // PDF Editing states and variables
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState(null);
@@ -91,9 +98,67 @@ export default function DocumentEditor({ navigation, route }) {
     });
   };
 
-  const saveEditedDocument = async () => {
-    // Sharing navigation once complete
-    // await shareAsync(uri, { UTI: ".pdf", mimeType: "application/pdf" });
+  const saveEditedDocument = async (page, x, y) => {
+    console.log(`tapPage: ${page}`);
+    console.log(`x coordinate Peter: ${x}`);
+    console.log(`y Don't use 3 fingers: ${y}`);
+
+    const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
+    console.log("pdfDoc:", pdfDoc);
+
+    const pages = pdfDoc.getPages();
+    const firstPage = pages[page - 1];
+    console.log("firstPage:", firstPage);
+
+    // Inputting the signature inside the PDF document
+    if (signatureArrayBuffer) {
+      const signatureImage = await pdfDoc.embedPng(signatureArrayBuffer);
+
+      firstPage.drawImage(signatureImage, {
+        x: (pageWidth * (x - 12)) / Dimensions.get("window").width,
+        y: pageHeight - (pageHeight * (y + 12)) / 540,
+        width: 100,
+        height: 100,
+      });
+      console.log("signatureImage:", signatureImage);
+
+      // Saving the new editted document
+      const pdfEditedBytes = await pdfDoc.save();
+      const pdfBase64 = uint8ToBase64Conversion(pdfEditedBytes);
+      // console.log("pdfBase64:", pdfBase64);
+
+      const editedDocPath = `${
+        RNFS.DocumentDirectoryPath
+      }/Completed/Document_${Date.now()}.pdf`;
+
+      console.log("editedDocPath", editedDocPath);
+
+      const existsPath = await RNFS.exists(
+        `${RNFS.DocumentDirectoryPath}/Completed/`
+      );
+
+      if (!existsPath) RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/Completed/`);
+
+      try {
+        await RNFS.writeFile(editedDocPath, pdfBase64, "base64");
+
+        setEditedPdfPath(editedDocPath);
+        setPdfBase64(pdfBase64);
+
+        // Sharing navigation once complete
+        await shareAsync(editedDocPath, {
+          UTI: ".pdf",
+          mimeType: "application/pdf",
+        });
+
+        // const info = await FileSystem.getInfoAsync(editedDocPath);
+        // console.log("info:", info);
+
+        console.log("Success, you have your newly edited document");
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   const selectPrinter = async () => {
@@ -129,6 +194,14 @@ export default function DocumentEditor({ navigation, route }) {
     return bytes;
   };
 
+  async function measureCoordinates() {
+    const coordinates = await UIManager.measureCoordinates(node);
+    console.log("coordinates:", coordinates);
+  }
+
+  console.log("setWidthElement", widthElement);
+  console.log("setHeightElement", heightElement);
+
   return (
     <SafeAreaView className="flex-1">
       <View className="flex-row items-center justify-between m-2">
@@ -140,9 +213,13 @@ export default function DocumentEditor({ navigation, route }) {
           <Text className="text-lg mx-1">Back</Text>
         </TouchableOpacity>
 
-        <View className="flex-row">
-          <TouchableOpacity className="mx-1" onPress={saveEditedDocument}>
-            <MaterialIcons name="save-alt" size={24} color="black" />
+        <View className="flex-row items-center">
+          <TouchableOpacity
+            className="flex-row items-center p-1 mx-1 bg-purple-600 rounded-lg"
+            onPress={saveEditedDocument}
+          >
+            <MaterialIcons name="save-alt" size={24} color="white" />
+            <Text className="mx-2 text-lg text-white">Save</Text>
           </TouchableOpacity>
 
           <TouchableOpacity className="mx-1" onPress={selectPrinter}>
@@ -163,7 +240,7 @@ export default function DocumentEditor({ navigation, route }) {
         <Text>{`Selected printer: ${selectedPrinter.name}`}</Text>
       ) : undefined}
 
-      <View style={styles.container}>
+      <View className="mt-10">
         <Pdf
           source={source}
           minScale={1.0}
@@ -172,58 +249,17 @@ export default function DocumentEditor({ navigation, route }) {
           spacing={0}
           fitPolicy={0}
           enablePaging={true}
-          style={styles.pdf}
-          onLoadComplete={(numberOfPages, filePath, { height, width }) => {
+          style={{ width: Dimensions.get("window").width, height: 540 }}
+          onLoadComplete={(pages, path, { height, width }) => {
             setPageHeight(height);
+            console.log("pdf_height:", height);
             setPageWidth(width);
+            console.log("pdf_width:", width);
           }}
-          onPageSingleTap={async (page, x, y) => {
-            console.log(`tapPage: ${page}`);
-            console.log(`x coordinate Peter: ${x}`);
-            console.log(`y Don't use 3 fingers: ${y}`);
-
-            const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
-            console.log("pdfDoc:", pdfDoc);
-
-            const pages = pdfDoc.getPages();
-            const firstPage = pages[page - 1];
-            console.log("firstPage:", firstPage);
-
-            // Inputting the signature inside the PDF document
-            if (signatureArrayBuffer) {
-              const signatureImage = await pdfDoc.embedPng(
-                signatureArrayBuffer
-              );
-
-              firstPage.drawImage(signatureImage, {
-                x: (pageWidth * (x - 12)) / Dimensions.get("window").width,
-                y: pageHeight - (pageHeight * (y + 12)) / 540,
-                width: 50,
-                height: 50,
-              });
-              console.log("signatureImage:", signatureImage);
-
-              // Saving the new editted document
-              const pdfEditedBytes = await pdfDoc.save();
-              const pdfBase64 = uint8ToBase64Conversion(pdfEditedBytes);
-              // console.log("pdfBase64:", pdfBase64);
-
-              const editedDocPath = `${
-                RNFS.DocumentDirectoryPath
-              }/SignedDocuments/Document_${Date.now()}`;
-
-              console.log("editedDocPath", editedDocPath);
-
-              try {
-                await RNFS.writeFile(editedDocPath, pdfBase64, "base64");
-
-                setEditedPdfPath(editedDocPath);
-                setPdfBase64(pdfBase64);
-                console.log("Success, you have your newly edited document");
-              } catch (error) {
-                console.log(error);
-              }
-            }
+          onPageSingleTap={(page, x, y) => {
+            console.log("x", x);
+            console.log("y", y);
+            // measureCoordinates();
           }}
           onPageChanged={(page, numberOfPages) => {
             console.log(`Current page: ${page}`);
@@ -240,6 +276,8 @@ export default function DocumentEditor({ navigation, route }) {
               <DraggableElement
                 className="flex-1"
                 selectedSignaturePath={selectedSignaturePath}
+                setWidthElement={setWidthElement}
+                setHeightElement={setHeightElement}
               />
             )}
           </View>
@@ -327,16 +365,3 @@ export default function DocumentEditor({ navigation, route }) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    marginTop: 25,
-    backgroundColor: "#f4f4f4",
-  },
-  pdf: {
-    width: Dimensions.get("window").width,
-    height: 540,
-  },
-});
