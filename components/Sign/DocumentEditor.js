@@ -77,7 +77,6 @@ export default function DocumentEditor({ navigation, route }) {
     readPdf();
 
     if (signatureBase64Data) {
-      console.log("Triggered useEffect signatureBase64");
       setSignatureArrayBuffer(base64ToArrayBuffer(signatureBase64Data));
     }
   }, [signatureBase64Data]);
@@ -99,24 +98,27 @@ export default function DocumentEditor({ navigation, route }) {
   };
 
   const saveEditedDocument = async (page, x, y) => {
-    console.log(`tapPage: ${page}`);
-    console.log(`x coordinate Peter: ${x}`);
-    console.log(`y Don't use 3 fingers: ${y}`);
+    // console.log(`tapPage: ${page}`);
+    // console.log(`x: ${x}`);
+    // console.log(`y: ${y}`);
 
     const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
     console.log("pdfDoc:", pdfDoc);
 
     const pages = pdfDoc.getPages();
-    const firstPage = pages[page - 1];
+    console.log("pages:", pages);
+    const firstPage = pages[0]; // must figure out which page is needed
     console.log("firstPage:", firstPage);
 
     // Inputting the signature inside the PDF document
     if (signatureArrayBuffer) {
       const signatureImage = await pdfDoc.embedPng(signatureArrayBuffer);
 
+      console.log(widthElement, heightElement);
+
       firstPage.drawImage(signatureImage, {
-        x: (pageWidth * (x - 12)) / Dimensions.get("window").width,
-        y: pageHeight - (pageHeight * (y + 12)) / 540,
+        x: (pageWidth * (widthElement - 12)) / Dimensions.get("window").width,
+        y: pageHeight - (pageHeight * (heightElement + 12)) / 540,
         width: 100,
         height: 100,
       });
@@ -199,8 +201,8 @@ export default function DocumentEditor({ navigation, route }) {
     console.log("coordinates:", coordinates);
   }
 
-  console.log("setWidthElement", widthElement);
-  console.log("setHeightElement", heightElement);
+  // console.log("setWidthElement", widthElement);
+  // console.log("setHeightElement", heightElement);
 
   return (
     <SafeAreaView className="flex-1">
@@ -259,7 +261,6 @@ export default function DocumentEditor({ navigation, route }) {
           onPageSingleTap={(page, x, y) => {
             console.log("x", x);
             console.log("y", y);
-            // measureCoordinates();
           }}
           onPageChanged={(page, numberOfPages) => {
             console.log(`Current page: ${page}`);

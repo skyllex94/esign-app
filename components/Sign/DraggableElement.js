@@ -19,6 +19,9 @@ export default function DraggableElement({
   setHeightElement,
   setWidthElement,
 }) {
+  const [transX, setTransX] = useState(0);
+  const [transY, setTransY] = useState(0);
+
   let translateX = new Animated.Value(0);
   let translateY = new Animated.Value(0);
   let height = new Animated.Value(40);
@@ -29,6 +32,8 @@ export default function DraggableElement({
         nativeEvent: {
           translationX: translateX,
           translationY: translateY,
+          // x: translateX,
+          // y: translateY,
         },
       },
     ],
@@ -43,9 +48,9 @@ export default function DraggableElement({
         },
       },
     ],
-    { useNativeDriver: false }
+    { useNativeDriver: true }
   );
-  let _lastOffset = { x: 0, y: 0 };
+  let _lastOffset = { x: transX, y: transY };
   let onHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       _lastOffset.x += event.nativeEvent.translationX;
