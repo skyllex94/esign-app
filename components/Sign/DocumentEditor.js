@@ -65,6 +65,8 @@ export default function DocumentEditor({ navigation, route }) {
   const [pageWidth, setPageWidth] = useState();
   // Edited PDF file path
   const [editedPdfPath, setEditedPdfPath] = useState();
+  // Current page of the pdf
+  const [currPage, setCurrPage] = useState(1);
 
   // Populate the stored signatures in the app's private storage
   useEffect(() => {
@@ -97,18 +99,12 @@ export default function DocumentEditor({ navigation, route }) {
     });
   };
 
-  const saveEditedDocument = async (page, x, y) => {
-    // console.log(`tapPage: ${page}`);
-    // console.log(`x: ${x}`);
-    // console.log(`y: ${y}`);
-
+  const saveEditedDocument = async () => {
     const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
-    console.log("pdfDoc:", pdfDoc);
 
     const pages = pdfDoc.getPages();
     console.log("pages:", pages);
-    const firstPage = pages[0]; // must figure out which page is needed
-    console.log("firstPage:", firstPage);
+    const firstPage = pages[currPage - 1];
 
     // Inputting the signature inside the PDF document
     if (signatureArrayBuffer) {
@@ -117,9 +113,9 @@ export default function DocumentEditor({ navigation, route }) {
       console.log(widthElement, heightElement);
 
       firstPage.drawImage(signatureImage, {
-        x: (pageWidth * (widthElement - 12)) / Dimensions.get("window").width,
-        y: pageHeight - (pageHeight * (heightElement + 12)) / 540,
-        width: 100,
+        x: (pageWidth * (widthElement - 100)) / Dimensions.get("window").width,
+        y: pageHeight - (pageHeight * (heightElement + 35)) / 540,
+        width: 140,
         height: 100,
       });
       console.log("signatureImage:", signatureImage);
@@ -201,9 +197,6 @@ export default function DocumentEditor({ navigation, route }) {
     console.log("coordinates:", coordinates);
   }
 
-  // console.log("setWidthElement", widthElement);
-  // console.log("setHeightElement", heightElement);
-
   return (
     <SafeAreaView className="flex-1">
       <View className="flex-row items-center justify-between m-2">
@@ -258,12 +251,13 @@ export default function DocumentEditor({ navigation, route }) {
             setPageWidth(width);
             console.log("pdf_width:", width);
           }}
+          onPageChanged={(page, numOfPages) => {
+            console.log("Current Page", page);
+            setCurrPage(page);
+          }}
           onPageSingleTap={(page, x, y) => {
             console.log("x", x);
             console.log("y", y);
-          }}
-          onPageChanged={(page, numberOfPages) => {
-            console.log(`Current page: ${page}`);
           }}
           onError={(error) => {
             console.log(error);

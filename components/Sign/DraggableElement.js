@@ -1,10 +1,11 @@
-import { useState } from "react";
-import { View, Dimensions, Animated, Button, StyleSheet } from "react-native";
+import { useCallback } from "react";
+import { View, Dimensions, Animated } from "react-native";
 // import Constants from "expo-constants";
-import { PanGestureHandler, State } from "react-native-gesture-handler";
-
-const screenHeight = Dimensions.get("window").height;
-const screenWidth = Dimensions.get("window").width;
+import {
+  GestureHandlerRootView,
+  PanGestureHandler,
+  State,
+} from "react-native-gesture-handler";
 
 let data = [
   { key: 1, id: 1 },
@@ -19,11 +20,8 @@ export default function DraggableElement({
   setHeightElement,
   setWidthElement,
 }) {
-  const [transX, setTransX] = useState(0);
-  const [transY, setTransY] = useState(0);
-
-  let translateX = new Animated.Value(0);
-  let translateY = new Animated.Value(0);
+  let translateX = new Animated.Value(Dimensions.get("screen").width / 3);
+  let translateY = new Animated.Value(Dimensions.get("screen").height / 4);
   let height = new Animated.Value(40);
   let width = new Animated.Value(100);
   let onGestureEvent = Animated.event(
@@ -32,26 +30,15 @@ export default function DraggableElement({
         nativeEvent: {
           translationX: translateX,
           translationY: translateY,
-          // x: translateX,
-          // y: translateY,
         },
       },
     ],
     { useNativeDriver: false }
   );
-  let onGestureTopEvent = Animated.event(
-    [
-      {
-        nativeEvent: {
-          translationX: width,
-          translationY: height,
-        },
-      },
-    ],
-    { useNativeDriver: true }
-  );
-  let _lastOffset = { x: transX, y: transY };
-  let onHandlerStateChange = (event) => {
+
+  let _lastOffset = { x: 0, y: 0 };
+
+  const onHandlerStateChange = (event) => {
     if (event.nativeEvent.oldState === State.ACTIVE) {
       _lastOffset.x += event.nativeEvent.translationX;
       _lastOffset.y += event.nativeEvent.translationY;
@@ -68,16 +55,32 @@ export default function DraggableElement({
     setHeightElement(event.nativeEvent.y);
   };
 
+  console.log("_lastOffset", _lastOffset);
+  console.log("translateX", translateX);
+
+  let onGestureTopEvent = Animated.event(
+    [
+      {
+        nativeEvent: {
+          translationX: width,
+          translationY: height,
+        },
+      },
+    ],
+    { useNativeDriver: true }
+  );
+
   return (
     <View>
-      <PanGestureHandler
-        onGestureEvent={onGestureEvent}
-        onHandlerStateChange={onHandlerStateChange}
-        onEnded={onRelease}
+      <GestureHandlerRootView
+        style={{ flex: 1, width: "100%", height: "100%" }}
       >
-        <View>
+        <PanGestureHandler
+          onGestureEvent={onGestureEvent}
+          onHandlerStateChange={onHandlerStateChange}
+          onEnded={onRelease}
+        >
           <Animated.Image
-            // className={`border-2 min-h-[${signHeight}] max-w-[${signWidth}]`}
             style={[
               {
                 transform: [{ translateX }, { translateY }],
@@ -86,8 +89,8 @@ export default function DraggableElement({
             ]}
             source={{ uri: selectedSignaturePath }}
           />
-        </View>
-      </PanGestureHandler>
+        </PanGestureHandler>
+      </GestureHandlerRootView>
 
       {/*
         <PanGestureHandler onGestureEvent={onGestureTopEvent}>
