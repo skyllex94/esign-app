@@ -34,7 +34,7 @@ import {
   uint8ToBase64Conversion,
 } from "./functions";
 
-import DraggableElement from "../Sign/DraggableElement";
+import DraggableElement from "./DraggableElement";
 import { PDFDocument } from "pdf-lib";
 
 export default function DocumentEditor({ navigation, route }) {
@@ -266,16 +266,13 @@ export default function DocumentEditor({ navigation, route }) {
             console.log(`Link pressed: ${uri}`);
           }}
         >
-          <View>
-            {inputSignature && (
-              <DraggableElement
-                className="flex-1"
-                selectedSignaturePath={selectedSignaturePath}
-                setWidthElement={setWidthElement}
-                setHeightElement={setHeightElement}
-              />
-            )}
-          </View>
+          {inputSignature && (
+            <DraggableElement
+              selectedSignaturePath={selectedSignaturePath}
+              setWidthElement={setWidthElement}
+              setHeightElement={setHeightElement}
+            />
+          )}
         </Pdf>
       </View>
 
