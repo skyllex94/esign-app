@@ -1,5 +1,5 @@
-import { scale } from "pdf-lib";
-import React, { useRef, useState } from "react";
+import { AntDesign } from "@expo/vector-icons";
+import React, { useRef } from "react";
 import {
   Animated,
   View,
@@ -9,15 +9,14 @@ import {
 } from "react-native";
 
 export default function DraggableElement({
+  pageRatio,
+  setInputSignature,
   selectedSignaturePath,
   setWidthElement,
   setHeightElement,
+  elementSizeWidth,
+  setElementSizeWidth,
 }) {
-  const [originViewHeight, setOriginViewHeight] = useState(200);
-  console.log("originViewHeight:", originViewHeight);
-  const [viewHeight, setViewHeight] = useState(100);
-  const [isPanning, setIsPanning] = useState(false);
-
   const pan = useRef(new Animated.ValueXY()).current;
 
   const panResponder = useRef(
@@ -28,7 +27,9 @@ export default function DraggableElement({
       }),
 
       onPanResponderRelease: (event) => {
-        // console.log("event:", event.nativeEvent);
+        console.log("event_x:", event.nativeEvent.pageX + 60);
+        console.log("event_y:", event.nativeEvent.pageY - 130);
+        console.log("event_y:", event.nativeEvent);
         setWidthElement(event.nativeEvent.pageX + 60);
         setHeightElement(event.nativeEvent.pageY - 130);
 
@@ -37,40 +38,44 @@ export default function DraggableElement({
     })
   ).current;
 
-  const panResize = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderMove: (event, gesture) => {
-        console.log("gesture:", gesture);
-        setViewHeight(originViewHeight + gesture.dy);
-      },
-      onPanResponderRelease: () => {
-        setOriginViewHeight(viewHeight);
-      },
-    }).current
-  );
-
   return (
-    <View className="flex-1 items-center justify-center">
+    <View className="items-center justify-center">
       <Animated.View
         style={{
           transform: [{ translateX: pan.x }, { translateY: pan.y }],
         }}
         {...panResponder.panHandlers}
       >
-        <View className="flex-row justify-end items-end border-2">
+        <View className="flex-row justify-end items-end">
           <Image
-            style={{ height: viewHeight, width: viewHeight }}
+            style={{
+              height: elementSizeWidth,
+              width: elementSizeWidth * pageRatio,
+            }}
             source={{ uri: selectedSignaturePath }}
           />
-          <TouchableOpacity
-            className="w-5 h-5 bg-red-400"
-            onPress={() => setViewHeight((curr) => curr - 10)}
-          />
-          <TouchableOpacity
-            className="w-5 h-5 bg-blue-400"
-            onPress={() => setViewHeight((curr) => curr + 10)}
-          />
+          <View className="justify-between">
+            <View className="justify-center items-start">
+              <TouchableOpacity
+                className="mb-3 bg-red-600 rounded-full"
+                onPress={() => setInputSignature(false)}
+              >
+                <AntDesign name="close" size={24} color="white" />
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+              className="mb-1"
+              onPress={() => setElementSizeWidth((curr) => curr + 10)}
+            >
+              <AntDesign name="pluscircleo" size={24} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setElementSizeWidth((curr) => curr - 10)}
+            >
+              <AntDesign name="minuscircleo" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
         </View>
       </Animated.View>
     </View>

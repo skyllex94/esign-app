@@ -4,7 +4,6 @@ import {
   Text,
   View,
   Image,
-  StyleSheet,
   Dimensions,
   UIManager,
 } from "react-native";
@@ -13,7 +12,6 @@ import { Context } from "../contexts/Global";
 import Pdf from "react-native-pdf";
 import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
-import * as IntentLauncher from "expo-intent-launcher";
 import * as FileSystem from "expo-file-system";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import RNFS from "react-native-fs";
@@ -34,6 +32,8 @@ import {
   uint8ToBase64Conversion,
 } from "./functions";
 
+import { actionButton } from "../../constants/UI";
+
 import DraggableElement from "./DraggableElement";
 import { PDFDocument } from "pdf-lib";
 
@@ -52,6 +52,9 @@ export default function DocumentEditor({ navigation, route }) {
   const [widthElement, setWidthElement] = useState(0);
   const [heightElement, setHeightElement] = useState(0);
 
+  // PDF single page ratio
+  const [pageRatio, setPageRatio] = useState(0);
+
   // PDF Editing states and variables
   const [pdfArrayBuffer, setPdfArrayBuffer] = useState(null);
   // The raw Base 64 data of the pdf file
@@ -67,6 +70,8 @@ export default function DocumentEditor({ navigation, route }) {
   const [editedPdfPath, setEditedPdfPath] = useState();
   // Current page of the pdf
   const [currPage, setCurrPage] = useState(1);
+  // Size of the element/signature
+  const [elementSizeWidth, setElementSizeWidth] = useState(80);
 
   // Populate the stored signatures in the app's private storage
   useEffect(() => {
@@ -113,10 +118,10 @@ export default function DocumentEditor({ navigation, route }) {
       console.log(widthElement, heightElement);
 
       firstPage.drawImage(signatureImage, {
-        x: (pageWidth * (widthElement - 100)) / Dimensions.get("window").width,
-        y: pageHeight - (pageHeight * (heightElement + 35)) / 540,
-        width: 140,
-        height: 100,
+        x: (pageWidth * (widthElement - 120)) / Dimensions.get("window").width,
+        y: pageHeight - (pageHeight * (heightElement + 25)) / 540,
+        width: elementSizeWidth + 50,
+        height: elementSizeWidth + 25,
       });
       console.log("signatureImage:", signatureImage);
 
@@ -192,11 +197,6 @@ export default function DocumentEditor({ navigation, route }) {
     return bytes;
   };
 
-  async function measureCoordinates() {
-    const coordinates = await UIManager.measureCoordinates(node);
-    console.log("coordinates:", coordinates);
-  }
-
   return (
     <SafeAreaView className="flex-1">
       <View className="flex-row items-center justify-between m-2">
@@ -210,7 +210,7 @@ export default function DocumentEditor({ navigation, route }) {
 
         <View className="flex-row items-center">
           <TouchableOpacity
-            className="flex-row items-center p-1 mx-1 bg-purple-600 rounded-lg"
+            className={`flex-row items-center p-1 mx-1 bg-[${actionButton}] rounded-lg`}
             onPress={saveEditedDocument}
           >
             <MaterialIcons name="save-alt" size={24} color="white" />
@@ -250,6 +250,9 @@ export default function DocumentEditor({ navigation, route }) {
             console.log("pdf_height:", height);
             setPageWidth(width);
             console.log("pdf_width:", width);
+
+            console.log("pdf_ratio:", (height / width).toFixed(2));
+            setPageRatio((height / width).toFixed(2));
           }}
           onPageChanged={(page, numOfPages) => {
             console.log("Current Page", page);
@@ -268,9 +271,13 @@ export default function DocumentEditor({ navigation, route }) {
         >
           {inputSignature && (
             <DraggableElement
+              pageRatio={pageRatio}
+              setInputSignature={setInputSignature}
               selectedSignaturePath={selectedSignaturePath}
               setWidthElement={setWidthElement}
               setHeightElement={setHeightElement}
+              elementSizeWidth={elementSizeWidth}
+              setElementSizeWidth={setElementSizeWidth}
             />
           )}
         </Pdf>
@@ -321,6 +328,7 @@ export default function DocumentEditor({ navigation, route }) {
                           selectSignature(
                             path,
                             setInputSignature,
+                            selectedSignaturePath,
                             setSelectedSignaturePath,
                             setSignatureBase64Data
                           )

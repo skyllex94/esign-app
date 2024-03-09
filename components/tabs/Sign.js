@@ -17,7 +17,8 @@ import DocumentEditor from "../Sign/DocumentEditor";
 // Other Dependency Imports
 import * as DocumentPicker from "expo-document-picker";
 import { Context } from "../contexts/Global";
-import DragSignature from "../Sign/DragSignature";
+// UI Imports
+import { actionButton } from "../../constants/UI";
 
 const Stack = createStackNavigator();
 
@@ -138,7 +139,7 @@ function SignBottomSheet({ navigation }) {
       <View className="flex-row justify-center mb-4 z-5">
         <TouchableOpacity
           onPress={handlePresentModalPress}
-          className="flex-row items-center bg-[#7851A9] p-3 rounded-lg"
+          className={`flex-row items-center bg-[${actionButton}] p-3 rounded-lg`}
         >
           <AntDesign name="plus" size={24} color="white" />
           <Text className="text-white pl-2">E-Sign Document</Text>

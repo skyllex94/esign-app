@@ -4,9 +4,8 @@ import {
   Button,
   Image,
   TouchableOpacity,
-  Alert,
 } from "react-native";
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 // UI Imports
 import { FontAwesome6, Ionicons } from "@expo/vector-icons";
 // Signature Imports
@@ -19,11 +18,12 @@ import {
   deleteSignature,
   displayStoredSignatures,
   hideSignatures,
-  selectSignature,
 } from "./functions";
 
 export default function DrawSignCapture() {
   const signature = useRef();
+  const [signatureColor, setSignatureColor] = useState("black");
+  const [updateSignatureCapture, setUpdateSignatureCapture] = useState(true);
 
   const { signatureList, setSignatureList, bottomSheetChooseDocument } =
     useContext(Context);
@@ -33,11 +33,6 @@ export default function DrawSignCapture() {
     console.log("USEEFFECTsignatureList", signatureList);
     bottomSheetChooseDocument.current.dismiss();
   }, []);
-
-  const _onDragEvent = () => {
-    // This callback will be called when the user enters signature
-    console.log("dragged");
-  };
 
   async function saveSignature(signature) {
     // signature.encoded - for the base64 encoded png
@@ -78,19 +73,58 @@ export default function DrawSignCapture() {
     console.log("signature:", signature);
   }
 
+  async function previewSignature(signatureFilePath) {
+    ReactNativeBlobUtil.ios.openDocument(signatureFilePath);
+  }
+
+  console.log(signatureColor);
+
+  function changeSignatureColor(color) {
+    if (color === signatureColor) return;
+    setSignatureColor(color);
+    setUpdateSignatureCapture(false);
+  }
+
+  useEffect(() => {
+    setUpdateSignatureCapture(true);
+  }, [signatureColor]);
+
   return (
     <SafeAreaView className="flex-1">
       <View>
-        <SignatureCapture
-          style={{ width: "100%", height: 314 }}
-          ref={signature}
-          saveImageFileInExtStorage={true}
-          viewMode={"portrait"}
-          showTitleLabel={false}
-          showNativeButtons={false}
-          onDragEvent={_onDragEvent}
-          onSaveEvent={saveSignature}
-        />
+        {updateSignatureCapture ? (
+          <SignatureCapture
+            style={{ width: "100%", height: 344 }}
+            ref={signature}
+            saveImageFileInExtStorage={true}
+            viewMode={"portrait"}
+            showTitleLabel={false}
+            showNativeButtons={false}
+            onSaveEvent={saveSignature}
+            strokeColor={signatureColor}
+          />
+        ) : (
+          <View className="h-[314px]" />
+        )}
+
+        <View className="flex-row absolute left-5 top-5 justify-end">
+          <TouchableOpacity
+            className="h-8 w-8 bg-black rounded-full mx-1"
+            onPress={() => changeSignatureColor("black")}
+          />
+          <TouchableOpacity
+            className="h-8 w-8 bg-[#0047ab] rounded-full mx-1"
+            onPress={() => changeSignatureColor("#0047ab")}
+          />
+          <TouchableOpacity
+            className="h-8 w-8 bg-[#4F7942] rounded-full mx-1"
+            onPress={() => changeSignatureColor("#4F7942")}
+          />
+        </View>
+
+        <View className="line justify-center absolute w-[90%] left-5 top-60">
+          <View className="border-[0.5px] border-dashed border-gray-500"></View>
+        </View>
 
         <View className="flex-row justify-between p-4">
           <Button
@@ -142,7 +176,7 @@ export default function DrawSignCapture() {
               className="flex-row items-start mx-1 mt-6 bg-slate-50 border-slate-300 border-2 rounded-lg"
             >
               <TouchableOpacity
-                onPress={() => selectSignature(path)}
+                onPress={() => previewSignature(path)}
                 className="flex-row p-1 "
               >
                 <Image className="h-12 w-24" source={{ uri: path }} />

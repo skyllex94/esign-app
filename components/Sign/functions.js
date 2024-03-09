@@ -7,19 +7,19 @@ import RNFS from "react-native-fs";
 export const selectSignature = async (
   signatureFilePath,
   setInputSignature,
+  selectedSignaturePath,
   setSelectedSignaturePath,
   setSignatureBase64Data
 ) => {
-  // const info = await FileSystem.getInfoAsync(signatureFilePath);
-  // ReactNativeBlobUtil.ios.openDocument(signatureFilePath);
-  // alert(info.uri);
-  // navigation.navigate("DragSignature");
-
   const signatureBase64 = await RNFS.readFile(signatureFilePath, "base64");
   setSignatureBase64Data(signatureBase64);
 
-  setSelectedSignaturePath(() => signatureFilePath);
-  setInputSignature((curr) => !curr);
+  if (selectedSignaturePath == signatureFilePath)
+    setInputSignature((curr) => !curr);
+  else {
+    setSelectedSignaturePath(() => signatureFilePath);
+    setInputSignature(true);
+  }
 };
 
 export const deleteSignature = (
