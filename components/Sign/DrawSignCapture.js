@@ -3,34 +3,46 @@ import {
   SafeAreaView,
   Button,
   Image,
+  Text,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useContext, useEffect, useRef, useState } from "react";
 // UI Imports
-import { FontAwesome6, Ionicons } from "@expo/vector-icons";
+import {
+  EvilIcons,
+  FontAwesome6,
+  Ionicons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 // Signature Imports
 import SignatureCapture from "react-native-signature-capture";
 import ReactNativeBlobUtil from "react-native-blob-util";
-import * as FileSystem from "expo-file-system";
 import { ScrollView } from "react-native-gesture-handler";
 import { Context } from "../contexts/Global";
-import {
-  deleteSignature,
-  displayStoredSignatures,
-  hideSignatures,
-} from "./functions";
+import { deleteSignature, displayStoredSignatures } from "./functions";
+import Checkbox from "expo-checkbox";
+import { actionButton } from "../../constants/UI";
+import * as FileSystem from "expo-file-system";
+import { SignatureDetails } from "./SignatureDetails";
 
-export default function DrawSignCapture() {
+export default function DrawSignCapture({ navigation }) {
   const signature = useRef();
   const [signatureColor, setSignatureColor] = useState("black");
   const [updateSignatureCapture, setUpdateSignatureCapture] = useState(true);
+  const [showSignatures, setShowSignatures] = useState(true);
+
+  // Signature Details Modal
+  const [signatureDetailsModal, setSignatureDetailsModal] = useState(false);
+  const [detailsInfo, setDetailsInfo] = useState(null);
+
+  const [checked, setChecked] = useState(false);
 
   const { signatureList, setSignatureList, bottomSheetChooseDocument } =
     useContext(Context);
 
   useEffect(() => {
     displayStoredSignatures(setSignatureList);
-    console.log("USEEFFECTsignatureList", signatureList);
     bottomSheetChooseDocument.current.dismiss();
   }, []);
 
@@ -65,24 +77,25 @@ export default function DrawSignCapture() {
     displayStoredSignatures(setSignatureList);
   }
 
-  async function readSignature() {
-    const filePath =
-      "/var/mobile/Containers/Data/Application/1B2A4A62-7CF1-4FF2-B75B-93420F938CE3/Documents/Signatures/signature959.png";
-
-    const signature = await FileSystem.getInfoAsync(filePath);
-    console.log("signature:", signature);
-  }
-
   async function previewSignature(signatureFilePath) {
     ReactNativeBlobUtil.ios.openDocument(signatureFilePath);
   }
-
-  console.log(signatureColor);
 
   function changeSignatureColor(color) {
     if (color === signatureColor) return;
     setSignatureColor(color);
     setUpdateSignatureCapture(false);
+  }
+
+  function addNewSignature() {
+    signature.current.saveImage();
+    signature.current.resetImage();
+  }
+
+  async function showSignatureDetails(path) {
+    const signatureInfo = await FileSystem.getInfoAsync(path);
+    setDetailsInfo(signatureInfo);
+    setSignatureDetailsModal((curr) => !curr);
   }
 
   useEffect(() => {
@@ -91,6 +104,31 @@ export default function DrawSignCapture() {
 
   return (
     <SafeAreaView className="flex-1">
+      <View className="flex-row justify-between">
+        <TouchableOpacity
+          className="flex-row items-center m-3"
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="arrow-back" size={24} color="black" />
+          <Text className="text-lg mx-1">Back</Text>
+        </TouchableOpacity>
+
+        <View className="flex-row justify-between p-4">
+          <Button
+            className="p-3"
+            color="#007AFF"
+            onPress={() => signature.current.saveImage()}
+            title="Save Signature"
+          />
+          <Button
+            className="p-3"
+            color="#007AFF"
+            onPress={() => signature.current.resetImage()}
+            title="Clear"
+          />
+        </View>
+      </View>
+
       <View>
         {updateSignatureCapture ? (
           <SignatureCapture
@@ -122,77 +160,74 @@ export default function DrawSignCapture() {
           />
         </View>
 
-        <View className="line justify-center absolute w-[90%] left-5 top-60">
+        <View className="line justify-center absolute w-[90%] left-5 top-64">
           <View className="border-[0.5px] border-dashed border-gray-500"></View>
         </View>
-
-        <View className="flex-row justify-between p-4">
-          <Button
-            className="p-3"
-            color="#007AFF"
-            onPress={() => signature.current.saveImage()}
-            title="Save Signature"
-          />
-          <Button
-            className="p-3"
-            color="#007AFF"
-            onPress={() => signature.current.resetImage()}
-            title="Clear Signature"
-          />
-          <Button
-            className="p-3"
-            color="#007AFF"
-            onPress={readSignature}
-            title="Read File"
-          />
-        </View>
-        <View className="flex-row justify-center">
-          <Button
-            className="p-3"
-            color="#007AFF"
-            onPress={() => displayStoredSignatures(setSignatureList)}
-            title="Display All Signatures"
-          />
-          <Button
-            className="p-3"
-            color="#007AFF"
-            onPress={() => hideSignatures(setSignatureList)}
-            title="Hide Signatures"
-          />
-        </View>
       </View>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        className="flex-1"
-      >
-        <View className="flex-row items-start">
-          <TouchableOpacity className="border-2 p-2 mt-7 mx-2 rounded-full">
+      <View className="flex-1 m-4">
+        <View className="flex-row items-center justify-between mt-2">
+          <Text className="text-lg">Stored Signatures</Text>
+
+          <TouchableOpacity
+            onPress={addNewSignature}
+            className="bg-slate-50 border-slate-400 rounded-lg p-2 mx-1"
+          >
             <FontAwesome6 name="add" size={24} color="black" />
           </TouchableOpacity>
-          {signatureList.map((path, idx) => (
-            <View
-              key={idx}
-              className="flex-row items-start mx-1 mt-6 bg-slate-50 border-slate-300 border-2 rounded-lg"
-            >
-              <TouchableOpacity
-                onPress={() => previewSignature(path)}
-                className="flex-row p-1 "
-              >
-                <Image className="h-12 w-24" source={{ uri: path }} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                className="absolute"
-                onPress={() =>
-                  deleteSignature(path, signatureList, setSignatureList)
-                }
-              >
-                <Ionicons name="close" size={20} color="black" />
-              </TouchableOpacity>
-            </View>
-          ))}
         </View>
-      </ScrollView>
+
+        <ScrollView showsVerticalScrollIndicator={false} className="mt-2">
+          <View className="flex-1 mt-2">
+            {signatureList.map((path, idx) => (
+              <View
+                key={idx}
+                className="flex-row items-center justify-between my-1 w-full bg-slate-50 border-gray-300 border-b-2 rounded-lg"
+              >
+                <TouchableOpacity>
+                  <Checkbox
+                    className={`${
+                      !checked && "border-black"
+                    } ml-4 p-2 rounded-full`}
+                    color={actionButton}
+                    value={checked}
+                    onValueChange={setChecked}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  className="flex-row p-1 ml-4"
+                  onPress={() => previewSignature(path)}
+                >
+                  <Image className="h-20 w-28" source={{ uri: path }} />
+                </TouchableOpacity>
+
+                <View className="flex-row items-center">
+                  <TouchableOpacity onPress={() => showSignatureDetails(path)}>
+                    <MaterialIcons name="more-horiz" size={24} color="black" />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    className="ml-2 mr-3"
+                    onPress={() =>
+                      deleteSignature(path, signatureList, setSignatureList)
+                    }
+                  >
+                    <EvilIcons name="trash" size={34} color="black" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
+
+        {signatureDetailsModal && (
+          <SignatureDetails
+            detailsInfo={detailsInfo}
+            signatureDetailsModal={signatureDetailsModal}
+            setSignatureDetailsModal={setSignatureDetailsModal}
+          />
+        )}
+      </View>
     </SafeAreaView>
   );
 }

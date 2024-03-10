@@ -55,7 +55,8 @@
     "react-native-signature-canvas": "^4.7.1",
     "react-native-signature-capture": "^0.4.12",
     "react-native-webview": "^13.8.1",
-    "toastify-react-native": "^5.0.0"
+    "toastify-react-native": "^5.0.0",
+    "expo-checkbox": "~2.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
