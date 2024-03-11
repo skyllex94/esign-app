@@ -26,6 +26,7 @@
     "base-64": "^1.0.0",
     "expo": "~50.0.6",
     "expo-asset": "~9.0.2",
+    "expo-checkbox": "~2.7.0",
     "expo-constants": "^15.4.5",
     "expo-dev-client": "~3.3.8",
     "expo-document-picker": "~11.10.1",
@@ -43,6 +44,7 @@
     "react": "18.2.0",
     "react-native": "0.73.4",
     "react-native-blob-util": "^0.19.6",
+    "react-native-elements": "^3.4.3",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.14.0",
     "react-native-html-to-pdf": "^0.12.0",
@@ -55,8 +57,7 @@
     "react-native-signature-canvas": "^4.7.1",
     "react-native-signature-capture": "^0.4.12",
     "react-native-webview": "^13.8.1",
-    "toastify-react-native": "^5.0.0",
-    "expo-checkbox": "~2.7.0"
+    "toastify-react-native": "^5.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

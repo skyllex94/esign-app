@@ -154,9 +154,6 @@ export default function DocumentEditor({ navigation, route }) {
           mimeType: "application/pdf",
         });
 
-        // const info = await FileSystem.getInfoAsync(editedDocPath);
-        // console.log("info:", info);
-
         console.log("Success, you have your newly edited document");
       } catch (error) {
         console.log(error);

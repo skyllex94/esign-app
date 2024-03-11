@@ -98,6 +98,7 @@ export default function DrawSignCapture({ navigation }) {
     setSignatureDetailsModal((curr) => !curr);
   }
 
+  // Needed to update when signature color is changed
   useEffect(() => {
     setUpdateSignatureCapture(true);
   }, [signatureColor]);
@@ -198,7 +199,7 @@ export default function DrawSignCapture({ navigation }) {
                   className="flex-row p-1 ml-4"
                   onPress={() => previewSignature(path)}
                 >
-                  <Image className="h-20 w-28" source={{ uri: path }} />
+                  <Image className="h-16 w-24" source={{ uri: path }} />
                 </TouchableOpacity>
 
                 <View className="flex-row items-center">

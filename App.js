@@ -1,5 +1,5 @@
 import "react-native-gesture-handler";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import SettingsScreen from "./components/tabs/Settings";
@@ -14,6 +14,9 @@ import ScanScreen from "./components/tabs/Scan";
 import TemplatesScreen from "./components/tabs/Templates";
 import SignScreen from "./components/tabs/Sign";
 import { createStackNavigator } from "@react-navigation/stack";
+import * as FileSystem from "expo-file-system";
+import { actionButton } from "./constants/UI";
+import { color } from "react-native-elements/dist/helpers";
 
 // Stack Nav Wrapper, Tab Nav Secondary
 const Stack = createStackNavigator();
@@ -34,31 +37,68 @@ function Main() {
   const bottomSheetChooseDocument = useRef();
   // Shared state for DrawSign & DocumentEditor
   const [signatureList, setSignatureList] = useState([]);
+  const [completedDocList, setCompletedDocList] = useState([]);
+
+  async function loadCompletedDocs() {
+    const updateCompleteDocsList = [];
+
+    let docs = await FileSystem.readDirectoryAsync(
+      FileSystem.documentDirectory + "Completed"
+    );
+
+    for (const doc of docs) {
+      const path = FileSystem.documentDirectory + "Completed/" + doc;
+      const docInfo = await FileSystem.getInfoAsync(path);
+
+      updateCompleteDocsList.push(
+        new Object({
+          name: doc,
+          path,
+          created: docInfo.modificationTime,
+          size: docInfo.size,
+        })
+      );
+    }
+
+    setCompletedDocList([...updateCompleteDocsList]);
+  }
+
+  useEffect(() => {
+    loadCompletedDocs();
+  }, []);
 
   return (
     <Context.Provider
-      value={{ signatureList, setSignatureList, bottomSheetChooseDocument }}
+      value={{
+        signatureList,
+        setSignatureList,
+        completedDocList,
+        setCompletedDocList,
+        bottomSheetChooseDocument,
+      }}
     >
       <GestureHandlerRootView className="flex-1">
         <BottomSheetModalProvider>
           <Tab.Navigator
-            options={{
-              tabBarOptions: {
-                style: {
-                  backgroundColor: "white",
-                },
+            screenOptions={() => ({
+              tabBarActiveTintColor: actionButton,
+              tabBarInactiveTintColor: "black",
+              tabBarStyle: {
+                height: 85,
+                paddingHorizontal: 5,
+                paddingTop: 10,
               },
-            }}
+            })}
           >
             <Tab.Screen
               name="eSign"
               options={{
                 headerShown: false,
-                tabBarIcon: ({}) => (
+                tabBarIcon: ({ color }) => (
                   <MaterialCommunityIcons
                     name="draw-pen"
+                    color={color}
                     size={24}
-                    color="black"
                   />
                 ),
               }}
@@ -73,7 +113,7 @@ function Main() {
                   <MaterialCommunityIcons
                     name="credit-card-scan"
                     size={24}
-                    color="black"
+                    color={color}
                   />
                 ),
               }}
@@ -85,7 +125,7 @@ function Main() {
               options={{
                 headerShown: false,
                 tabBarIcon: ({ color, size }) => (
-                  <Ionicons name="newspaper" size={24} color="black" />
+                  <Ionicons name="newspaper" size={24} color={color} />
                 ),
               }}
               component={TemplatesScreen}
@@ -95,8 +135,8 @@ function Main() {
               name="Settings"
               options={{
                 headerShown: false,
-                tabBarIcon: () => (
-                  <Ionicons name="settings" color="black" size={24} />
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons name="settings" color={color} size={24} />
                 ),
               }}
               component={SettingsScreen}
