@@ -5,9 +5,9 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import { AntDesign, Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { AntDesign, Feather } from "@expo/vector-icons";
 // Bottom Sheet Imports
-import React, { useCallback, useContext, useMemo, useRef } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 // Stack Navigation
@@ -20,6 +20,7 @@ import { Context } from "../contexts/Global";
 // UI Imports
 import { actionButton } from "../../constants/UI";
 import { ScrollView } from "react-native-gesture-handler";
+import DocumentDetails from "../Sign/DocumentDetails";
 // import { SearchBar } from "react-native-elements";
 
 const Stack = createStackNavigator();
@@ -40,6 +41,11 @@ export default function SignScreen() {
         name="DocumentEditor"
         component={DocumentEditor}
         options={{ presentation: "card" }}
+      />
+      <Stack.Screen
+        name="DocumentDetails"
+        component={DocumentDetails}
+        options={{ presentation: "modal" }}
       />
     </Stack.Navigator>
   );
@@ -66,8 +72,6 @@ function SignBottomSheet({ navigation }) {
     });
 
     if (pickedDocument.canceled === true) return;
-
-    console.log(pickedDocument);
 
     bottomSheetChooseDocument.current.close();
     navigation.navigate("DocumentEditor", { pickedDocument });
@@ -121,25 +125,35 @@ function SignBottomSheet({ navigation }) {
                 className="flex-row items-center py-2 border-b-[0.5px] border-slate-300"
               >
                 <View className="m-3">
-                  <AntDesign name="checkcircle" size={24} color="green" />
+                  <AntDesign name="checkcircle" size={24} color="#99cc33" />
                 </View>
 
                 <View className="flex-1 items-start gap-1 my-1">
-                  <Text className="text-gray-800">
-                    {doc.path.split("Completed/")[1]}
-                  </Text>
+                  <Text className="text-gray-800">{doc.name}</Text>
 
                   <View>
                     <Text className="text-gray-400">Signed by you</Text>
 
                     <Text className="text-gray-400">
-                      {new Date(doc.created * 1000).toDateString()},{" "}
-                      {new Date(doc.created * 1000).toLocaleTimeString()}
+                      {new Date(doc.created * 1000).toLocaleDateString(
+                        "en-us",
+                        {
+                          weekday: "long",
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        }
+                      )}{" "}
                     </Text>
                   </View>
                 </View>
 
-                <TouchableOpacity className="mx-4">
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate("DocumentDetails", { doc })
+                  }
+                  className="mx-4"
+                >
                   <Feather name="more-horizontal" size={24} color="#b7b7b7" />
                 </TouchableOpacity>
               </View>

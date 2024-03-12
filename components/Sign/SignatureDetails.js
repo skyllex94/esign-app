@@ -25,34 +25,33 @@ export const SignatureDetails = ({
           className="items-center m-8 bg-white rounded-lg p-5 shadow"
           style={styles.modalView}
         >
-          <View className="flex-row items-center justify-between mb-4">
-            <Text className="mr-6">Signature Information</Text>
+          <View className="flex-row items-center justify-between mb-3 w-full">
+            <Text className="text-[15px] mr-6">Signature Details</Text>
             <TouchableOpacity
-              className="p-2 rounded-lg bg-red-500"
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setSignatureDetailsModal(!signatureDetailsModal)}
+              className={`bg-[#e6867a] rounded-full p-2`}
+              onPress={() => setSignatureDetailsModal((curr) => !curr)}
             >
               <AntDesign name="close" size={20} color="white" />
             </TouchableOpacity>
           </View>
 
-          <View className="gap-1">
-            <View className="flex-row justify-between">
+          <View className="gap-2 mt-1">
+            <View className="flex-row items-center justify-between w-full">
               <Text className="mr-3">File Name: </Text>
               <Text>{(path = detailsInfo.uri.split("Signatures/")[1])}</Text>
             </View>
 
-            <View className="flex-row justify-between">
+            <View className="flex-row items-center justify-between w-full">
               <Text>Directory: </Text>
               <Text>(Protected)</Text>
             </View>
 
-            <View className="flex-row justify-between">
+            <View className="flex-row items-center justify-between w-full">
               <Text>Size: </Text>
               <Text>{(detailsInfo.size / 1024).toFixed(2)} kB</Text>
             </View>
 
-            <View className="flex-row justify-between">
+            <View className="flex-row items-center justify-between w-full">
               <Text className="mr-3">Time Created: </Text>
               <Text>{dateCreated.toDateString()}</Text>
             </View>

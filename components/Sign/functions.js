@@ -100,3 +100,48 @@ export const uint8ToBase64Conversion = (u8Arr) => {
   }
   return encode(result);
 };
+
+export const deleteDocument = (
+  fileWtPath,
+  completedDocList,
+  setCompletedDocList
+) => {
+  return Alert.alert(
+    "Are your sure?",
+    "Are you sure you want to delete this signature?",
+    [
+      {
+        text: "Yes",
+        onPress: () => {
+          const path = fileWtPath.split("//")[1];
+          console.log("path:", path);
+
+          ReactNativeBlobUtil.fs
+            .unlink(path)
+            .then(() => {
+              console.log("Deleted File from - ", path);
+            })
+            .catch((err) => console.log(err));
+
+          console.log("completedDocList", completedDocList);
+
+          // Updating signature array list for the UI
+
+          const updatedDocList = completedDocList.filter((doc) => {
+            console.log("doc", doc);
+            return doc !== fileWtPath;
+          });
+
+          console.log("updatedDocList", updatedDocList);
+
+          setCompletedDocList(updatedDocList);
+        },
+      },
+
+      {
+        text: "No",
+        onPress: () => {},
+      },
+    ]
+  );
+};

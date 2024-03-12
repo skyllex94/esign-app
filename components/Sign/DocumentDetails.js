@@ -1,0 +1,92 @@
+import { View, Text, TouchableOpacity } from "react-native";
+import React, { useContext, useState } from "react";
+import { AntDesign } from "@expo/vector-icons";
+import { RenameDocumentModal } from "./RenameDocModal";
+import { ScrollView } from "react-native-gesture-handler";
+import { deleteDocument } from "./functions";
+import { Context } from "../contexts/Global";
+
+export default function DocumentDetails({ route, navigation }) {
+  const { doc } = route.params;
+  const date = doc.created * 1000;
+
+  const [showRenameModal, setShowRenameModal] = useState(false);
+  const { completedDocList, setCompletedDocList } = useContext(Context);
+
+  return (
+    <View className="mx-3 my-8">
+      <View className="flex-row items-center justify-between px-3 pb-6">
+        <Text className="text-lg font-semibold">Document Details</Text>
+        <TouchableOpacity
+          className="bg-gray-200 rounded-full p-2"
+          onPress={() => navigation.goBack()}
+        >
+          <AntDesign name="close" size={20} color="black" />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView className="h-full">
+        <View className="document-info items-center my-3">
+          <View className="flex-row bg-white rounded-t-lg items-center justify-between px-3 h-16 w-full border-b-[0.5px] border-gray-400">
+            <Text>Name:</Text>
+            <Text className="text-gray-500">{doc.name.split(".")[0]}</Text>
+          </View>
+
+          <View className="flex-row bg-white items-center justify-between px-3 h-16 w-full border-b-[0.5px] border-gray-400">
+            <Text>Document Type:</Text>
+            <Text className="text-gray-500">
+              {doc.name.split(".")[1].toUpperCase()}
+            </Text>
+          </View>
+
+          <View className="flex-row bg-white items-center justify-between px-3 h-16 w-full border-b-[0.5px] border-gray-400">
+            <Text>Size:</Text>
+            <Text className="text-gray-500">
+              {(doc.size / 1024).toFixed(2)} kB
+            </Text>
+          </View>
+
+          <View className="flex-row bg-white items-center rounded-b-lg justify-between px-3 h-16 w-full">
+            <Text>Time Created:</Text>
+            <Text className="text-gray-500">
+              {new Date(date).toLocaleDateString("en-us", {
+                weekday: "short",
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+              })}{" "}
+              at {new Date(date).toLocaleTimeString()}
+            </Text>
+          </View>
+        </View>
+
+        <View className="document-options items-center my-3">
+          <TouchableOpacity
+            onPress={() => setShowRenameModal((curr) => !curr)}
+            className="flex-row bg-white rounded-lg mb-2 items-center px-3 h-16 w-full shadow"
+          >
+            <Text>Rename</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() =>
+              deleteDocument(doc.path, completedDocList, setCompletedDocList)
+            }
+            className="flex-row bg-white rounded-lg mb-2 items-center px-3 h-16 w-full shadow"
+          >
+            <Text>Delete</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+
+      {showRenameModal && (
+        <RenameDocumentModal
+          currName={doc.name}
+          path={doc.path}
+          showRenameModal={showRenameModal}
+          setShowRenameModal={setShowRenameModal}
+        />
+      )}
+    </View>
+  );
+}
