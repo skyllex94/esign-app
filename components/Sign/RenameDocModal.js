@@ -4,12 +4,13 @@ import { Modal, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import * as FileSystem from "expo-file-system";
 // UI
-import { closeButton } from "../../constants/UI";
 import { TextInput } from "react-native";
 
 export const RenameDocumentModal = ({
-  currName,
-  path,
+  docName,
+  setDocName,
+  docPath,
+  setDocPath,
   showRenameModal,
   setShowRenameModal,
 }) => {
@@ -23,20 +24,21 @@ export const RenameDocumentModal = ({
 
   async function renameDocument() {
     if (newName === null) return;
-    console.log(newName);
 
-    const onlyPath = path.split(currName)[0];
-    console.log("onlyPath:", onlyPath);
-    console.log("path:", path);
+    // Split path and file name
+    const onlyPath = docPath.split(docName)[0];
+    const newPath = onlyPath + newName + ".pdf";
 
     try {
       await FileSystem.moveAsync({
-        from: path,
-        to: onlyPath + newName + ".pdf",
+        from: docPath,
+        to: newPath,
       });
     } catch (err) {
       console.log("Error while renaming file: ", err);
     }
+    setDocName(newName);
+    setDocPath(newPath);
     setShowRenameModal((curr) => !curr);
   }
 
@@ -65,7 +67,7 @@ export const RenameDocumentModal = ({
           <View className="flex-row items-center justify-between my-2 w-full">
             <TextInput
               ref={renameRef}
-              placeholder={currName.split(".")[0]}
+              placeholder={docName.split(".")[0]}
               onChangeText={(text) => setNewName(text)}
               className="h-12 px-2 w-full rounded-lg border-2 border-gray-600"
             />

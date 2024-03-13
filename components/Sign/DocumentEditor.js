@@ -1,18 +1,10 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import {
-  SafeAreaView,
-  Text,
-  View,
-  Image,
-  Dimensions,
-  UIManager,
-} from "react-native";
+import { SafeAreaView, Text, View, Image, Dimensions } from "react-native";
 import { Context } from "../contexts/Global";
 // PDF Imports
 import Pdf from "react-native-pdf";
 import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
-import * as FileSystem from "expo-file-system";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import RNFS from "react-native-fs";
 import { decode, encode } from "base-64";
@@ -207,7 +199,7 @@ export default function DocumentEditor({ navigation, route }) {
 
         <View className="flex-row items-center">
           <TouchableOpacity
-            className={`flex-row items-center p-1 mx-1 bg-[${actionButton}] rounded-lg`}
+            className={`flex-row items-center p-1 mx-1 bg-[#7851A9] rounded-lg`}
             onPress={saveEditedDocument}
           >
             <MaterialIcons name="save-alt" size={24} color="white" />

@@ -28,7 +28,7 @@ export const deleteSignature = (
   setSignatureList
 ) => {
   return Alert.alert(
-    "Are your sure?",
+    "Signature Deletion",
     "Are you sure you want to delete this signature?",
     [
       {
@@ -47,7 +47,6 @@ export const deleteSignature = (
           console.log("signatureList", signatureList);
 
           // Updating signature array list for the UI
-
           const updatedSignatureList = signatureList.filter((signature) => {
             console.log("signature", signature);
             return signature !== fileWtPath;
@@ -101,14 +100,10 @@ export const uint8ToBase64Conversion = (u8Arr) => {
   return encode(result);
 };
 
-export const deleteDocument = (
-  fileWtPath,
-  completedDocList,
-  setCompletedDocList
-) => {
+export const deleteDocument = (fileWtPath, docList, setDocList, navigation) => {
   return Alert.alert(
-    "Are your sure?",
-    "Are you sure you want to delete this signature?",
+    "Document Deletion",
+    "Are you sure you want to delete this signed document?",
     [
       {
         text: "Yes",
@@ -123,18 +118,15 @@ export const deleteDocument = (
             })
             .catch((err) => console.log(err));
 
-          console.log("completedDocList", completedDocList);
+          console.log("docList", docList);
 
           // Updating signature array list for the UI
+          const updatedDocList = docList.filter((doc) => doc !== fileWtPath);
 
-          const updatedDocList = completedDocList.filter((doc) => {
-            console.log("doc", doc);
-            return doc !== fileWtPath;
-          });
-
-          console.log("updatedDocList", updatedDocList);
-
-          setCompletedDocList(updatedDocList);
+          setDocList(updatedDocList);
+          setTimeout(() => {
+            navigation.goBack();
+          }, 1000);
         },
       },
 

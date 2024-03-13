@@ -11,7 +11,10 @@ export default function DocumentDetails({ route, navigation }) {
   const date = doc.created * 1000;
 
   const [showRenameModal, setShowRenameModal] = useState(false);
-  const { completedDocList, setCompletedDocList } = useContext(Context);
+  const [docName, setDocName] = useState(doc.name);
+  const [docPath, setDocPath] = useState(doc.path);
+
+  const { docList, setDocList } = useContext(Context);
 
   return (
     <View className="mx-3 my-8">
@@ -29,7 +32,7 @@ export default function DocumentDetails({ route, navigation }) {
         <View className="document-info items-center my-3">
           <View className="flex-row bg-white rounded-t-lg items-center justify-between px-3 h-16 w-full border-b-[0.5px] border-gray-400">
             <Text>Name:</Text>
-            <Text className="text-gray-500">{doc.name.split(".")[0]}</Text>
+            <Text className="text-gray-500">{docName.split(".")[0]}</Text>
           </View>
 
           <View className="flex-row bg-white items-center justify-between px-3 h-16 w-full border-b-[0.5px] border-gray-400">
@@ -70,19 +73,21 @@ export default function DocumentDetails({ route, navigation }) {
 
           <TouchableOpacity
             onPress={() =>
-              deleteDocument(doc.path, completedDocList, setCompletedDocList)
+              deleteDocument(docPath, docList, setDocList, navigation)
             }
             className="flex-row bg-white rounded-lg mb-2 items-center px-3 h-16 w-full shadow"
           >
-            <Text>Delete</Text>
+            <Text className="text-red-500">Delete</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
       {showRenameModal && (
         <RenameDocumentModal
-          currName={doc.name}
-          path={doc.path}
+          docName={docName}
+          setDocName={setDocName}
+          docPath={docPath}
+          setDocPath={setDocPath}
           showRenameModal={showRenameModal}
           setShowRenameModal={setShowRenameModal}
         />

@@ -5,14 +5,14 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import { AntDesign, Feather } from "@expo/vector-icons";
+import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
 // Bottom Sheet Imports
-import React, { useCallback, useContext, useMemo } from "react";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 // Stack Navigation
 import { createStackNavigator } from "@react-navigation/stack";
-import DrawSignCapture from "../Sign/DrawSignCapture";
+import DrawSignCapture from "../Sign/DrawSign";
 import DocumentEditor from "../Sign/DocumentEditor";
 // Other Dependency Imports
 import * as DocumentPicker from "expo-document-picker";
@@ -21,7 +21,9 @@ import { Context } from "../contexts/Global";
 import { actionButton } from "../../constants/UI";
 import { ScrollView } from "react-native-gesture-handler";
 import DocumentDetails from "../Sign/DocumentDetails";
-// import { SearchBar } from "react-native-elements";
+import { SearchBar } from "react-native-elements";
+import { useState } from "react";
+import DocumentPreview from "../Sign/DocumentPreview";
 
 const Stack = createStackNavigator();
 
@@ -47,13 +49,19 @@ export default function SignScreen() {
         component={DocumentDetails}
         options={{ presentation: "modal" }}
       />
+      <Stack.Screen
+        name="DocumentPreview"
+        component={DocumentPreview}
+        options={{ presentation: "modal" }}
+      />
     </Stack.Navigator>
   );
 }
 
 function SignBottomSheet({ navigation }) {
-  const { completedDocList, bottomSheetChooseDocument } = useContext(Context);
+  const { docList, bottomSheetChooseDocument } = useContext(Context);
   const snapPoints = useMemo(() => ["50%"], []);
+  const [search, setSearch] = useState(null);
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
@@ -77,15 +85,17 @@ function SignBottomSheet({ navigation }) {
     navigation.navigate("DocumentEditor", { pickedDocument });
   }
 
-  // For SaveAverView bg-slate-150
+  function previewDocument(doc) {
+    navigation.navigate("DocumentPreview", { doc });
+  }
+
+  // For SafeAreaView bg-slate-150
   return (
     <SafeAreaView className="flex-1 mx-3">
       <StatusBar style="auto" />
       <Text className="text-center font-bold text-2xl mb-4">SimpleSign</Text>
       <View className="flex-1 gap-2">
-        <View></View>
-
-        <View className="flex-row gap-2 mb-4 rounded-lg justify-center">
+        <View className="flex-row gap-y-2 mb-4 rounded-lg justify-between">
           <TouchableOpacity
             onPress={handlePresentModalPress}
             className={`flex-row items-center bg-[${actionButton}] p-3 rounded-lg`}
@@ -113,13 +123,35 @@ function SignBottomSheet({ navigation }) {
 
         <View className="flex-1 items-start">
           <Text className="font-bold text-gray-700 text-[16px] mb-3">
-            Recent Activity
+            Signed Documents
           </Text>
+
+          <View className="search-bar w-full">
+            <SearchBar
+              platform="ios"
+              containerStyle={{
+                backgroundColor: "transparent",
+                alignContent: "center",
+                justifyContent: "center",
+                backfaceVisibility: "hidden",
+                alignContent: "stretch",
+                gap: 0,
+                rowGap: 0,
+                justifyContent: "space-between",
+                margin: 0,
+              }}
+              placeholder="Search..."
+              searchIcon={() => (
+                <Ionicons name="search" size={24} color="#7b7d7b" />
+              )}
+            />
+          </View>
+
           <ScrollView
             showsVerticalScrollIndicator={false}
             className="bg-white w-full"
           >
-            {completedDocList.map((doc, idx) => (
+            {docList.map((doc, idx) => (
               <View
                 key={idx}
                 className="flex-row items-center py-2 border-b-[0.5px] border-slate-300"
@@ -128,7 +160,10 @@ function SignBottomSheet({ navigation }) {
                   <AntDesign name="checkcircle" size={24} color="#99cc33" />
                 </View>
 
-                <View className="flex-1 items-start gap-1 my-1">
+                <TouchableOpacity
+                  onPress={() => previewDocument(doc)}
+                  className="flex-1 bg-black items-start gap-1 my-1"
+                >
                   <Text className="text-gray-800">{doc.name}</Text>
 
                   <View>
@@ -146,7 +181,7 @@ function SignBottomSheet({ navigation }) {
                       )}{" "}
                     </Text>
                   </View>
-                </View>
+                </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={() =>

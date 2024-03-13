@@ -16,7 +16,6 @@ import SignScreen from "./components/tabs/Sign";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as FileSystem from "expo-file-system";
 import { actionButton } from "./constants/UI";
-import { color } from "react-native-elements/dist/helpers";
 
 // Stack Nav Wrapper, Tab Nav Secondary
 const Stack = createStackNavigator();
@@ -37,7 +36,7 @@ function Main() {
   const bottomSheetChooseDocument = useRef();
   // Shared state for DrawSign & DocumentEditor
   const [signatureList, setSignatureList] = useState([]);
-  const [completedDocList, setCompletedDocList] = useState([]);
+  const [docList, setDocList] = useState([]);
 
   async function loadCompletedDocs() {
     const updateCompleteDocsList = [];
@@ -60,20 +59,21 @@ function Main() {
       );
     }
 
-    setCompletedDocList([...updateCompleteDocsList]);
+    setDocList([...updateCompleteDocsList]);
   }
 
   useEffect(() => {
+    // Update UI for documents
     loadCompletedDocs();
-  }, []);
+  }, [docList]);
 
   return (
     <Context.Provider
       value={{
         signatureList,
         setSignatureList,
-        completedDocList,
-        setCompletedDocList,
+        docList,
+        setDocList,
         bottomSheetChooseDocument,
       }}
     >
