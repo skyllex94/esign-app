@@ -3,6 +3,7 @@ import * as FileSystem from "expo-file-system";
 import { Alert } from "react-native";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import RNFS from "react-native-fs";
+import { updateDocuments } from "../functions/Global";
 
 export const selectSignature = async (
   signatureFilePath,
@@ -43,8 +44,6 @@ export const deleteSignature = (
               console.log("Deleted File from - ", path[1]);
             })
             .catch((err) => console.log(err));
-
-          console.log("signatureList", signatureList);
 
           // Updating signature array list for the UI
           const updatedSignatureList = signatureList.filter((signature) => {
@@ -124,6 +123,7 @@ export const deleteDocument = (fileWtPath, docList, setDocList, navigation) => {
           const updatedDocList = docList.filter((doc) => doc !== fileWtPath);
 
           setDocList(updatedDocList);
+          updateDocuments(setDocList);
           setTimeout(() => {
             navigation.goBack();
           }, 1000);

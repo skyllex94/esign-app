@@ -7,14 +7,15 @@ import * as FileSystem from "expo-file-system";
 import { TextInput } from "react-native";
 import { Context } from "../contexts/Global";
 import { updateDocuments } from "../functions/Global";
+import { actionButton } from "../../constants/UI";
 
-export const RenameDocumentModal = ({
-  docName,
-  setDocName,
-  docPath,
-  setDocPath,
-  showRenameModal,
-  setShowRenameModal,
+export const SaveDocModal = ({
+  //   docName,
+  //   setDocName,
+  //   docPath,
+  //   setDocPath,
+  isNamingModal,
+  setIsNamingModal,
 }) => {
   const renameRef = useRef();
   const [newName, setNewName] = useState(null);
@@ -25,33 +26,33 @@ export const RenameDocumentModal = ({
     renameRef.current.focus();
   }, []);
 
-  async function renameDocument() {
-    if (newName === null) return;
+  //   async function renameDocument() {
+  //     if (newName === null) return;
 
-    // Split path and file name
-    const onlyPath = docPath.split(docName)[0];
-    const newPath = onlyPath + newName + ".pdf";
+  //     // Split path and file name
+  //     const onlyPath = docPath.split(docName)[0];
+  //     const newPath = onlyPath + newName + ".pdf";
 
-    try {
-      await FileSystem.moveAsync({
-        from: docPath,
-        to: newPath,
-      });
-    } catch (err) {
-      console.log("Error while renaming file: ", err);
-    }
-    setDocName(newName);
-    setDocPath(newPath);
-    updateDocuments(setDocList);
-    setShowRenameModal((curr) => !curr);
-  }
+  //     try {
+  //       await FileSystem.moveAsync({
+  //         from: docPath,
+  //         to: newPath,
+  //       });
+  //     } catch (err) {
+  //       console.log("Error while renaming file: ", err);
+  //     }
+  //     setDocName(newName);
+  //     setDocPath(newPath);
+  //     updateDocuments(setDocList);
+  //     setIsNamingModal((curr) => !curr);
+  //   }
 
   return (
     <Modal
       animationType="slide"
       transparent={true}
-      visible={showRenameModal}
-      onRequestClose={() => setShowRenameModal((curr) => !curr)}
+      visible={isNamingModal}
+      onRequestClose={() => setIsNamingModal((curr) => !curr)}
     >
       <View className="flex-1 justify-center items-center">
         <View
@@ -59,10 +60,10 @@ export const RenameDocumentModal = ({
           style={styles.modalView}
         >
           <View className="flex-row items-center justify-between mb-3 w-full">
-            <Text className="mr-6">Rename Document</Text>
+            <Text className="mr-6 text-[16px]">Save Signed Document</Text>
             <TouchableOpacity
               className={`bg-[#e6867a] rounded-full p-2`}
-              onPress={() => setShowRenameModal((curr) => !curr)}
+              onPress={() => setIsNamingModal((curr) => !curr)}
             >
               <AntDesign name="close" size={20} color="white" />
             </TouchableOpacity>
@@ -71,15 +72,24 @@ export const RenameDocumentModal = ({
           <View className="flex-row items-center justify-between my-2 w-full">
             <TextInput
               ref={renameRef}
-              placeholder={docName.split(".")[0]}
+              placeholder="Document Name"
               onChangeText={(text) => setNewName(text)}
               className="h-12 px-2 w-full rounded-lg border-2 border-gray-600"
             />
           </View>
 
-          <View className="flex-row my-3 w-full">
-            <TouchableOpacity onPress={renameDocument}>
-              <Text className="text-[16px]">Save</Text>
+          <View className="flex-row items-center justify-between my-3 w-full">
+            <TouchableOpacity
+              className={`rounded-lg bg-[${actionButton}] py-3 px-10`}
+            >
+              <Text className="text-[16px] text-white">Save</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setIsNamingModal(false)}
+              className={`rounded-lg bg-slate-200 py-3 px-6`}
+            >
+              <Text className="text-[16px]">Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>

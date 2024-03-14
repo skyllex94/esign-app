@@ -5,7 +5,7 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
+import { AntDesign, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 // Bottom Sheet Imports
 import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
@@ -82,74 +82,49 @@ function SignBottomSheet({ navigation }) {
     if (pickedDocument.canceled === true) return;
 
     bottomSheetChooseDocument.current.close();
-    navigation.navigate("DocumentEditor", { pickedDocument });
+
+    console.log("pickedDocument sdfsdf:", pickedDocument);
+    navigation.navigate("DocumentEditor", {
+      pickedDocument: pickedDocument.assets[0].uri,
+    });
   }
 
   function previewDocument(doc) {
     navigation.navigate("DocumentPreview", { doc });
   }
 
-  // For SafeAreaView bg-slate-150
+  // For SafeAreaView
   return (
-    <SafeAreaView className="flex-1 mx-3">
+    <SafeAreaView className="flex-1 bg-slate-150">
       <StatusBar style="auto" />
-      <Text className="text-center font-bold text-2xl mb-4">SimpleSign</Text>
-      <View className="flex-1 gap-2">
-        <View className="flex-row gap-y-2 mb-4 rounded-lg justify-between">
-          <TouchableOpacity
-            onPress={handlePresentModalPress}
-            className={`flex-row items-center bg-[${actionButton}] p-3 rounded-lg`}
-          >
-            <AntDesign name="plus" size={24} color="white" />
-            <Text className="text-white pl-2">Sign Document</Text>
-          </TouchableOpacity>
+      <Text className="text-center font-bold text-2xl my-2">SimpleSign</Text>
 
-          <TouchableOpacity
-            onPress={handlePresentModalPress}
-            className={`flex-row items-center bg-slate-300 p-3 rounded-lg`}
-          >
-            <AntDesign name="plus" size={24} color="white" />
-            <Text className="text-white pl-2">Request</Text>
-          </TouchableOpacity>
+      <View className="search-bar mx-1">
+        <SearchBar
+          platform="ios"
+          containerStyle={{
+            backgroundColor: "transparent",
+            alignContent: "center",
+            justifyContent: "center",
+            backfaceVisibility: "hidden",
+            alignContent: "stretch",
+            gap: 0,
+            rowGap: 0,
+            justifyContent: "space-between",
+            margin: 0,
+          }}
+          placeholder="Search..."
+          searchIcon={() => (
+            <Ionicons name="search" size={24} color="#7b7d7b" />
+          )}
+        />
+      </View>
 
-          <TouchableOpacity
-            onPress={handlePresentModalPress}
-            className={`flex-row items-center bg-slate-300 p-3 rounded-lg`}
-          >
-            <AntDesign name="plus" size={24} color="white" />
-            <Text className="text-white pl-2">E-Sign</Text>
-          </TouchableOpacity>
-        </View>
-
+      <View className="flex-1 gap-y-2 mx-3">
         <View className="flex-1 items-start">
-          <Text className="font-bold text-gray-700 text-[16px] mb-3">
-            Signed Documents
-          </Text>
-
-          <View className="search-bar w-full">
-            <SearchBar
-              platform="ios"
-              containerStyle={{
-                backgroundColor: "transparent",
-                alignContent: "center",
-                justifyContent: "center",
-                backfaceVisibility: "hidden",
-                alignContent: "stretch",
-                gap: 0,
-                rowGap: 0,
-                justifyContent: "space-between",
-                margin: 0,
-              }}
-              placeholder="Search..."
-              searchIcon={() => (
-                <Ionicons name="search" size={24} color="#7b7d7b" />
-              )}
-            />
-          </View>
-
           <ScrollView
             showsVerticalScrollIndicator={false}
-            className="bg-white w-full"
+            className="bg-white w-full rounded-lg"
           >
             {docList.map((doc, idx) => (
               <View
@@ -162,7 +137,7 @@ function SignBottomSheet({ navigation }) {
 
                 <TouchableOpacity
                   onPress={() => previewDocument(doc)}
-                  className="flex-1 bg-black items-start gap-1 my-1"
+                  className="flex-1 items-start gap-1 my-1"
                 >
                   <Text className="text-gray-800">{doc.name}</Text>
 
@@ -194,6 +169,24 @@ function SignBottomSheet({ navigation }) {
               </View>
             ))}
           </ScrollView>
+        </View>
+
+        <View className="flex-row gap-y-2 mb-4 rounded-lg justify-between">
+          <TouchableOpacity
+            onPress={handlePresentModalPress}
+            className={`flex-row items-center bg-[${actionButton}] p-3 rounded-lg w-[48%] h-[70px]`}
+          >
+            <AntDesign name="plus" size={24} color="white" />
+            <Text className="text-white pl-2">Sign Document</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handlePresentModalPress}
+            className={`flex-row items-center bg-slate-300 p-3 rounded-lg w-[48%]`}
+          >
+            <FontAwesome name="mail-forward" size={24} color="white" />
+            <Text className="text-white pl-2">Request Signature</Text>
+          </TouchableOpacity>
         </View>
       </View>
 

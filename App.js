@@ -16,6 +16,7 @@ import SignScreen from "./components/tabs/Sign";
 import { createStackNavigator } from "@react-navigation/stack";
 import * as FileSystem from "expo-file-system";
 import { actionButton } from "./constants/UI";
+import { updateDocuments } from "./components/functions/Global";
 
 // Stack Nav Wrapper, Tab Nav Secondary
 const Stack = createStackNavigator();
@@ -38,34 +39,36 @@ function Main() {
   const [signatureList, setSignatureList] = useState([]);
   const [docList, setDocList] = useState([]);
 
-  async function loadCompletedDocs() {
-    const updateCompleteDocsList = [];
+  // async function loadCompletedDocs() {
+  //   const updateCompleteDocsList = [];
 
-    let docs = await FileSystem.readDirectoryAsync(
-      FileSystem.documentDirectory + "Completed"
-    );
+  //   let docs = await FileSystem.readDirectoryAsync(
+  //     FileSystem.documentDirectory + "Completed"
+  //   );
 
-    for (const doc of docs) {
-      const path = FileSystem.documentDirectory + "Completed/" + doc;
-      const docInfo = await FileSystem.getInfoAsync(path);
+  //   for (const doc of docs) {
+  //     const path = FileSystem.documentDirectory + "Completed/" + doc;
+  //     const docInfo = await FileSystem.getInfoAsync(path);
 
-      updateCompleteDocsList.push(
-        new Object({
-          name: doc,
-          path,
-          created: docInfo.modificationTime,
-          size: docInfo.size,
-        })
-      );
-    }
+  //     updateCompleteDocsList.push(
+  //       new Object({
+  //         name: doc,
+  //         path,
+  //         created: docInfo.modificationTime,
+  //         size: docInfo.size,
+  //       })
+  //     );
+  //   }
 
-    setDocList([...updateCompleteDocsList]);
-  }
+  //   setDocList([...updateCompleteDocsList]);
+  // }
+
+  console.log("docList", docList);
 
   useEffect(() => {
     // Update UI for documents
-    loadCompletedDocs();
-  }, [docList]);
+    updateDocuments(setDocList);
+  }, []);
 
   return (
     <Context.Provider

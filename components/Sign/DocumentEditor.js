@@ -24,10 +24,11 @@ import {
   uint8ToBase64Conversion,
 } from "./functions";
 
-import { actionButton } from "../../constants/UI";
-
 import DraggableElement from "./DraggableElement";
+// PDF editing
 import { PDFDocument } from "pdf-lib";
+import { updateDocuments } from "../functions/Global";
+import { SaveDocModal } from "./SaveDocModal";
 
 export default function DocumentEditor({ navigation, route }) {
   const [selectedPrinter, setSelectedPrinter] = useState();
@@ -38,7 +39,7 @@ export default function DocumentEditor({ navigation, route }) {
   // Selected signature path
   const [selectedSignaturePath, setSelectedSignaturePath] = useState(null);
   // Signature list context
-  const { signatureList, setSignatureList } = useContext(Context);
+  const { signatureList, setSignatureList, setDocList } = useContext(Context);
 
   // Relative width and height of inputed element
   const [widthElement, setWidthElement] = useState(0);
@@ -65,6 +66,9 @@ export default function DocumentEditor({ navigation, route }) {
   // Size of the element/signature
   const [elementSizeWidth, setElementSizeWidth] = useState(80);
 
+  // Naming Modal
+  const [isNamingModal, setIsNamingModal] = useState(false);
+
   // Populate the stored signatures in the app's private storage
   useEffect(() => {
     displayStoredSignatures(setSignatureList);
@@ -82,7 +86,8 @@ export default function DocumentEditor({ navigation, route }) {
 
   // Passed path name for the documents picked
   const { pickedDocument } = route.params;
-  const source = { uri: pickedDocument.assets[0].uri, cache: true };
+  console.log("pickedDocument:", pickedDocument);
+  const source = { uri: pickedDocument, cache: true };
 
   // Bottomsheet refs and values
   const editingPalette = useRef();
@@ -147,6 +152,7 @@ export default function DocumentEditor({ navigation, route }) {
         });
 
         console.log("Success, you have your newly edited document");
+        updateDocuments(setDocList);
       } catch (error) {
         console.log(error);
       }
@@ -168,10 +174,7 @@ export default function DocumentEditor({ navigation, route }) {
   }
 
   async function readPdf() {
-    const readDocument = await RNFS.readFile(
-      pickedDocument.assets[0].uri,
-      "base64"
-    );
+    const readDocument = await RNFS.readFile(pickedDocument, "base64");
 
     setPdfBase64(readDocument);
     setPdfArrayBuffer(base64ToArrayBuffer(readDocument));
@@ -200,13 +203,13 @@ export default function DocumentEditor({ navigation, route }) {
         <View className="flex-row items-center">
           <TouchableOpacity
             className={`flex-row items-center p-1 mx-1 bg-[#7851A9] rounded-lg`}
-            onPress={saveEditedDocument}
+            onPress={() => setIsNamingModal(true)}
           >
             <MaterialIcons name="save-alt" size={24} color="white" />
             <Text className="mx-2 text-lg text-white">Save</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="mx-1" onPress={selectPrinter}>
+          <TouchableOpacity className="mx-1" onPress={() => selectPrinter()}>
             <MaterialCommunityIcons
               name="printer-eye"
               size={24}
@@ -214,15 +217,11 @@ export default function DocumentEditor({ navigation, route }) {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity className="mx-1" onPress={printDocument}>
+          <TouchableOpacity className="mx-1" onPress={() => printDocument()}>
             <FontAwesome name="print" size={24} color="black" />
           </TouchableOpacity>
         </View>
       </View>
-
-      {selectedPrinter ? (
-        <Text>{`Selected printer: ${selectedPrinter.name}`}</Text>
-      ) : undefined}
 
       <View className="mt-10">
         <Pdf
@@ -271,6 +270,13 @@ export default function DocumentEditor({ navigation, route }) {
           )}
         </Pdf>
       </View>
+
+      {isNamingModal && (
+        <SaveDocModal
+          isNamingModal={isNamingModal}
+          setIsNamingModal={setIsNamingModal}
+        />
+      )}
 
       <BottomSheetModal
         ref={editingPalette}

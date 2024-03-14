@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React, { useContext, useState } from "react";
-import { AntDesign } from "@expo/vector-icons";
+import { AntDesign, Feather, MaterialIcons } from "@expo/vector-icons";
 import { RenameDocumentModal } from "./RenameDocModal";
 import { ScrollView } from "react-native-gesture-handler";
 import { deleteDocument } from "./functions";
@@ -68,8 +68,22 @@ export default function DocumentDetails({ route, navigation }) {
             onPress={() => setShowRenameModal((curr) => !curr)}
             className="flex-row bg-white rounded-lg mb-2 items-center px-3 h-16 w-full shadow"
           >
-            <Text>Rename</Text>
+            <MaterialIcons
+              name="drive-file-rename-outline"
+              size={22}
+              color="black"
+            />
+            <Text className="mx-2">Rename</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => setShowRenameModal((curr) => !curr)}
+            className="flex-row bg-white rounded-lg mb-6 items-center px-3 h-16 w-full shadow"
+          >
+            <Feather name="share-2" size={22} color="black" />
+            <Text className="mx-2">Share</Text>
+          </TouchableOpacity>
+          <View className="border-b-[0.5px] border-gray-300 w-11/12 mb-6 px-6" />
 
           <TouchableOpacity
             onPress={() =>
@@ -77,7 +91,8 @@ export default function DocumentDetails({ route, navigation }) {
             }
             className="flex-row bg-white rounded-lg mb-2 items-center px-3 h-16 w-full shadow"
           >
-            <Text className="text-red-500">Delete</Text>
+            <MaterialIcons name="delete-outline" size={22} color="red" />
+            <Text className="text-red-500 mx-2">Delete</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
