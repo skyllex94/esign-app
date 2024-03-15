@@ -56,27 +56,8 @@ export default function DocumentPreview({ route, navigation }) {
           fitPolicy={0}
           enablePaging={true}
           style={{ width: Dimensions.get("window").width, height: 540 }}
-          onLoadComplete={(pages, path, { height, width }) => {
-            // setPageHeight(height);
-            // console.log("pdf_height:", height);
-            // setPageWidth(width);
-            // console.log("pdf_width:", width);
-            // console.log("pdf_ratio:", (height / width).toFixed(2));
-            // setPageRatio((height / width).toFixed(2));
-          }}
-          onPageChanged={(page, numOfPages) => {
-            console.log("Current Page", page);
-            // setCurrPage(page);
-          }}
-          onPageSingleTap={(page, x, y) => {
-            console.log("x", x);
-            console.log("y", y);
-          }}
           onError={(error) => {
             console.log(error);
-          }}
-          onPressLink={(uri) => {
-            console.log(`Link pressed: ${uri}`);
           }}
         />
       </View>

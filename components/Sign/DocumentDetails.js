@@ -38,7 +38,7 @@ export default function DocumentDetails({ route, navigation }) {
           <View className="flex-row bg-white items-center justify-between px-3 h-16 w-full border-b-[0.5px] border-gray-400">
             <Text>Document Type:</Text>
             <Text className="text-gray-500">
-              {doc.name.split(".")[1].toUpperCase()}
+              {doc.name.split(".")[1]?.toUpperCase()}
             </Text>
           </View>
 

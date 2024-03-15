@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { AntDesign, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 // Bottom Sheet Imports
-import React, { useCallback, useContext, useEffect, useMemo } from "react";
+import React, { useCallback, useContext, useMemo, useState } from "react";
 import { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 // Stack Navigation
@@ -21,9 +21,9 @@ import { Context } from "../contexts/Global";
 import { actionButton } from "../../constants/UI";
 import { ScrollView } from "react-native-gesture-handler";
 import DocumentDetails from "../Sign/DocumentDetails";
-import { SearchBar } from "react-native-elements";
-import { useState } from "react";
+import { Button, SearchBar } from "react-native-elements";
 import DocumentPreview from "../Sign/DocumentPreview";
+import DocumentSuccess from "../Sign/DocumentSuccess";
 
 const Stack = createStackNavigator();
 
@@ -53,6 +53,11 @@ export default function SignScreen() {
         name="DocumentPreview"
         component={DocumentPreview}
         options={{ presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="DocumentSuccess"
+        component={DocumentSuccess}
+        options={{ presentation: "card" }}
       />
     </Stack.Navigator>
   );
@@ -101,6 +106,8 @@ function SignBottomSheet({ navigation }) {
 
       <View className="search-bar mx-1">
         <SearchBar
+          value={search}
+          onChangeText={(text) => setSearch(text)}
           platform="ios"
           containerStyle={{
             backgroundColor: "transparent",
@@ -114,6 +121,14 @@ function SignBottomSheet({ navigation }) {
             margin: 0,
           }}
           placeholder="Search..."
+          clearIcon={() => (
+            <Ionicons
+              onPress={() => setSearch("")}
+              name="close"
+              size={24}
+              color="#7b7d7b"
+            />
+          )}
           searchIcon={() => (
             <Ionicons name="search" size={24} color="#7b7d7b" />
           )}

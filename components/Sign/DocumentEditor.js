@@ -257,7 +257,7 @@ export default function DocumentEditor({ navigation, route }) {
             console.log(`Link pressed: ${uri}`);
           }}
         >
-          {inputSignature && (
+          {inputSignature ? (
             <DraggableElement
               pageRatio={pageRatio}
               setInputSignature={setInputSignature}
@@ -267,7 +267,7 @@ export default function DocumentEditor({ navigation, route }) {
               elementSizeWidth={elementSizeWidth}
               setElementSizeWidth={setElementSizeWidth}
             />
-          )}
+          ) : null}
         </Pdf>
       </View>
 
@@ -275,6 +275,18 @@ export default function DocumentEditor({ navigation, route }) {
         <SaveDocModal
           isNamingModal={isNamingModal}
           setIsNamingModal={setIsNamingModal}
+          currPage={currPage}
+          widthElement={widthElement}
+          heightElement={heightElement}
+          pageWidth={pageWidth}
+          pageHeight={pageHeight}
+          elementSizeWidth={elementSizeWidth}
+          setEditedPdfPath={setEditedPdfPath}
+          setPdfBase64={setPdfBase64}
+          signatureArrayBuffer={signatureArrayBuffer}
+          pdfArrayBuffer={pdfArrayBuffer}
+          navigation={navigation}
+          editingPalette={editingPalette}
         />
       )}
 
