@@ -10,6 +10,7 @@ import {
 import React, { useContext, useEffect, useRef, useState } from "react";
 // UI Imports
 import {
+  AntDesign,
   EvilIcons,
   FontAwesome6,
   Ionicons,
@@ -25,6 +26,7 @@ import Checkbox from "expo-checkbox";
 import { actionButton } from "../../constants/UI";
 import * as FileSystem from "expo-file-system";
 import { SignatureDetails } from "./SignatureDetails";
+import { openDocument } from "../functions/Global";
 
 export default function DrawSignCapture({ navigation }) {
   const signature = useRef();
@@ -181,12 +183,12 @@ export default function DrawSignCapture({ navigation }) {
             {signatureList.map((path, idx) => (
               <View
                 key={idx}
-                className="flex-row items-center justify-between my-1 w-full bg-slate-50 border-gray-300 border-b-2 rounded-lg"
+                className="flex-row items-center justify-between my-1 w-full bg-slate-50 border-gray-300 rounded-lg"
               >
                 <TouchableOpacity>
                   <Checkbox
                     className={`${
-                      !checked && "border-black"
+                      !checked && "border-gray-400"
                     } ml-4 p-2 rounded-full`}
                     color={actionButton}
                     value={checked}
@@ -195,15 +197,15 @@ export default function DrawSignCapture({ navigation }) {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  className="flex-row p-1 ml-4"
+                  className="flex-row justify-center items-center p-1 ml-4 w-60"
                   onPress={() => previewSignature(path)}
                 >
-                  <Image className="h-16 w-24" source={{ uri: path }} />
+                  <Image className="h-12 w-20" source={{ uri: path }} />
                 </TouchableOpacity>
 
                 <View className="flex-row items-center">
                   <TouchableOpacity onPress={() => showSignatureDetails(path)}>
-                    <MaterialIcons name="more-horiz" size={24} color="black" />
+                    <MaterialIcons name="more-horiz" size={24} color="gray" />
                   </TouchableOpacity>
 
                   <TouchableOpacity
@@ -212,7 +214,7 @@ export default function DrawSignCapture({ navigation }) {
                       deleteSignature(path, signatureList, setSignatureList)
                     }
                   >
-                    <EvilIcons name="trash" size={34} color="black" />
+                    <AntDesign name="close" size={22} color="gray" />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -227,6 +229,19 @@ export default function DrawSignCapture({ navigation }) {
             setSignatureDetailsModal={setSignatureDetailsModal}
           />
         )}
+
+        <View className="mt-3">
+          <TouchableOpacity
+            onPress={() =>
+              openDocument(navigation, signatureList, bottomSheetChooseDocument)
+            }
+            className={`bg-[${actionButton}] items-center justify-center rounded-lg h-12 w-full`}
+          >
+            <Text className="text-white text-[15px] font-bold">
+              Open Document
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );

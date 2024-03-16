@@ -117,8 +117,6 @@ export const deleteDocument = (fileWtPath, docList, setDocList, navigation) => {
             })
             .catch((err) => console.log(err));
 
-          console.log("docList", docList);
-
           // Updating signature array list for the UI
           const updatedDocList = docList.filter((doc) => doc !== fileWtPath);
 

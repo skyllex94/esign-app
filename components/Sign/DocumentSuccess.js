@@ -1,4 +1,4 @@
-import { View, Text, StatusBar, Alert } from "react-native";
+import { View, Text, StatusBar, Share } from "react-native";
 import React, { useContext, useEffect, useRef } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LottieView from "lottie-react-native";
@@ -11,10 +11,13 @@ import {
 } from "@expo/vector-icons";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { shareAsync } from "expo-sharing";
+import { showMessage } from "react-native-flash-message";
+import ReactNativeBlobUtil from "react-native-blob-util";
 
 export default function DocumentSuccess({ route, navigation }) {
   const animation = useRef(null);
   const { editedDocPath } = route.params;
+  const name = editedDocPath?.split("Completed/")[1];
   const { bottomSheetChooseDocument } = useContext(Context);
 
   console.log("editedDocPath:", editedDocPath);
@@ -26,22 +29,68 @@ export default function DocumentSuccess({ route, navigation }) {
     });
   }
 
-  const createTwoButtonAlert = () =>
-    Alert.alert("Alert Title", "My Alert Msg", [
-      {
-        text: "Cancel",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "cancel",
-      },
-      { text: "OK", onPress: () => console.log("OK Pressed") },
-    ]);
-
   async function emailDocument() {
-    try {
-      await MailComposer.composeAsync({ body: "Here we go" });
-    } catch (err) {
-      console.log(err);
+    const canUseMailService = await MailComposer.isAvailableAsync();
+
+    if (canUseMailService === false) {
+      showMessage({
+        message: "Email Service cannot be used",
+        description: "The email cannot be used on this device unfortunately.",
+        duration: 3000,
+        type: "danger",
+      });
+      return;
     }
+
+    try {
+      await MailComposer.composeAsync({
+        subject: "Document to be Signed",
+        body: "Here's the signed document for you to review/have. Signed via SimpleSign™.",
+        attachments: editedDocPath,
+      });
+    } catch (err) {
+      showMessage({
+        message: "Error Occured",
+        description: err.toString(),
+        duration: 3000,
+        type: "danger",
+      });
+    }
+  }
+
+  async function emailToThirdParty() {
+    const canUseMailService = await MailComposer.isAvailableAsync();
+
+    if (canUseMailService === false) {
+      showMessage({
+        message: "Email Service cannot be used",
+        description: "The email cannot be used on this device unfortunately.",
+        duration: 3000,
+        type: "danger",
+      });
+      return;
+    }
+
+    try {
+      await MailComposer.composeAsync({
+        subject: `Signed Document`,
+        body: `Here's the signed document - ${name} for you to review/have. Signed via SimpleSign™.`,
+        attachments: editedDocPath,
+      });
+    } catch (err) {
+      showMessage({
+        message: "Error Occured",
+        description: err.toString(),
+        duration: 3000,
+        type: "danger",
+      });
+    }
+  }
+
+  async function openSharingOptions() {}
+
+  async function previewDocument() {
+    ReactNativeBlobUtil.ios.openDocument(editedDocPath);
   }
 
   useEffect(() => {
@@ -65,6 +114,14 @@ export default function DocumentSuccess({ route, navigation }) {
         <Text className="text-[16px] m-3">What's Next?</Text>
         <View className="bg-white rounded-lg">
           <TouchableOpacity
+            onPress={previewDocument}
+            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
+          >
+            <Ionicons name="document-text-outline" size={24} color="black" />
+            <Text className="mx-2">View Document</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             onPress={emailDocument}
             className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
           >
@@ -77,6 +134,18 @@ export default function DocumentSuccess({ route, navigation }) {
           </TouchableOpacity>
 
           <TouchableOpacity
+            onPress={emailToThirdParty}
+            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
+          >
+            <MaterialCommunityIcons
+              name="email-fast-outline"
+              size={24}
+              color="black"
+            />
+            <Text className="mx-2">Email to Third Party</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             onPress={openShareOptions}
             className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
           >
@@ -84,36 +153,41 @@ export default function DocumentSuccess({ route, navigation }) {
             <Text className="mx-2">Save a Copy</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400">
+          <TouchableOpacity
+            onPress={openSharingOptions}
+            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
+          >
             <FontAwesome6 name="share-square" size={24} color="black" />
             <Text className="mx-2">Share through...</Text>
           </TouchableOpacity>
         </View>
 
-        <View className="mt-4">
-          <Text className="text-[16px] m-3">Go To:</Text>
-          <View className="bg-white rounded-lg">
-            <TouchableOpacity
-              onPress={() => navigation.navigate("SignBottomSheet")}
-              className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
-            >
-              <Ionicons name="document-text-outline" size={24} color="black" />
-              <Text className="mx-2">All Documents</Text>
-            </TouchableOpacity>
+        {/* 
+          <View className="mt-4">
+              <Text className="text-[16px] m-3">Go To:</Text>
+              <View className="bg-white rounded-lg">
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("SignBottomSheet")}
+                  className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
+                >
+                  <Ionicons name="document-text-outline" size={24} color="black" />
+                  <Text className="mx-2">All Documents</Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => navigation.navigate("SignBottomSheet")}
-              className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
-            >
-              <MaterialCommunityIcons
-                name="signature"
-                size={24}
-                color="black"
-              />
-              <Text className="mx-2">Signature List</Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("SignBottomSheet")}
+                  className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
+                >
+                <MaterialCommunityIcons
+                  name="signature"
+                  size={24}
+                  color="black"
+                />
+                <Text className="mx-2">Signature List</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        */}
       </ScrollView>
     </SafeAreaView>
   );

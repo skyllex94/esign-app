@@ -57,7 +57,7 @@ export default function DocumentDetails({ route, navigation }) {
                 year: "numeric",
                 month: "short",
                 day: "numeric",
-              })}{" "}
+              })}
               at {new Date(date).toLocaleTimeString()}
             </Text>
           </View>
@@ -83,7 +83,7 @@ export default function DocumentDetails({ route, navigation }) {
             <Feather name="share-2" size={22} color="black" />
             <Text className="mx-2">Share</Text>
           </TouchableOpacity>
-          <View className="border-b-[0.5px] border-gray-300 w-11/12 mb-6 px-6" />
+          <View className="border-b-[0.5px] border-gray-300 w-[90%] mb-6 px-6" />
 
           <TouchableOpacity
             onPress={() =>

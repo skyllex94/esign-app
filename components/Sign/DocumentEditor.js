@@ -29,6 +29,7 @@ import DraggableElement from "./DraggableElement";
 import { PDFDocument } from "pdf-lib";
 import { updateDocuments } from "../functions/Global";
 import { SaveDocModal } from "./SaveDocModal";
+import { StatusBar } from "expo-status-bar";
 
 export default function DocumentEditor({ navigation, route }) {
   const [selectedPrinter, setSelectedPrinter] = useState();
@@ -101,64 +102,6 @@ export default function DocumentEditor({ navigation, route }) {
     });
   };
 
-  const saveEditedDocument = async () => {
-    const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
-
-    const pages = pdfDoc.getPages();
-    console.log("pages:", pages);
-    const firstPage = pages[currPage - 1];
-
-    // Inputting the signature inside the PDF document
-    if (signatureArrayBuffer) {
-      const signatureImage = await pdfDoc.embedPng(signatureArrayBuffer);
-
-      console.log(widthElement, heightElement);
-
-      firstPage.drawImage(signatureImage, {
-        x: (pageWidth * (widthElement - 120)) / Dimensions.get("window").width,
-        y: pageHeight - (pageHeight * (heightElement + 25)) / 540,
-        width: elementSizeWidth + 50,
-        height: elementSizeWidth + 25,
-      });
-      console.log("signatureImage:", signatureImage);
-
-      // Saving the new editted document
-      const pdfEditedBytes = await pdfDoc.save();
-      const pdfBase64 = uint8ToBase64Conversion(pdfEditedBytes);
-      // console.log("pdfBase64:", pdfBase64);
-
-      const editedDocPath = `${
-        RNFS.DocumentDirectoryPath
-      }/Completed/Document_${Date.now()}.pdf`;
-
-      console.log("editedDocPath", editedDocPath);
-
-      const existsPath = await RNFS.exists(
-        `${RNFS.DocumentDirectoryPath}/Completed/`
-      );
-
-      if (!existsPath) RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/Completed/`);
-
-      try {
-        await RNFS.writeFile(editedDocPath, pdfBase64, "base64");
-
-        setEditedPdfPath(editedDocPath);
-        setPdfBase64(pdfBase64);
-
-        // Sharing navigation once complete
-        await shareAsync(editedDocPath, {
-          UTI: ".pdf",
-          mimeType: "application/pdf",
-        });
-
-        console.log("Success, you have your newly edited document");
-        updateDocuments(setDocList);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
-
   const selectPrinter = async () => {
     const printer = await Print.selectPrinterAsync(); // iOS only
     setSelectedPrinter(printer);
@@ -191,6 +134,7 @@ export default function DocumentEditor({ navigation, route }) {
 
   return (
     <SafeAreaView className="flex-1">
+      <StatusBar style="dark" />
       <View className="flex-row items-center justify-between m-2">
         <TouchableOpacity
           className="flex-row items-center mx-1"

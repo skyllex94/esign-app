@@ -8,8 +8,6 @@ export default function DocumentPreview({ route, navigation }) {
   const source = { uri: doc.path, cache: true };
   const path = doc.path;
 
-  console.log("doc:", doc);
-
   return (
     <View className="my-6">
       <View className="flex-row items-center justify-between mx-4">

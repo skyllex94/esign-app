@@ -14,9 +14,9 @@ import ScanScreen from "./components/tabs/Scan";
 import TemplatesScreen from "./components/tabs/Templates";
 import SignScreen from "./components/tabs/Sign";
 import { createStackNavigator } from "@react-navigation/stack";
-import * as FileSystem from "expo-file-system";
 import { actionButton } from "./constants/UI";
 import { updateDocuments } from "./components/functions/Global";
+import FlashMessage from "react-native-flash-message";
 
 // Stack Nav Wrapper, Tab Nav Secondary
 const Stack = createStackNavigator();
@@ -28,6 +28,7 @@ export default function App() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Main" component={Main} />
       </Stack.Navigator>
+      <FlashMessage position="top" />
     </NavigationContainer>
   );
 }

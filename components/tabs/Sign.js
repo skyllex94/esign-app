@@ -7,23 +7,30 @@ import {
 } from "react-native";
 import { AntDesign, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
 // Bottom Sheet Imports
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 // Stack Navigation
 import { createStackNavigator } from "@react-navigation/stack";
 import DrawSignCapture from "../Sign/DrawSign";
 import DocumentEditor from "../Sign/DocumentEditor";
-// Other Dependency Imports
-import * as DocumentPicker from "expo-document-picker";
+// Other Dependency Import
 import { Context } from "../contexts/Global";
+import filter from "lodash.filter";
 // UI Imports
 import { actionButton } from "../../constants/UI";
 import { ScrollView } from "react-native-gesture-handler";
 import DocumentDetails from "../Sign/DocumentDetails";
-import { Button, SearchBar } from "react-native-elements";
+import { SearchBar } from "react-native-elements";
 import DocumentPreview from "../Sign/DocumentPreview";
 import DocumentSuccess from "../Sign/DocumentSuccess";
+import { openDocument } from "../functions/Global";
 
 const Stack = createStackNavigator();
 
@@ -64,9 +71,15 @@ export default function SignScreen() {
 }
 
 function SignBottomSheet({ navigation }) {
-  const { docList, bottomSheetChooseDocument } = useContext(Context);
+  const { docList, signatureList, bottomSheetChooseDocument } =
+    useContext(Context);
   const snapPoints = useMemo(() => ["50%"], []);
   const [search, setSearch] = useState(null);
+  const [filteredDocs, setFilteredDocs] = useState(docList);
+
+  useEffect(() => {
+    setFilteredDocs(docList);
+  }, []);
 
   // callbacks
   const handlePresentModalPress = useCallback(() => {
@@ -78,25 +91,25 @@ function SignBottomSheet({ navigation }) {
     navigation.navigate("DrawSign");
   }
 
-  async function openSelectDocument() {
-    const pickedDocument = await DocumentPicker.getDocumentAsync({
-      type: "application/pdf",
-      copyToCacheDirectory: true, // enabled to be found by FileSystem
-    });
-
-    if (pickedDocument.canceled === true) return;
-
-    bottomSheetChooseDocument.current.close();
-
-    console.log("pickedDocument sdfsdf:", pickedDocument);
-    navigation.navigate("DocumentEditor", {
-      pickedDocument: pickedDocument.assets[0].uri,
-    });
-  }
-
   function previewDocument(doc) {
     navigation.navigate("DocumentPreview", { doc });
   }
+
+  function handleSearch(query) {
+    setSearch(query);
+    const formattedQuery = query.toLowerCase();
+
+    const filteredData = filter(docList, (doc) => {
+      return contains(doc, formattedQuery);
+    });
+
+    setFilteredDocs(() => filteredData);
+  }
+
+  const contains = ({ name }, query) => {
+    if (name.toString().toLowerCase().includes(query)) return true;
+    return false;
+  };
 
   // For SafeAreaView
   return (
@@ -107,7 +120,7 @@ function SignBottomSheet({ navigation }) {
       <View className="search-bar mx-1">
         <SearchBar
           value={search}
-          onChangeText={(text) => setSearch(text)}
+          onChangeText={(text) => handleSearch(text)}
           platform="ios"
           containerStyle={{
             backgroundColor: "transparent",
@@ -130,7 +143,9 @@ function SignBottomSheet({ navigation }) {
             />
           )}
           searchIcon={() => (
-            <Ionicons name="search" size={24} color="#7b7d7b" />
+            <TouchableOpacity>
+              <Ionicons name="search" size={24} color="#7b7d7b" />
+            </TouchableOpacity>
           )}
         />
       </View>
@@ -141,7 +156,7 @@ function SignBottomSheet({ navigation }) {
             showsVerticalScrollIndicator={false}
             className="bg-white w-full rounded-lg"
           >
-            {docList.map((doc, idx) => (
+            {filteredDocs.map((doc, idx) => (
               <View
                 key={idx}
                 className="flex-row items-center py-2 border-b-[0.5px] border-slate-300"
@@ -189,7 +204,7 @@ function SignBottomSheet({ navigation }) {
         <View className="flex-row gap-y-2 mb-4 rounded-lg justify-between">
           <TouchableOpacity
             onPress={handlePresentModalPress}
-            className={`flex-row items-center bg-[${actionButton}] p-3 rounded-lg w-[48%] h-[70px]`}
+            className={`flex-row items-center bg-[${actionButton}] p-3 rounded-lg w-[48%] h-[90px]`}
           >
             <AntDesign name="plus" size={24} color="white" />
             <Text className="text-white pl-2">Sign Document</Text>
@@ -197,10 +212,10 @@ function SignBottomSheet({ navigation }) {
 
           <TouchableOpacity
             onPress={handlePresentModalPress}
-            className={`flex-row items-center bg-slate-300 p-3 rounded-lg w-[48%]`}
+            className={`flex-row items-center bg-white p-3 rounded-lg w-[48%]`}
           >
-            <FontAwesome name="mail-forward" size={24} color="white" />
-            <Text className="text-white pl-2">Request Signature</Text>
+            <FontAwesome name="mail-forward" size={24} color="black" />
+            <Text className="text-black pl-2">Request Signature</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -249,7 +264,9 @@ function SignBottomSheet({ navigation }) {
 
         <View className="flex-row px-3 h-16">
           <TouchableOpacity
-            onPress={openSelectDocument}
+            onPress={() =>
+              openDocument(navigation, signatureList, bottomSheetChooseDocument)
+            }
             className="flex-1 bg-gray-200 rounded-md mr-3 p-2"
           >
             <Text>Files</Text>

@@ -12,6 +12,7 @@ import { PDFDocument } from "pdf-lib";
 import { uint8ToBase64Conversion } from "./functions";
 import RNFS from "react-native-fs";
 import LottieView from "lottie-react-native";
+// import { BlurView } from "expo-blur";
 
 export const SaveDocModal = ({
   isNamingModal,
@@ -84,12 +85,6 @@ export const SaveDocModal = ({
 
         setEditedPdfPath(editedDocPath);
         setPdfBase64(pdfBase64);
-
-        // Sharing navigation once complete
-        // await shareAsync(editedDocPath, {
-        //   UTI: ".pdf",
-        //   mimeType: "application/pdf",
-        // });
 
         console.log("Success, you have your newly edited document");
         editingPalette.current.close();
