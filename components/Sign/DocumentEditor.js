@@ -19,7 +19,7 @@ import {
 } from "@expo/vector-icons";
 import {
   deleteSignature,
-  displayStoredSignatures,
+  loadStoredSignatures,
   selectSignature,
   uint8ToBase64Conversion,
 } from "./functions";
@@ -28,7 +28,7 @@ import DraggableElement from "./DraggableElement";
 // PDF editing
 import { PDFDocument } from "pdf-lib";
 import { updateDocuments } from "../functions/Global";
-import { SaveDocModal } from "./SaveDocModal";
+import { SaveDocument } from "./SaveDocument";
 import { StatusBar } from "expo-status-bar";
 
 export default function DocumentEditor({ navigation, route }) {
@@ -70,9 +70,7 @@ export default function DocumentEditor({ navigation, route }) {
   // Naming Modal
   const [isNamingModal, setIsNamingModal] = useState(false);
 
-  // Populate the stored signatures in the app's private storage
   useEffect(() => {
-    displayStoredSignatures(setSignatureList);
     editingPalette.current.present();
   }, []);
 
@@ -216,7 +214,7 @@ export default function DocumentEditor({ navigation, route }) {
       </View>
 
       {isNamingModal && (
-        <SaveDocModal
+        <SaveDocument
           isNamingModal={isNamingModal}
           setIsNamingModal={setIsNamingModal}
           currPage={currPage}

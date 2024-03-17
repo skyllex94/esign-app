@@ -39,36 +39,11 @@ function Main() {
   // Shared state for DrawSign & DocumentEditor
   const [signatureList, setSignatureList] = useState([]);
   const [docList, setDocList] = useState([]);
-
-  // async function loadCompletedDocs() {
-  //   const updateCompleteDocsList = [];
-
-  //   let docs = await FileSystem.readDirectoryAsync(
-  //     FileSystem.documentDirectory + "Completed"
-  //   );
-
-  //   for (const doc of docs) {
-  //     const path = FileSystem.documentDirectory + "Completed/" + doc;
-  //     const docInfo = await FileSystem.getInfoAsync(path);
-
-  //     updateCompleteDocsList.push(
-  //       new Object({
-  //         name: doc,
-  //         path,
-  //         created: docInfo.modificationTime,
-  //         size: docInfo.size,
-  //       })
-  //     );
-  //   }
-
-  //   setDocList([...updateCompleteDocsList]);
-  // }
-
-  console.log("docList", docList);
+  const [filteredDocList, setFilteredDocList] = useState([]);
 
   useEffect(() => {
     // Update UI for documents
-    updateDocuments(setDocList);
+    updateDocuments(setDocList, setFilteredDocList);
   }, []);
 
   return (
@@ -78,6 +53,8 @@ function Main() {
         setSignatureList,
         docList,
         setDocList,
+        filteredDocList,
+        setFilteredDocList,
         bottomSheetChooseDocument,
       }}
     >

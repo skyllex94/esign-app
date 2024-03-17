@@ -1,7 +1,7 @@
 import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
 
-export async function updateDocuments(setDocList) {
+export async function updateDocuments(setDocList, setFilteredDocList) {
   const updateCompleteDocsList = [];
 
   let docs = await FileSystem.readDirectoryAsync(
@@ -23,6 +23,7 @@ export async function updateDocuments(setDocList) {
   }
 
   setDocList([...updateCompleteDocsList]);
+  setFilteredDocList([...updateCompleteDocsList]);
 }
 
 export async function getFileInfo(path) {
@@ -35,6 +36,7 @@ export async function openDocument(
   signatureList,
   bottomSheetChooseDocument
 ) {
+  console.log("signatureList:", signatureList);
   if (signatureList.length < 1) {
     navigation.navigate("DrawSign");
     return;

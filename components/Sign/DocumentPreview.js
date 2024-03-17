@@ -2,6 +2,7 @@ import { AntDesign, Feather } from "@expo/vector-icons";
 import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 import Pdf from "react-native-pdf";
 import { actionButton } from "../../constants/UI";
+import { showMessage } from "react-native-flash-message";
 
 export default function DocumentPreview({ route, navigation }) {
   const { doc } = route.params;
@@ -55,7 +56,12 @@ export default function DocumentPreview({ route, navigation }) {
           enablePaging={true}
           style={{ width: Dimensions.get("window").width, height: 540 }}
           onError={(error) => {
-            console.log(error);
+            showMessage({
+              message: "Error while displaying document",
+              description: error.toString(),
+              duration: 3000,
+              type: "danger",
+            });
           }}
         />
       </View>

@@ -18,7 +18,7 @@ export const RenameDocumentModal = ({
 }) => {
   const renameRef = useRef();
   const [newName, setNewName] = useState(null);
-  const { setDocList } = useContext(Context);
+  const { setDocList, setFilteredDocList } = useContext(Context);
 
   useEffect(() => {
     // Auto focus on the rename field
@@ -42,7 +42,7 @@ export const RenameDocumentModal = ({
     }
     setDocName(newName);
     setDocPath(newPath);
-    updateDocuments(setDocList);
+    updateDocuments(setDocList, setFilteredDocList);
     setShowRenameModal((curr) => !curr);
   }
 

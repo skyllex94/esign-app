@@ -5,7 +5,14 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import { AntDesign, Feather, FontAwesome, Ionicons } from "@expo/vector-icons";
+import {
+  AntDesign,
+  Entypo,
+  Feather,
+  FontAwesome,
+  Ionicons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 // Bottom Sheet Imports
 import React, {
   useCallback,
@@ -31,6 +38,10 @@ import { SearchBar } from "react-native-elements";
 import DocumentPreview from "../Sign/DocumentPreview";
 import DocumentSuccess from "../Sign/DocumentSuccess";
 import { openDocument } from "../functions/Global";
+import { loadStoredSignatures } from "../Sign/functions";
+// OAuth imports
+import * as Linking from "expo-linking";
+import * as WebBrowser from "expo-web-browser";
 
 const Stack = createStackNavigator();
 
@@ -71,17 +82,23 @@ export default function SignScreen() {
 }
 
 function SignBottomSheet({ navigation }) {
-  const { docList, signatureList, bottomSheetChooseDocument } =
-    useContext(Context);
+  const {
+    docList,
+    signatureList,
+    setSignatureList,
+    filteredDocList,
+    setFilteredDocList,
+    bottomSheetChooseDocument,
+  } = useContext(Context);
   const snapPoints = useMemo(() => ["50%"], []);
   const [search, setSearch] = useState(null);
-  const [filteredDocs, setFilteredDocs] = useState(docList);
 
+  // Load stored signatures from app's data
   useEffect(() => {
-    setFilteredDocs(docList);
+    loadStoredSignatures(setSignatureList);
   }, []);
 
-  // callbacks
+  // Callbacks
   const handlePresentModalPress = useCallback(() => {
     bottomSheetChooseDocument.current?.present();
   }, []);
@@ -103,7 +120,7 @@ function SignBottomSheet({ navigation }) {
       return contains(doc, formattedQuery);
     });
 
-    setFilteredDocs(() => filteredData);
+    setFilteredDocList(filteredData);
   }
 
   const contains = ({ name }, query) => {
@@ -111,7 +128,6 @@ function SignBottomSheet({ navigation }) {
     return false;
   };
 
-  // For SafeAreaView
   return (
     <SafeAreaView className="flex-1 bg-slate-150">
       <StatusBar style="auto" />
@@ -156,7 +172,7 @@ function SignBottomSheet({ navigation }) {
             showsVerticalScrollIndicator={false}
             className="bg-white w-full rounded-lg"
           >
-            {filteredDocs.map((doc, idx) => (
+            {filteredDocList.map((doc, idx) => (
               <View
                 key={idx}
                 className="flex-row items-center py-2 border-b-[0.5px] border-slate-300"
@@ -246,15 +262,43 @@ function SignBottomSheet({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        <View className="flex-row px-3 h-16">
+        <View className="flex-row px-3 gap-x-2 h-16">
           <TouchableOpacity
             onPress={openDrawSign}
-            className="flex-1 bg-gray-200 rounded-md mr-3 p-2"
+            className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
           >
-            <Text>Draw</Text>
+            <View className="flex-row items-center">
+              <FontAwesome name="pencil-square-o" size={24} color="black" />
+              <Text className="mx-2 font-bold">Draw</Text>
+            </View>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-1 bg-gray-200 rounded-md p-2">
-            <Text>Import Photo</Text>
+
+          <TouchableOpacity
+            onPress={openDrawSign}
+            className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
+          >
+            <View className="flex-row items-center">
+              <MaterialCommunityIcons
+                name="keyboard-settings-outline"
+                size={24}
+                color="black"
+              />
+              <Text className="mx-2 font-bold">Type</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={openDrawSign}
+            className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
+          >
+            <View className="flex-row items-center">
+              <MaterialCommunityIcons
+                name="upload-outline"
+                size={24}
+                color="black"
+              />
+              <Text className="mx-2 font-bold">Upload</Text>
+            </View>
           </TouchableOpacity>
         </View>
 
@@ -262,17 +306,30 @@ function SignBottomSheet({ navigation }) {
           <Text className="text-lg font-semibold">Open a Document</Text>
         </View>
 
-        <View className="flex-row px-3 h-16">
+        <View className="flex-row px-3 h-16 gap-x-2">
           <TouchableOpacity
             onPress={() =>
               openDocument(navigation, signatureList, bottomSheetChooseDocument)
             }
-            className="flex-1 bg-gray-200 rounded-md mr-3 p-2"
+            className="flex-1 bg-gray-200 rounded-md p-2"
           >
             <Text>Files</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-1 bg-gray-200 rounded-md p-2">
-            <Text>Google Drive</Text>
+          <TouchableOpacity className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2">
+            <View className="flex-row items-center gap-x-2">
+              <Entypo name="google-drive" size={24} color="black" />
+              <Text>Drive</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => WebBrowser.openBrowserAsync("https://expo.dev")}
+            className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
+          >
+            <View className="flex-row items-center gap-x-2">
+              <AntDesign name="dropbox" size={24} color="black" />
+              <Text>DropBox</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </BottomSheetModal>

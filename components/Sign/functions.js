@@ -69,7 +69,7 @@ export const hideSignatures = (setSignatureList) => {
   setSignatureList(() => []);
 };
 
-export async function displayStoredSignatures(setSignatureList) {
+export async function loadStoredSignatures(setSignatureList) {
   const updatedSignatureList = [];
 
   let dir = await FileSystem.readDirectoryAsync(
@@ -99,7 +99,13 @@ export const uint8ToBase64Conversion = (u8Arr) => {
   return encode(result);
 };
 
-export const deleteDocument = (fileWtPath, docList, setDocList, navigation) => {
+export const deleteDocument = (
+  fileWtPath,
+  docList,
+  setDocList,
+  setFilteredDocList,
+  navigation
+) => {
   return Alert.alert(
     "Document Deletion",
     "Are you sure you want to delete this signed document?",
@@ -121,7 +127,7 @@ export const deleteDocument = (fileWtPath, docList, setDocList, navigation) => {
           const updatedDocList = docList.filter((doc) => doc !== fileWtPath);
 
           setDocList(updatedDocList);
-          updateDocuments(setDocList);
+          updateDocuments(setDocList, setFilteredDocList);
           setTimeout(() => {
             navigation.goBack();
           }, 1000);

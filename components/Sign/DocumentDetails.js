@@ -14,7 +14,7 @@ export default function DocumentDetails({ route, navigation }) {
   const [docName, setDocName] = useState(doc.name);
   const [docPath, setDocPath] = useState(doc.path);
 
-  const { docList, setDocList } = useContext(Context);
+  const { docList, setDocList, setFilteredDocList } = useContext(Context);
 
   return (
     <View className="mx-3 my-8">
@@ -87,7 +87,13 @@ export default function DocumentDetails({ route, navigation }) {
 
           <TouchableOpacity
             onPress={() =>
-              deleteDocument(docPath, docList, setDocList, navigation)
+              deleteDocument(
+                docPath,
+                docList,
+                setDocList,
+                setFilteredDocList,
+                navigation
+              )
             }
             className="flex-row bg-white rounded-lg mb-2 items-center px-3 h-16 w-full shadow"
           >

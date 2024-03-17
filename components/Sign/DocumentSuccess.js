@@ -5,6 +5,7 @@ import LottieView from "lottie-react-native";
 import { Context } from "../contexts/Global";
 import * as MailComposer from "expo-mail-composer";
 import {
+  AntDesign,
   FontAwesome6,
   Ionicons,
   MaterialCommunityIcons,
@@ -100,6 +101,16 @@ export default function DocumentSuccess({ route, navigation }) {
   return (
     <SafeAreaView className="mx-4 gap-y-8">
       <StatusBar barStyle="dark-content" />
+
+      <View className="flex-row pt-2 justify-end">
+        <TouchableOpacity
+          className={`bg-slate-300 rounded-full p-2`}
+          onPress={() => navigation.navigate("SignBottomSheet")}
+        >
+          <AntDesign name="close" size={20} color="black" />
+        </TouchableOpacity>
+      </View>
+
       <View className="items-center justify-center">
         <LottieView
           autoPlay

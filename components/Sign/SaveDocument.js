@@ -2,7 +2,6 @@ import { AntDesign } from "@expo/vector-icons";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Modal, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import * as FileSystem from "expo-file-system";
 // UI
 import { TextInput, Dimensions } from "react-native";
 import { Context } from "../contexts/Global";
@@ -12,9 +11,10 @@ import { PDFDocument } from "pdf-lib";
 import { uint8ToBase64Conversion } from "./functions";
 import RNFS from "react-native-fs";
 import LottieView from "lottie-react-native";
+import { showMessage } from "react-native-flash-message";
 // import { BlurView } from "expo-blur";
 
-export const SaveDocModal = ({
+export const SaveDocument = ({
   isNamingModal,
   setIsNamingModal,
   currPage,
@@ -33,10 +33,9 @@ export const SaveDocModal = ({
   const renameRef = useRef();
   const animation = useRef();
   const [newName, setNewName] = useState(null);
-  const { setDocList, bottomSheetChooseDocument } = useContext(Context);
+  const { setDocList, setFilteredDocList, bottomSheetChooseDocument } =
+    useContext(Context);
   const [savingInProgress, setSavingInProgress] = useState(false);
-
-  console.log("newName:", newName);
 
   useEffect(() => {
     // Auto focus on the rename field
@@ -90,10 +89,16 @@ export const SaveDocModal = ({
         editingPalette.current.close();
         bottomSheetChooseDocument.current.close();
         await setIsNamingModal(false);
+
         navigation.navigate("DocumentSuccess", { editedDocPath });
-        updateDocuments(setDocList);
-      } catch (error) {
-        console.log(error);
+        updateDocuments(setDocList, setFilteredDocList);
+      } catch (err) {
+        showMessage({
+          message: "Error Occured",
+          description: err.toString(),
+          duration: 3000,
+          type: "danger",
+        });
       }
     }
   }

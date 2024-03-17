@@ -21,7 +21,7 @@ import SignatureCapture from "react-native-signature-capture";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import { ScrollView } from "react-native-gesture-handler";
 import { Context } from "../contexts/Global";
-import { deleteSignature, displayStoredSignatures } from "./functions";
+import { deleteSignature, loadStoredSignatures } from "./functions";
 import Checkbox from "expo-checkbox";
 import { actionButton } from "../../constants/UI";
 import * as FileSystem from "expo-file-system";
@@ -43,7 +43,6 @@ export default function DrawSignCapture({ navigation }) {
     useContext(Context);
 
   useEffect(() => {
-    displayStoredSignatures(setSignatureList);
     bottomSheetChooseDocument.current.dismiss();
   }, []);
 
@@ -80,7 +79,7 @@ export default function DrawSignCapture({ navigation }) {
 
     // Include filePath into the signature array
     setSignatureList([...signatureList, filePath]);
-    displayStoredSignatures(setSignatureList);
+    loadStoredSignatures(setSignatureList);
   }
 
   async function previewSignature(signatureFilePath) {
