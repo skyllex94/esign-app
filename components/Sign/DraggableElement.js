@@ -39,7 +39,7 @@ export default function DraggableElement({
   ).current;
 
   return (
-    <View className="items-center justify-center">
+    <View className="items-center justify-center mt-96">
       <Animated.View
         style={{
           transform: [{ translateX: pan.x }, { translateY: pan.y }],

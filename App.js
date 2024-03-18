@@ -41,10 +41,18 @@ function Main() {
   const [docList, setDocList] = useState([]);
   const [filteredDocList, setFilteredDocList] = useState([]);
 
+  // UI States
+  const [loadDocuments, setLoadDocuments] = useState(false);
+
   useEffect(() => {
     // Update UI for documents
-    updateDocuments(setDocList, setFilteredDocList);
+    loadStoredDocuments();
   }, []);
+
+  async function loadStoredDocuments() {
+    await updateDocuments(setDocList, setFilteredDocList);
+    setLoadDocuments(true);
+  }
 
   return (
     <Context.Provider
@@ -56,6 +64,7 @@ function Main() {
         filteredDocList,
         setFilteredDocList,
         bottomSheetChooseDocument,
+        loadDocuments,
       }}
     >
       <GestureHandlerRootView className="flex-1">

@@ -167,7 +167,7 @@ export default function DrawSignCapture({ navigation }) {
       </View>
       <View className="flex-1 m-4">
         <View className="flex-row items-center justify-between mt-2">
-          <Text className="text-lg">Stored Signatures</Text>
+          <Text className="text-lg">My Signatures</Text>
 
           <TouchableOpacity
             onPress={addNewSignature}

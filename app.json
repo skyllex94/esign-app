@@ -19,7 +19,14 @@
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to scan a document.",
         "NSPhotoLibraryUsageDescription": "Allow SimpleSign to access your photos.",
-        "NSPhotoLibraryAddUsageDescription": "Allow SimpleSign to save photos."
+        "NSPhotoLibraryAddUsageDescription": "Allow SimpleSign to save photos.",
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.926245312325-otb9msahg4nice3l71uqa71gfdlborer"
+            ]
+          }
+        ]
       }
     },
     "plugins": [
@@ -32,7 +39,8 @@
           "savePhotosPermission": "Allow SimpleSign to save photos.",
           "isAccessMediaLocationEnabled": true
         }
-      ]
+      ],
+      "@react-native-google-signin/google-signin"
     ],
     "android": {
       "adaptiveIcon": {

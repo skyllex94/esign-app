@@ -4,12 +4,14 @@ import {
   StatusBar,
   View,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import {
   AntDesign,
   Entypo,
   Feather,
   FontAwesome,
+  FontAwesome6,
   Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
@@ -19,6 +21,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
@@ -40,8 +43,13 @@ import DocumentSuccess from "../Sign/DocumentSuccess";
 import { openDocument } from "../functions/Global";
 import { loadStoredSignatures } from "../Sign/functions";
 // OAuth imports
-import * as Linking from "expo-linking";
 import * as WebBrowser from "expo-web-browser";
+import LottieView from "lottie-react-native";
+import {
+  GoogleSignin,
+  statusCodes,
+} from "@react-native-google-signin/google-signin";
+import { showMessage } from "react-native-flash-message";
 
 const Stack = createStackNavigator();
 
@@ -89,13 +97,18 @@ function SignBottomSheet({ navigation }) {
     filteredDocList,
     setFilteredDocList,
     bottomSheetChooseDocument,
+    loadDocuments,
   } = useContext(Context);
   const snapPoints = useMemo(() => ["50%"], []);
   const [search, setSearch] = useState(null);
+  const [googleUserInfo, setGoogleUserInfo] = useState();
+
+  const lottieAnimationRef = useRef();
 
   // Load stored signatures from app's data
   useEffect(() => {
     loadStoredSignatures(setSignatureList);
+    configureGoogleSignIn();
   }, []);
 
   // Callbacks
@@ -128,6 +141,53 @@ function SignBottomSheet({ navigation }) {
     return false;
   };
 
+  function clearSearch() {
+    setSearch("");
+    setFilteredDocList(docList);
+  }
+
+  function configureGoogleSignIn() {
+    console.log("Google Configure Done");
+    GoogleSignin.configure({
+      scopes: ["https://www.googleapis.com/auth/drive.file"],
+      offlineAccess: true,
+      iosClientId:
+        "926245312325-otb9msahg4nice3l71uqa71gfdlborer.apps.googleusercontent.com",
+      webClientId:
+        "926245312325-ovfidnn2pt43tbaj72boq6bh3gbha2sk.apps.googleusercontent.com",
+    });
+  }
+
+  function signOut() {
+    setGoogleUserInfo(null);
+    GoogleSignin.revokeAccess();
+    GoogleSignin.signOut();
+  }
+
+  async function openGoogleDriveOAth() {
+    console.log("GoogleSignIn");
+
+    try {
+      await GoogleSignin.hasPlayServices();
+
+      const userInfo = await GoogleSignin.signIn();
+      // userInfo = await GoogleSignin.signIn();
+
+      setGoogleUserInfo(userInfo);
+    } catch (err) {
+      console.log("err:", err);
+      if (err.code === statusCodes.SIGN_IN_CANCELLED)
+        showMessage({
+          duration: 4000,
+          title: "Cancelation",
+          message: "User cancelled access to files from Google Drive.",
+          type: "danger",
+        });
+    }
+  }
+
+  console.log("UserInfo", googleUserInfo);
+
   return (
     <SafeAreaView className="flex-1 bg-slate-150">
       <StatusBar style="auto" />
@@ -152,7 +212,7 @@ function SignBottomSheet({ navigation }) {
           placeholder="Search..."
           clearIcon={() => (
             <Ionicons
-              onPress={() => setSearch("")}
+              onPress={clearSearch}
               name="close"
               size={24}
               color="#7b7d7b"
@@ -172,48 +232,73 @@ function SignBottomSheet({ navigation }) {
             showsVerticalScrollIndicator={false}
             className="bg-white w-full rounded-lg"
           >
-            {filteredDocList.map((doc, idx) => (
-              <View
-                key={idx}
-                className="flex-row items-center py-2 border-b-[0.5px] border-slate-300"
-              >
-                <View className="m-3">
-                  <AntDesign name="checkcircle" size={24} color="#99cc33" />
-                </View>
+            {loadDocuments ? (
+              filteredDocList.length > 0 ? (
+                filteredDocList.map((doc, idx) => (
+                  <View
+                    key={idx}
+                    className="flex-row items-center py-2 border-b-[0.5px] border-slate-300"
+                  >
+                    <View className="m-3">
+                      <AntDesign name="checkcircle" size={24} color="#99cc33" />
+                    </View>
 
-                <TouchableOpacity
-                  onPress={() => previewDocument(doc)}
-                  className="flex-1 items-start gap-1 my-1"
-                >
-                  <Text className="text-gray-800">{doc.name}</Text>
+                    <TouchableOpacity
+                      onPress={() => previewDocument(doc)}
+                      className="flex-1 items-start gap-1 my-1"
+                    >
+                      <Text className="text-gray-800">{doc.name}</Text>
 
-                  <View>
-                    <Text className="text-gray-400">Signed by you</Text>
+                      <View>
+                        <Text className="text-gray-400">Signed by you</Text>
 
-                    <Text className="text-gray-400">
-                      {new Date(doc.created * 1000).toLocaleDateString(
-                        "en-us",
-                        {
-                          weekday: "long",
-                          year: "numeric",
-                          month: "short",
-                          day: "numeric",
-                        }
-                      )}{" "}
-                    </Text>
+                        <Text className="text-gray-400">
+                          {new Date(doc.created * 1000).toLocaleDateString(
+                            "en-us",
+                            {
+                              weekday: "long",
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            }
+                          )}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("DocumentDetails", { doc })
+                      }
+                      className="mx-4"
+                    >
+                      <Feather
+                        name="more-horizontal"
+                        size={24}
+                        color="#b7b7b7"
+                      />
+                    </TouchableOpacity>
                   </View>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate("DocumentDetails", { doc })
-                  }
-                  className="mx-4"
-                >
-                  <Feather name="more-horizontal" size={24} color="#b7b7b7" />
-                </TouchableOpacity>
+                ))
+              ) : (
+                <View className="flex-1 mt-10 items-center justify-center">
+                  <LottieView
+                    autoPlay
+                    speed={0.5}
+                    ref={lottieAnimationRef}
+                    style={{ width: 200, height: 200 }}
+                    source={require("../../assets/lottie/space.json")}
+                  />
+                  <Text className="text-gray-500 mt-3">
+                    No Documents {docList.length > 0 ? "Found" : "Yet"}
+                  </Text>
+                </View>
+              )
+            ) : (
+              <View className="flex-1 mt-6 items-center justify-center">
+                <ActivityIndicator size={"small"} />
               </View>
-            ))}
+            )}
           </ScrollView>
         </View>
 
@@ -269,7 +354,7 @@ function SignBottomSheet({ navigation }) {
           >
             <View className="flex-row items-center">
               <FontAwesome name="pencil-square-o" size={24} color="black" />
-              <Text className="mx-2 font-bold">Draw</Text>
+              <Text className="mx-2 font-semibold">Draw</Text>
             </View>
           </TouchableOpacity>
 
@@ -283,7 +368,7 @@ function SignBottomSheet({ navigation }) {
                 size={24}
                 color="black"
               />
-              <Text className="mx-2 font-bold">Type</Text>
+              <Text className="mx-2 font-semibold">Type</Text>
             </View>
           </TouchableOpacity>
 
@@ -297,7 +382,7 @@ function SignBottomSheet({ navigation }) {
                 size={24}
                 color="black"
               />
-              <Text className="mx-2 font-bold">Upload</Text>
+              <Text className="mx-2 font-semibold">Upload</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -311,14 +396,20 @@ function SignBottomSheet({ navigation }) {
             onPress={() =>
               openDocument(navigation, signatureList, bottomSheetChooseDocument)
             }
-            className="flex-1 bg-gray-200 rounded-md p-2"
+            className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
           >
-            <Text>Files</Text>
+            <View className="flex-row items-center gap-x-2">
+              <FontAwesome6 name="folder-open" size={24} color="black" />
+              <Text className="font-semibold">Files</Text>
+            </View>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2">
+          <TouchableOpacity
+            onPress={openGoogleDriveOAth}
+            className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
+          >
             <View className="flex-row items-center gap-x-2">
               <Entypo name="google-drive" size={24} color="black" />
-              <Text>Drive</Text>
+              <Text className="font-semibold">Drive</Text>
             </View>
           </TouchableOpacity>
 
@@ -327,8 +418,18 @@ function SignBottomSheet({ navigation }) {
             className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
           >
             <View className="flex-row items-center gap-x-2">
-              <AntDesign name="dropbox" size={24} color="black" />
-              <Text>DropBox</Text>
+              <AntDesign name="dropbox" size={26} color="black" />
+              <Text className="font-semibold">DropBox</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={signOut}
+            className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
+          >
+            <View className="flex-row items-center gap-x-2">
+              <AntDesign name="dropbox" size={26} color="black" />
+              <Text className="font-semibold">SignOut</Text>
             </View>
           </TouchableOpacity>
         </View>

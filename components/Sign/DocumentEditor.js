@@ -26,8 +26,6 @@ import {
 
 import DraggableElement from "./DraggableElement";
 // PDF editing
-import { PDFDocument } from "pdf-lib";
-import { updateDocuments } from "../functions/Global";
 import { SaveDocument } from "./SaveDocument";
 import { StatusBar } from "expo-status-bar";
 
@@ -131,7 +129,7 @@ export default function DocumentEditor({ navigation, route }) {
   };
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1 ">
       <StatusBar style="dark" />
       <View className="flex-row items-center justify-between m-2">
         <TouchableOpacity

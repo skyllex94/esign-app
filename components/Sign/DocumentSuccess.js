@@ -6,6 +6,7 @@ import { Context } from "../contexts/Global";
 import * as MailComposer from "expo-mail-composer";
 import {
   AntDesign,
+  Feather,
   FontAwesome6,
   Ionicons,
   MaterialCommunityIcons,
@@ -160,16 +161,8 @@ export default function DocumentSuccess({ route, navigation }) {
             onPress={openShareOptions}
             className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
           >
-            <FontAwesome6 name="copy" size={24} color="black" />
-            <Text className="mx-2">Save a Copy</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={openSharingOptions}
-            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
-          >
-            <FontAwesome6 name="share-square" size={24} color="black" />
-            <Text className="mx-2">Share through...</Text>
+            <Feather name="share" size={24} color="black" />
+            <Text className="mx-2">Share</Text>
           </TouchableOpacity>
         </View>
 
