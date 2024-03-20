@@ -50,16 +50,22 @@ import {
   statusCodes,
 } from "@react-native-google-signin/google-signin";
 import { showMessage } from "react-native-flash-message";
+import {
+  GDrive,
+  MimeTypes,
+} from "@robinbobin/react-native-google-drive-api-wrapper";
+import GoogleDriveFiles from "../Sign/GoogleDriveFiles";
+import GoogleDrive from "../Sign/GoogleDrive";
 
 const Stack = createStackNavigator();
 
 export default function SignScreen() {
   return (
     <Stack.Navigator
-      initialRouteName="SignBottomSheet"
+      initialRouteName="Main"
       screenOptions={{ headerShown: false }}
     >
-      <Stack.Screen name="SignBottomSheet" component={SignBottomSheet} />
+      <Stack.Screen name="Main" component={Main} />
       <Stack.Screen
         name="DrawSign"
         component={DrawSignCapture}
@@ -85,11 +91,16 @@ export default function SignScreen() {
         component={DocumentSuccess}
         options={{ presentation: "card" }}
       />
+      <Stack.Screen
+        name="GoogleDrive"
+        component={GoogleDrive}
+        options={{ presentation: "modal" }}
+      />
     </Stack.Navigator>
   );
 }
 
-function SignBottomSheet({ navigation }) {
+function Main({ navigation }) {
   const {
     docList,
     signatureList,
@@ -149,7 +160,11 @@ function SignBottomSheet({ navigation }) {
   function configureGoogleSignIn() {
     console.log("Google Configure Done");
     GoogleSignin.configure({
-      scopes: ["https://www.googleapis.com/auth/drive.file"],
+      scopes: [
+        "https://www.googleapis.com/auth/drive.file",
+        "https://www.googleapis.com/auth/drive",
+        "https://www.googleapis.com/auth/drive.appfolder",
+      ],
       offlineAccess: true,
       iosClientId:
         "926245312325-otb9msahg4nice3l71uqa71gfdlborer.apps.googleusercontent.com",
@@ -164,6 +179,9 @@ function SignBottomSheet({ navigation }) {
     GoogleSignin.signOut();
   }
 
+  const [gdrive, setGDrive] = useState();
+  console.log("gdrive:", gdrive);
+
   async function openGoogleDriveOAth() {
     console.log("GoogleSignIn");
 
@@ -171,7 +189,37 @@ function SignBottomSheet({ navigation }) {
       await GoogleSignin.hasPlayServices();
 
       const userInfo = await GoogleSignin.signIn();
-      // userInfo = await GoogleSignin.signIn();
+      const token = await GoogleSignin.getTokens();
+      console.log("token:", token);
+
+      const gdrv = new GDrive();
+
+      gdrv.accessToken = token.accessToken;
+
+      gdrv.fetchCoercesTypes = true;
+      gdrv.fetchRejectsOnHttpErrors = true;
+      gdrv.fetchTimeout = 3000;
+
+      console.log(await gdrv.files.list());
+
+      const files = await gdrv.files.list();
+      console.log("files GDRV:", files);
+
+      navigation.navigate("GoogleDrive", { files: await files });
+
+      setGDrive(gdrv);
+
+      // const id = (
+      //   await gdrv.files
+      //     .newMultipartUploader()
+      //     .setData([1, 2, 3, 4, 5], MimeTypes.BINARY)
+      //     .setRequestBody({
+      //       name: "multipart_bin",
+      //     })
+      //     .execute()
+      // ).id;
+
+      // console.log(await gdrv.files.getBinary(id));
 
       setGoogleUserInfo(userInfo);
     } catch (err) {
@@ -181,12 +229,10 @@ function SignBottomSheet({ navigation }) {
           duration: 4000,
           title: "Cancelation",
           message: "User cancelled access to files from Google Drive.",
-          type: "danger",
+          type: "warning",
         });
     }
   }
-
-  console.log("UserInfo", googleUserInfo);
 
   return (
     <SafeAreaView className="flex-1 bg-slate-150">
@@ -305,18 +351,29 @@ function SignBottomSheet({ navigation }) {
         <View className="flex-row gap-y-2 mb-4 rounded-lg justify-between">
           <TouchableOpacity
             onPress={handlePresentModalPress}
-            className={`flex-row items-center bg-[${actionButton}] p-3 rounded-lg w-[48%] h-[90px]`}
+            className={`flex-row items-center bg-[${actionButton}] p-3 rounded-lg w-[30%] h-[90px]`}
           >
             <AntDesign name="plus" size={24} color="white" />
             <Text className="text-white pl-2">Sign Document</Text>
           </TouchableOpacity>
 
+          {/* <GoogleDriveFiles gdrive={gdrive} /> */}
+
           <TouchableOpacity
             onPress={handlePresentModalPress}
-            className={`flex-row items-center bg-white p-3 rounded-lg w-[48%]`}
+            className={`flex-row items-center bg-white p-3 rounded-lg w-[30%]`}
           >
             <FontAwesome name="mail-forward" size={24} color="black" />
             <Text className="text-black pl-2">Request Signature</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate("GoogleDrive", { files: gdrive })
+            }
+            className={`flex-row items-center bg-white p-3 rounded-lg w-[30%]`}
+          >
+            <FontAwesome name="mail-forward" size={24} color="black" />
+            <Text className="text-black pl-2">Open GD</Text>
           </TouchableOpacity>
         </View>
       </View>

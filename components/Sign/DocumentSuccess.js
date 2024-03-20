@@ -106,7 +106,7 @@ export default function DocumentSuccess({ route, navigation }) {
       <View className="flex-row pt-2 justify-end">
         <TouchableOpacity
           className={`bg-slate-300 rounded-full p-2`}
-          onPress={() => navigation.navigate("SignBottomSheet")}
+          onPress={() => navigation.navigate("Main")}
         >
           <AntDesign name="close" size={20} color="black" />
         </TouchableOpacity>
@@ -171,7 +171,7 @@ export default function DocumentSuccess({ route, navigation }) {
               <Text className="text-[16px] m-3">Go To:</Text>
               <View className="bg-white rounded-lg">
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("SignBottomSheet")}
+                  onPress={() => navigation.navigate("Main")}
                   className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
                 >
                   <Ionicons name="document-text-outline" size={24} color="black" />
@@ -179,7 +179,7 @@ export default function DocumentSuccess({ route, navigation }) {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("SignBottomSheet")}
+                  onPress={() => navigation.navigate("Main")}
                   className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
                 >
                 <MaterialCommunityIcons
