@@ -113,6 +113,7 @@ function Main({ navigation }) {
   const snapPoints = useMemo(() => ["50%"], []);
   const [search, setSearch] = useState(null);
   const [googleUserInfo, setGoogleUserInfo] = useState();
+  const [signedInDrive, setSignedInDrive] = useState(false);
 
   const lottieAnimationRef = useRef();
 
@@ -160,11 +161,7 @@ function Main({ navigation }) {
   function configureGoogleSignIn() {
     console.log("Google Configure Done");
     GoogleSignin.configure({
-      scopes: [
-        "https://www.googleapis.com/auth/drive.file",
-        "https://www.googleapis.com/auth/drive",
-        "https://www.googleapis.com/auth/drive.appfolder",
-      ],
+      scopes: ["https://www.googleapis.com/auth/drive"],
       offlineAccess: true,
       iosClientId:
         "926245312325-otb9msahg4nice3l71uqa71gfdlborer.apps.googleusercontent.com",
@@ -179,9 +176,6 @@ function Main({ navigation }) {
     GoogleSignin.signOut();
   }
 
-  const [gdrive, setGDrive] = useState();
-  console.log("gdrive:", gdrive);
-
   async function openGoogleDriveOAth() {
     console.log("GoogleSignIn");
 
@@ -190,38 +184,9 @@ function Main({ navigation }) {
 
       const userInfo = await GoogleSignin.signIn();
       const token = await GoogleSignin.getTokens();
-      console.log("token:", token);
-
-      const gdrv = new GDrive();
-
-      gdrv.accessToken = token.accessToken;
-
-      gdrv.fetchCoercesTypes = true;
-      gdrv.fetchRejectsOnHttpErrors = true;
-      gdrv.fetchTimeout = 3000;
-
-      console.log(await gdrv.files.list());
-
-      const files = await gdrv.files.list();
-      console.log("files GDRV:", files);
-
-      navigation.navigate("GoogleDrive", { files: await files });
-
-      setGDrive(gdrv);
-
-      // const id = (
-      //   await gdrv.files
-      //     .newMultipartUploader()
-      //     .setData([1, 2, 3, 4, 5], MimeTypes.BINARY)
-      //     .setRequestBody({
-      //       name: "multipart_bin",
-      //     })
-      //     .execute()
-      // ).id;
-
-      // console.log(await gdrv.files.getBinary(id));
 
       setGoogleUserInfo(userInfo);
+      navigation.navigate("GoogleDrive", { token });
     } catch (err) {
       console.log("err:", err);
       if (err.code === statusCodes.SIGN_IN_CANCELLED)
@@ -229,7 +194,7 @@ function Main({ navigation }) {
           duration: 4000,
           title: "Cancelation",
           message: "User cancelled access to files from Google Drive.",
-          type: "warning",
+          type: "danger",
         });
     }
   }
@@ -367,9 +332,9 @@ function Main({ navigation }) {
             <Text className="text-black pl-2">Request Signature</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() =>
-              navigation.navigate("GoogleDrive", { files: gdrive })
-            }
+            // onPress={() =>
+            //   navigation.navigate("GoogleDrive", { token: accessTkn })
+            // }
             className={`flex-row items-center bg-white p-3 rounded-lg w-[30%]`}
           >
             <FontAwesome name="mail-forward" size={24} color="black" />

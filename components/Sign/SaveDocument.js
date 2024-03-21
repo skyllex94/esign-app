@@ -44,6 +44,7 @@ export const SaveDocument = ({
 
   async function saveSignedDocument() {
     setSavingInProgress(true);
+    // TODO: Work of encrypted pdf files
     const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
 
     const pages = pdfDoc.getPages();
@@ -62,7 +63,6 @@ export const SaveDocument = ({
         width: elementSizeWidth + 50,
         height: elementSizeWidth + 25,
       });
-      console.log("signatureImage:", signatureImage);
 
       // Saving the new editted document
       const pdfEditedBytes = await pdfDoc.save();

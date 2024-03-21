@@ -4,7 +4,6 @@ import { Context } from "../contexts/Global";
 // PDF Imports
 import Pdf from "react-native-pdf";
 import * as Print from "expo-print";
-import { shareAsync } from "expo-sharing";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import RNFS from "react-native-fs";
 import { decode, encode } from "base-64";
@@ -17,12 +16,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import {
-  deleteSignature,
-  loadStoredSignatures,
-  selectSignature,
-  uint8ToBase64Conversion,
-} from "./functions";
+import { deleteSignature, selectSignature } from "./functions";
 
 import DraggableElement from "./DraggableElement";
 // PDF editing
@@ -111,6 +105,8 @@ export default function DocumentEditor({ navigation, route }) {
   function toggleSignatureList() {
     setShowSignatures((curr) => !curr);
   }
+
+  // console.log("pdfArrayBuffer", pdfArrayBuffer);
 
   async function readPdf() {
     const readDocument = await RNFS.readFile(pickedDocument, "base64");
