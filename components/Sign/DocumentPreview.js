@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 import Pdf from "react-native-pdf";
 import { actionButton } from "../../constants/UI";
 import { showMessage } from "react-native-flash-message";
+import { getFileName } from "../functions/Global";
 
 export default function DocumentPreview({ route, navigation }) {
   const { doc } = route.params;
@@ -12,7 +13,7 @@ export default function DocumentPreview({ route, navigation }) {
   return (
     <View className="my-6">
       <View className="flex-row items-center justify-between mx-4">
-        <Text className="text-lg font-semibold">{doc.name.split(".")[0]}</Text>
+        <Text className="text-lg font-semibold">{getFileName(doc.name)}</Text>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
           className={`bg-gray-200 rounded-full p-2`}

@@ -30,7 +30,7 @@ export const RenameDocumentModal = ({
 
     // Split path and file name
     const onlyPath = docPath.split(docName)[0];
-    const newPath = onlyPath + newName + ".pdf";
+    const newPath = onlyPath + newName.trim() + ".pdf";
 
     try {
       await FileSystem.moveAsync({

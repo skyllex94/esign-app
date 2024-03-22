@@ -40,7 +40,12 @@ import DocumentDetails from "../Sign/DocumentDetails";
 import { SearchBar } from "react-native-elements";
 import DocumentPreview from "../Sign/DocumentPreview";
 import DocumentSuccess from "../Sign/DocumentSuccess";
-import { openDocument } from "../functions/Global";
+import {
+  deleteStoredData,
+  openDocument,
+  retrieveStoredData,
+  storeData,
+} from "../functions/Global";
 import { loadStoredSignatures } from "../Sign/functions";
 // OAuth imports
 import * as WebBrowser from "expo-web-browser";
@@ -50,12 +55,9 @@ import {
   statusCodes,
 } from "@react-native-google-signin/google-signin";
 import { showMessage } from "react-native-flash-message";
-import {
-  GDrive,
-  MimeTypes,
-} from "@robinbobin/react-native-google-drive-api-wrapper";
-import GoogleDriveFiles from "../Sign/GoogleDriveFiles";
 import GoogleDrive from "../Sign/GoogleDrive";
+import { GDrive } from "@robinbobin/react-native-google-drive-api-wrapper";
+import DropBox from "../Sign/Services/DropBox";
 
 const Stack = createStackNavigator();
 
@@ -113,9 +115,8 @@ function Main({ navigation }) {
   const snapPoints = useMemo(() => ["50%"], []);
   const [search, setSearch] = useState(null);
   const [googleUserInfo, setGoogleUserInfo] = useState();
-  const [signedInDrive, setSignedInDrive] = useState(false);
 
-  const lottieAnimationRef = useRef();
+  const lottieAstronautRef = useRef();
 
   // Load stored signatures from app's data
   useEffect(() => {
@@ -159,24 +160,49 @@ function Main({ navigation }) {
   }
 
   function configureGoogleSignIn() {
-    console.log("Google Configure Done");
+    // Google Drive Configurations for proper scopes and connection
     GoogleSignin.configure({
       scopes: ["https://www.googleapis.com/auth/drive"],
       offlineAccess: true,
-      iosClientId:
-        "926245312325-otb9msahg4nice3l71uqa71gfdlborer.apps.googleusercontent.com",
-      webClientId:
-        "926245312325-ovfidnn2pt43tbaj72boq6bh3gbha2sk.apps.googleusercontent.com",
+      iosClientId: process.env.EXPO_PUBLIC_GDRIVE_IOS_CLIENTID,
+      webClientId: process.env.EXPO_PUBLIC_GDRIVE_WEB_CLIENTID,
     });
   }
 
-  function signOut() {
+  async function signOut() {
     setGoogleUserInfo(null);
+    console.log("googleUserInfo:", googleUserInfo);
     GoogleSignin.revokeAccess();
     GoogleSignin.signOut();
+    await deleteStoredData("gdrive_tkn");
   }
 
-  async function openGoogleDriveOAth() {
+  // Retrieve data from the AsyncStorage if any
+  async function preopeningGoogleDriveCheckups() {
+    const fetchedStoredData = await retrieveStoredData("gdrive_tkn");
+
+    if (fetchedStoredData === null) openGoogleDriveOath();
+
+    try {
+      const gdrive = new GDrive();
+      gdrive.accessToken = fetchedStoredData.accessToken;
+      gdrive.fetchCoercesTypes = true;
+
+      // List of documents in Google Drive
+      await gdrive.files.list();
+    } catch (err) {
+      if (err.toString().includes("UNAUTHENTICATED")) {
+        await signOut();
+      }
+
+      return openGoogleDriveOath();
+    }
+
+    console.log("Fetched Tkn From Storage");
+    navigation.navigate("GoogleDrive", { token: fetchedStoredData });
+  }
+
+  async function openGoogleDriveOath() {
     console.log("GoogleSignIn");
 
     try {
@@ -186,6 +212,9 @@ function Main({ navigation }) {
       const token = await GoogleSignin.getTokens();
 
       setGoogleUserInfo(userInfo);
+      await storeData(token);
+
+      // Open Google Drive Documents Modal
       navigation.navigate("GoogleDrive", { token });
     } catch (err) {
       console.log("err:", err);
@@ -296,7 +325,7 @@ function Main({ navigation }) {
                   <LottieView
                     autoPlay
                     speed={0.5}
-                    ref={lottieAnimationRef}
+                    ref={lottieAstronautRef}
                     style={{ width: 200, height: 200 }}
                     source={require("../../assets/lottie/space.json")}
                   />
@@ -322,23 +351,12 @@ function Main({ navigation }) {
             <Text className="text-white pl-2">Sign Document</Text>
           </TouchableOpacity>
 
-          {/* <GoogleDriveFiles gdrive={gdrive} /> */}
-
           <TouchableOpacity
             onPress={handlePresentModalPress}
             className={`flex-row items-center bg-white p-3 rounded-lg w-[30%]`}
           >
             <FontAwesome name="mail-forward" size={24} color="black" />
             <Text className="text-black pl-2">Request Signature</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            // onPress={() =>
-            //   navigation.navigate("GoogleDrive", { token: accessTkn })
-            // }
-            className={`flex-row items-center bg-white p-3 rounded-lg w-[30%]`}
-          >
-            <FontAwesome name="mail-forward" size={24} color="black" />
-            <Text className="text-black pl-2">Open GD</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -426,7 +444,7 @@ function Main({ navigation }) {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={openGoogleDriveOAth}
+            onPress={preopeningGoogleDriveCheckups}
             className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
           >
             <View className="flex-row items-center gap-x-2">
@@ -440,8 +458,7 @@ function Main({ navigation }) {
             className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
           >
             <View className="flex-row items-center gap-x-2">
-              <AntDesign name="dropbox" size={26} color="black" />
-              <Text className="font-semibold">DropBox</Text>
+              <DropBox />
             </View>
           </TouchableOpacity>
 

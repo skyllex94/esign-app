@@ -12,7 +12,6 @@ import { uint8ToBase64Conversion } from "./functions";
 import RNFS from "react-native-fs";
 import LottieView from "lottie-react-native";
 import { showMessage } from "react-native-flash-message";
-// import { BlurView } from "expo-blur";
 
 export const SaveDocument = ({
   isNamingModal,
@@ -45,7 +44,24 @@ export const SaveDocument = ({
   async function saveSignedDocument() {
     setSavingInProgress(true);
     // TODO: Work of encrypted pdf files
-    const pdfDoc = await PDFDocument.load(pdfArrayBuffer);
+
+    let pdfDoc = null;
+
+    try {
+      pdfDoc = await PDFDocument.load(pdfArrayBuffer);
+    } catch (err) {
+      console.log(err.toString().includes("encrypted"));
+
+      if (err.toString().includes("encrypted"))
+        showMessage({
+          message: "Error Occured",
+          description:
+            "The document you are trying to load is encrypted. Unfortunately, we cannot save this.",
+          duration: 6000,
+          type: "danger",
+        });
+      return setIsNamingModal(false);
+    }
 
     const pages = pdfDoc.getPages();
     console.log("pages:", pages);
@@ -69,15 +85,13 @@ export const SaveDocument = ({
       const pdfBase64 = uint8ToBase64Conversion(pdfEditedBytes);
       // console.log("pdfBase64:", pdfBase64);
 
-      const editedDocPath = `${RNFS.DocumentDirectoryPath}/Completed/${newName}.pdf`;
-      console.log("editedDocPath", editedDocPath);
+      // Check if directory path exists
+      if (!(await RNFS.exists(`${RNFS.DocumentDirectoryPath}/Completed/`)))
+        RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/Completed/`);
 
-      const existsPath = await RNFS.exists(
-        `${RNFS.DocumentDirectoryPath}/Completed/`
-      );
-
-      // Make directory path if none exists
-      if (!existsPath) RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/Completed/`);
+      const editedDocPath = `${
+        RNFS.DocumentDirectoryPath
+      }/Completed/${newName.trim()}.pdf`;
 
       try {
         await RNFS.writeFile(editedDocPath, pdfBase64, "base64");

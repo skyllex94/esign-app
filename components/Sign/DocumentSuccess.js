@@ -7,7 +7,6 @@ import * as MailComposer from "expo-mail-composer";
 import {
   AntDesign,
   Feather,
-  FontAwesome6,
   Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
