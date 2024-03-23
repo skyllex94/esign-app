@@ -129,7 +129,7 @@ export const deleteDocument = (
           setDocList(updatedDocList);
           updateDocuments(setDocList, setFilteredDocList);
           setTimeout(() => {
-            navigation.goBack();
+            navigation.navigate("Main");
           }, 1000);
         },
       },

@@ -29,6 +29,7 @@ export const RenameDocumentModal = ({
     if (newName === null) return;
 
     // Split path and file name
+
     const onlyPath = docPath.split(docName)[0];
     const newPath = onlyPath + newName.trim() + ".pdf";
 
@@ -40,7 +41,8 @@ export const RenameDocumentModal = ({
     } catch (err) {
       console.log("Error while renaming file: ", err);
     }
-    setDocName(newName);
+    // TODO: Figure out a better flow
+    setDocName(newName + ".pdf");
     setDocPath(newPath);
     updateDocuments(setDocList, setFilteredDocList);
     setShowRenameModal((curr) => !curr);

@@ -91,7 +91,7 @@ export default function SignScreen() {
       <Stack.Screen
         name="DocumentSuccess"
         component={DocumentSuccess}
-        options={{ presentation: "card" }}
+        options={{ presentation: "card", gestureEnabled: false }}
       />
       <Stack.Screen
         name="GoogleDrive"
@@ -342,21 +342,30 @@ function Main({ navigation }) {
           </ScrollView>
         </View>
 
-        <View className="flex-row gap-y-2 mb-4 rounded-lg justify-between">
+        <View className="flex-row items-center justify-center gap-y-1 mb-2 rounded-lg ">
           <TouchableOpacity
-            onPress={handlePresentModalPress}
-            className={`flex-row items-center bg-[${actionButton}] p-3 rounded-lg w-[30%] h-[90px]`}
+            onPress={() => navigation.navigate("DrawSign")}
+            className={`absolute left-0 items-center justify-center bg-white p-3 rounded-full w-[35%] h-[55px]`}
           >
-            <AntDesign name="plus" size={24} color="white" />
-            <Text className="text-white pl-2">Sign Document</Text>
+            <FontAwesome6 name="signature" size={24} color="black" />
+            <Text className="pl-2">Library</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={handlePresentModalPress}
-            className={`flex-row items-center bg-white p-3 rounded-lg w-[30%]`}
+            activeOpacity={1}
+            className={`flex-row items-center opacity-100 justify-center bg-[${actionButton}] p-3 z-10 rounded-full w-[50%] h-[85px] border-4 border-slate-100`}
+          >
+            <AntDesign name="plus" size={34} color="white" />
+            <Text className="text-white pl-2">Open Document</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={handlePresentModalPress}
+            className={`absolute right-0 items-center justify-center bg-white p-3 rounded-full w-[35%] h-[55px]`}
           >
             <FontAwesome name="mail-forward" size={24} color="black" />
-            <Text className="text-black pl-2">Request Signature</Text>
+            <Text className="pl-2">Request</Text>
           </TouchableOpacity>
         </View>
       </View>

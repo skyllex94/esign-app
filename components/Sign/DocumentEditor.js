@@ -64,7 +64,7 @@ export default function DocumentEditor({ navigation, route }) {
 
   useEffect(() => {
     editingPalette.current.present();
-  }, []);
+  }, [editingPalette, navigation]);
 
   useEffect(() => {
     // Reads the raw data from the chosen PDF
@@ -77,7 +77,6 @@ export default function DocumentEditor({ navigation, route }) {
 
   // Passed path name for the documents picked
   const { pickedDocument } = route.params;
-  console.log("pickedDocument:", pickedDocument);
   const source = { uri: pickedDocument, cache: true };
 
   // Bottomsheet refs and values

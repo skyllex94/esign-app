@@ -23,7 +23,7 @@ export default function DocumentDetails({ route, navigation }) {
         <Text className="text-lg font-semibold">Document Details</Text>
         <TouchableOpacity
           className="bg-gray-200 rounded-full p-2"
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate("Main")}
         >
           <AntDesign name="close" size={20} color="black" />
         </TouchableOpacity>
@@ -58,7 +58,7 @@ export default function DocumentDetails({ route, navigation }) {
                 year: "numeric",
                 month: "short",
                 day: "numeric",
-              })}
+              })}{" "}
               at {new Date(date).toLocaleTimeString()}
             </Text>
           </View>

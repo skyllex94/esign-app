@@ -9,6 +9,7 @@ web-build/
 
 # Files & Folders
 setup.txt
+.env
 
 # Native
 *.orig.*
