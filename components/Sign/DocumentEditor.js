@@ -35,8 +35,8 @@ export default function DocumentEditor({ navigation, route }) {
   const { signatureList, setSignatureList, setDocList } = useContext(Context);
 
   // Relative width and height of inputed element
-  const [widthElement, setWidthElement] = useState(0);
-  const [heightElement, setHeightElement] = useState(0);
+  const [coordinateX, setCoordinateX] = useState(0);
+  const [coordinateY, setCoordinateY] = useState(0);
 
   // PDF single page ratio
   const [pageRatio, setPageRatio] = useState(0);
@@ -197,10 +197,12 @@ export default function DocumentEditor({ navigation, route }) {
               pageRatio={pageRatio}
               setInputSignature={setInputSignature}
               selectedSignaturePath={selectedSignaturePath}
-              setWidthElement={setWidthElement}
-              setHeightElement={setHeightElement}
+              setCoordinateX={setCoordinateX}
+              setCoordinateY={setCoordinateY}
               elementSizeWidth={elementSizeWidth}
               setElementSizeWidth={setElementSizeWidth}
+              pageWidth={pageWidth}
+              pageHeight={pageHeight}
             />
           ) : null}
         </Pdf>
@@ -211,8 +213,8 @@ export default function DocumentEditor({ navigation, route }) {
           isNamingModal={isNamingModal}
           setIsNamingModal={setIsNamingModal}
           currPage={currPage}
-          widthElement={widthElement}
-          heightElement={heightElement}
+          coordinateX={coordinateX}
+          coordinateY={coordinateY}
           pageWidth={pageWidth}
           pageHeight={pageHeight}
           elementSizeWidth={elementSizeWidth}

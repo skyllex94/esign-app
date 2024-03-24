@@ -91,7 +91,7 @@ export default function SignScreen() {
       <Stack.Screen
         name="DocumentSuccess"
         component={DocumentSuccess}
-        options={{ presentation: "card", gestureEnabled: false }}
+        options={{ presentation: "card" }} // gestureEnabled: false
       />
       <Stack.Screen
         name="GoogleDrive"
@@ -345,27 +345,38 @@ function Main({ navigation }) {
         <View className="flex-row items-center justify-center gap-y-1 mb-2 rounded-lg ">
           <TouchableOpacity
             onPress={() => navigation.navigate("DrawSign")}
-            className={`absolute left-0 items-center justify-center bg-white p-3 rounded-full w-[35%] h-[55px]`}
+            className={`absolute left-0 items-center justify-center z-2 bg-white p-3
+            rounded-full w-[33%] h-[55px]`}
           >
-            <FontAwesome6 name="signature" size={24} color="black" />
-            <Text className="pl-2">Library</Text>
+            <View className="pr-4 items-center justify-center">
+              <FontAwesome6 name="signature" size={24} color="black" />
+              <Text>Library</Text>
+            </View>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={handlePresentModalPress}
-            activeOpacity={1}
-            className={`flex-row items-center opacity-100 justify-center bg-[${actionButton}] p-3 z-10 rounded-full w-[50%] h-[85px] border-4 border-slate-100`}
+            className={`flex-row items-center justify-center bg-[${actionButton}]
+            z-20 w-[50%] h-[85px] rounded-full `}
           >
-            <AntDesign name="plus" size={34} color="white" />
-            <Text className="text-white pl-2">Open Document</Text>
+            <AntDesign name="plus" size={30} color="white" />
+            <Text className="pl-2 text-white">Open Document</Text>
           </TouchableOpacity>
+
+          <View
+            className={`absolute items-center justify-center z-10 bg-[#f2f2f2] 
+              rounded-full w-[55%] h-[100px]`}
+          />
 
           <TouchableOpacity
             onPress={handlePresentModalPress}
-            className={`absolute right-0 items-center justify-center bg-white p-3 rounded-full w-[35%] h-[55px]`}
+            className={`absolute right-0 items-center justify-center z-4 bg-white p-3 
+            rounded-full w-[33%] h-[55px]`}
           >
-            <FontAwesome name="mail-forward" size={24} color="black" />
-            <Text className="pl-2">Request</Text>
+            <View className="pl-4 items-center justify-center">
+              <FontAwesome name="mail-forward" size={24} color="black" />
+              <Text className="pl-2">Request</Text>
+            </View>
           </TouchableOpacity>
         </View>
       </View>

@@ -15,8 +15,8 @@ let data = [
 export default function PanGestureResponder({
   item,
   selectedSignaturePath,
-  setHeightElement,
-  setWidthElement,
+  setCoordinateY,
+  setCoordinateX,
 }) {
   let translateX = new Animated.Value(Dimensions.get("screen").width / 3);
   let translateY = new Animated.Value(Dimensions.get("screen").height / 4);
@@ -49,8 +49,8 @@ export default function PanGestureResponder({
 
   const onRelease = (event) => {
     console.log("Event", event.nativeEvent);
-    setWidthElement(event.nativeEvent.x);
-    setHeightElement(event.nativeEvent.y);
+    setCoordinateX(event.nativeEvent.x);
+    setCoordinateY(event.nativeEvent.y);
   };
 
   console.log("_lastOffset", _lastOffset);

@@ -17,8 +17,8 @@ export const SaveDocument = ({
   isNamingModal,
   setIsNamingModal,
   currPage,
-  widthElement,
-  heightElement,
+  coordinateX,
+  coordinateY,
   pageWidth,
   pageHeight,
   elementSizeWidth,
@@ -71,13 +71,14 @@ export const SaveDocument = ({
     if (signatureArrayBuffer) {
       const signatureImage = await pdfDoc.embedPng(signatureArrayBuffer);
 
-      console.log(widthElement, heightElement);
+      console.log("page_width: ", pageWidth, "page_height: ", pageHeight);
+      console.log("x_save: ", coordinateX, "y_save: ", coordinateY);
 
       firstPage.drawImage(signatureImage, {
-        x: (pageWidth * (widthElement - 120)) / Dimensions.get("window").width,
-        y: pageHeight - (pageHeight * (heightElement + 25)) / 540,
-        width: elementSizeWidth + 50,
-        height: elementSizeWidth + 25,
+        x: (pageWidth * (coordinateX - 135)) / Dimensions.get("window").width,
+        y: pageHeight - (pageHeight * (coordinateY + 40)) / 540,
+        width: elementSizeWidth + 80,
+        height: elementSizeWidth + 50,
       });
 
       // Saving the new editted document

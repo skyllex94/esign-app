@@ -12,10 +12,12 @@ export default function DraggableElement({
   pageRatio,
   setInputSignature,
   selectedSignaturePath,
-  setWidthElement,
-  setHeightElement,
+  setCoordinateX,
+  setCoordinateY,
   elementSizeWidth,
   setElementSizeWidth,
+  pageWidth,
+  pageHeight,
 }) {
   const pan = useRef(new Animated.ValueXY()).current;
 
@@ -27,11 +29,16 @@ export default function DraggableElement({
       }),
 
       onPanResponderRelease: (event) => {
-        console.log("event_x:", event.nativeEvent.pageX + 60);
-        console.log("event_y:", event.nativeEvent.pageY - 130);
-        console.log("event_y:", event.nativeEvent);
-        setWidthElement(event.nativeEvent.pageX + 60);
-        setHeightElement(event.nativeEvent.pageY - 130);
+        console.log("event_not_changed:", event.nativeEvent);
+
+        console.log("event_x_changed:", event.nativeEvent.pageX - 60);
+        console.log("event_y_changed:", event.nativeEvent.pageY - 130);
+
+        console.log("pageWidth:", pageWidth);
+        console.log("pageHeight:", pageHeight);
+
+        setCoordinateX(event.nativeEvent.pageX + 60);
+        setCoordinateY(event.nativeEvent.pageY - 130);
 
         pan.extractOffset();
       },
@@ -46,8 +53,10 @@ export default function DraggableElement({
         }}
         {...panResponder.panHandlers}
       >
-        <View className="flex-row justify-end items-end">
+        <View className="flex-row justify-start items-start">
+          {/* <View className="w-2 h-2 bg-black rounded-full" /> */}
           <Image
+            className="border-2"
             style={{
               height: elementSizeWidth,
               width: elementSizeWidth * pageRatio,
