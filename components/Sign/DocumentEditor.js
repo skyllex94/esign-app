@@ -49,9 +49,10 @@ export default function DocumentEditor({ navigation, route }) {
   const [signatureArrayBuffer, setSignatureArrayBuffer] = useState(null);
   // Signature's Base64 data state
   const [signatureBase64Data, setSignatureBase64Data] = useState(null);
+
   // PDF page dimension states
-  const [pageHeight, setPageHeight] = useState();
-  const [pageWidth, setPageWidth] = useState();
+  const [pdfHeight, setPdfHeight] = useState();
+  const [pdfWidth, setPdfWidth] = useState();
   // Edited PDF file path
   const [editedPdfPath, setEditedPdfPath] = useState();
   // Current page of the pdf
@@ -79,6 +80,14 @@ export default function DocumentEditor({ navigation, route }) {
   const { pickedDocument } = route.params;
   const source = { uri: pickedDocument, cache: true };
 
+  const displayWidth = Dimensions.get("window").width;
+  const displayHeight = Dimensions.get("window").width * pageRatio;
+
+  const [displayDocHeight, setDisplayDocHeight] = useState();
+  const [displayDocWidth, setDisplayDocWidth] = useState(displayWidth);
+
+  console.log("displayHeight:", displayHeight);
+
   // Bottomsheet refs and values
   const editingPalette = useRef();
   const snapPoints = useMemo(() => ["16%"], []);
@@ -104,8 +113,6 @@ export default function DocumentEditor({ navigation, route }) {
   function toggleSignatureList() {
     setShowSignatures((curr) => !curr);
   }
-
-  // console.log("pdfArrayBuffer", pdfArrayBuffer);
 
   async function readPdf() {
     const readDocument = await RNFS.readFile(pickedDocument, "base64");
@@ -167,15 +174,31 @@ export default function DocumentEditor({ navigation, route }) {
           spacing={0}
           fitPolicy={0}
           enablePaging={true}
-          style={{ width: Dimensions.get("window").width, height: 540 }}
+          style={{ width: displayWidth, height: displayHeight }}
           onLoadComplete={(pages, path, { height, width }) => {
-            setPageHeight(height);
-            console.log("pdf_height:", height);
-            setPageWidth(width);
-            console.log("pdf_width:", width);
-
+            console.log("pdf_height:", height, ":", "pdf_width:", width);
             console.log("pdf_ratio:", (height / width).toFixed(2));
+
+            setPdfHeight(height);
+            setPdfWidth(width);
             setPageRatio((height / width).toFixed(2));
+
+            console.log(
+              "display_height:",
+              displayWidth * (height / width).toFixed(2),
+              ":",
+              "display_width:",
+              displayWidth
+            );
+            console.log(
+              "display_ratio:",
+              (
+                (displayWidth * (height / width).toFixed(2)) /
+                displayWidth
+              ).toFixed(2)
+            );
+
+            setDisplayDocHeight(displayWidth * (height / width).toFixed(2));
           }}
           onPageChanged={(page, numOfPages) => {
             console.log("Current Page", page);
@@ -201,8 +224,8 @@ export default function DocumentEditor({ navigation, route }) {
               setCoordinateY={setCoordinateY}
               elementSizeWidth={elementSizeWidth}
               setElementSizeWidth={setElementSizeWidth}
-              pageWidth={pageWidth}
-              pageHeight={pageHeight}
+              pdfWidth={pdfWidth}
+              pdfHeight={pdfHeight}
             />
           ) : null}
         </Pdf>
@@ -215,8 +238,8 @@ export default function DocumentEditor({ navigation, route }) {
           currPage={currPage}
           coordinateX={coordinateX}
           coordinateY={coordinateY}
-          pageWidth={pageWidth}
-          pageHeight={pageHeight}
+          pdfWidth={pdfWidth}
+          pdfHeight={pdfHeight}
           elementSizeWidth={elementSizeWidth}
           setEditedPdfPath={setEditedPdfPath}
           setPdfBase64={setPdfBase64}

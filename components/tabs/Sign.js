@@ -357,7 +357,7 @@ function Main({ navigation }) {
           <TouchableOpacity
             onPress={handlePresentModalPress}
             className={`flex-row items-center justify-center bg-[${actionButton}]
-            z-20 w-[50%] h-[85px] rounded-full `}
+            z-20 w-[50%] h-[75px] rounded-full `}
           >
             <AntDesign name="plus" size={30} color="white" />
             <Text className="pl-2 text-white">Open Document</Text>
@@ -365,7 +365,7 @@ function Main({ navigation }) {
 
           <View
             className={`absolute items-center justify-center z-10 bg-[#f2f2f2] 
-              rounded-full w-[55%] h-[100px]`}
+              rounded-full w-[55%] h-[80px]`}
           />
 
           <TouchableOpacity

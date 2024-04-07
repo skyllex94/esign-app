@@ -16,8 +16,8 @@ export default function DraggableElement({
   setCoordinateY,
   elementSizeWidth,
   setElementSizeWidth,
-  pageWidth,
-  pageHeight,
+  pdfWidth,
+  pdfHeight,
 }) {
   const pan = useRef(new Animated.ValueXY()).current;
 
@@ -34,8 +34,8 @@ export default function DraggableElement({
         console.log("event_x_changed:", event.nativeEvent.pageX - 60);
         console.log("event_y_changed:", event.nativeEvent.pageY - 130);
 
-        console.log("pageWidth:", pageWidth);
-        console.log("pageHeight:", pageHeight);
+        console.log("pdfWidth:", pdfWidth);
+        console.log("pdfHeight:", pdfHeight);
 
         setCoordinateX(event.nativeEvent.pageX + 60);
         setCoordinateY(event.nativeEvent.pageY - 130);
@@ -54,19 +54,18 @@ export default function DraggableElement({
         {...panResponder.panHandlers}
       >
         <View className="flex-row justify-start items-start">
-          {/* <View className="w-2 h-2 bg-black rounded-full" /> */}
           <Image
             className="border-2"
             style={{
               height: elementSizeWidth,
-              width: elementSizeWidth * pageRatio,
+              width: elementSizeWidth, // * pageRatio
             }}
             source={{ uri: selectedSignaturePath }}
           />
           <View className="justify-between">
             <View className="justify-center items-start">
               <TouchableOpacity
-                className="mb-3 bg-red-600 rounded-full"
+                className=" bg-red-600 rounded-full"
                 onPress={() => setInputSignature(false)}
               >
                 <AntDesign name="close" size={24} color="white" />
@@ -74,7 +73,6 @@ export default function DraggableElement({
             </View>
 
             <TouchableOpacity
-              className="mb-1"
               onPress={() => setElementSizeWidth((curr) => curr + 10)}
             >
               <AntDesign name="pluscircleo" size={24} color="black" />

@@ -19,8 +19,8 @@ export const SaveDocument = ({
   currPage,
   coordinateX,
   coordinateY,
-  pageWidth,
-  pageHeight,
+  pdfWidth,
+  pdfHeight,
   elementSizeWidth,
   setEditedPdfPath,
   setPdfBase64,
@@ -71,13 +71,13 @@ export const SaveDocument = ({
     if (signatureArrayBuffer) {
       const signatureImage = await pdfDoc.embedPng(signatureArrayBuffer);
 
-      console.log("page_width: ", pageWidth, "page_height: ", pageHeight);
+      console.log("pdf_height: ", pdfHeight, "pdf_width: ", pdfWidth);
       console.log("x_save: ", coordinateX, "y_save: ", coordinateY);
 
       firstPage.drawImage(signatureImage, {
-        x: (pageWidth * (coordinateX - 135)) / Dimensions.get("window").width,
-        y: pageHeight - (pageHeight * (coordinateY + 40)) / 540,
-        width: elementSizeWidth + 80,
+        x: (pdfWidth * (coordinateX - 115)) / Dimensions.get("window").width,
+        y: pdfHeight - (pdfHeight * (coordinateY + 40)) / 540,
+        width: elementSizeWidth + 50,
         height: elementSizeWidth + 50,
       });
 
