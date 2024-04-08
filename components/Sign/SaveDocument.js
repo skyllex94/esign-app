@@ -19,6 +19,9 @@ export const SaveDocument = ({
   currPage,
   coordinateX,
   coordinateY,
+  pageRatio,
+  diplayWidth,
+  displayHeight,
   pdfWidth,
   pdfHeight,
   elementSizeWidth,
@@ -41,9 +44,26 @@ export const SaveDocument = ({
     renameRef.current.focus();
   }, []);
 
+  console.log("x_save: ", coordinateX, "y_save: ", coordinateY);
+  console.log("pdf_height: ", pdfHeight, "pdf_width: ", pdfWidth);
+
+  console.log(diplayWidth, displayHeight);
+
+  console.log("x_final:", x, "y_final:", y);
+
+  const x = (pdfWidth * coordinateX) / Dimensions.get("window").width;
+  const y =
+    (pdfHeight * coordinateY) /
+    (Dimensions.get("window").width * pageRatio).toFixed(2);
+
+  console.log("dim_width:", Dimensions.get("window").width);
+
+  console.log("pageRatio:", pageRatio);
+
   async function saveSignedDocument() {
     setSavingInProgress(true);
     // TODO: Work of encrypted pdf files
+    // TODO: Place a lot of try-catch clauses for protection against crashes
 
     let pdfDoc = null;
 
@@ -75,11 +95,18 @@ export const SaveDocument = ({
       console.log("x_save: ", coordinateX, "y_save: ", coordinateY);
 
       firstPage.drawImage(signatureImage, {
-        x: (pdfWidth * (coordinateX - 115)) / Dimensions.get("window").width,
-        y: pdfHeight - (pdfHeight * (coordinateY + 40)) / 540,
-        width: elementSizeWidth + 50,
+        x: (pdfWidth * coordinateX) / Dimensions.get("window").width,
+        y:
+          (pdfHeight * coordinateY) /
+          (Dimensions.get("window").width * pageRatio).toFixed(2),
+        width: elementSizeWidth + 60,
         height: elementSizeWidth + 50,
       });
+
+      // x: (pdfWidth * (coordinateX - 115)) / Dimensions.get("window").width,
+      // y: pdfHeight - (pdfHeight * (coordinateY + 40)) / 540,
+      // width: elementSizeWidth + 50,
+      // height: elementSizeWidth + 50,
 
       // Saving the new editted document
       const pdfEditedBytes = await pdfDoc.save();
@@ -180,6 +207,8 @@ export const SaveDocument = ({
     </Modal>
   );
 };
+
+export default SaveDocument;
 
 const styles = StyleSheet.create({
   modalView: {

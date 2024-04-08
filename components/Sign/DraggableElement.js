@@ -31,23 +31,43 @@ export default function DraggableElement({
       onPanResponderRelease: (event) => {
         console.log("event_not_changed:", event.nativeEvent);
 
-        console.log("event_x_changed:", event.nativeEvent.pageX - 60);
-        console.log("event_y_changed:", event.nativeEvent.pageY - 130);
+        // console.log("event_x:", event.nativeEvent.pageX); // - 60
+        console.log("event_y:", event.nativeEvent.pageY); // - 130
 
-        console.log("pdfWidth:", pdfWidth);
-        console.log("pdfHeight:", pdfHeight);
+        // console.log("pdfWidth:", pdfWidth, "pdfHeight:", pdfHeight);
 
-        setCoordinateX(event.nativeEvent.pageX + 60);
-        setCoordinateY(event.nativeEvent.pageY - 130);
+        // setCoordinateX(event.nativeEvent.pageX + 60);
+        // setCoordinateY(event.nativeEvent.pageY - 130);
+
+        elementLocation.current.measure((h, w, px, py, x, y) => {
+          console.log(
+            "x_rltve",
+            h,
+            "y_rltve:",
+            w,
+            "x_sign:",
+            px,
+            "y_sign:",
+            py,
+            x,
+            y
+          );
+
+          setCoordinateX(h);
+          setCoordinateY(w);
+        });
 
         pan.extractOffset();
       },
     })
   ).current;
 
+  const elementLocation = React.useRef();
+
   return (
-    <View className="items-center justify-center mt-96">
+    <View className="items-center justify-center">
       <Animated.View
+        ref={elementLocation}
         style={{
           transform: [{ translateX: pan.x }, { translateY: pan.y }],
         }}

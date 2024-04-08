@@ -76,7 +76,7 @@ export default function DocumentEditor({ navigation, route }) {
     }
   }, [signatureBase64Data]);
 
-  // Passed path name for the documents picked
+  // Passed path name for the documents pickeda
   const { pickedDocument } = route.params;
   const source = { uri: pickedDocument, cache: true };
 
@@ -85,8 +85,6 @@ export default function DocumentEditor({ navigation, route }) {
 
   const [displayDocHeight, setDisplayDocHeight] = useState();
   const [displayDocWidth, setDisplayDocWidth] = useState(displayWidth);
-
-  console.log("displayHeight:", displayHeight);
 
   // Bottomsheet refs and values
   const editingPalette = useRef();
@@ -190,12 +188,20 @@ export default function DocumentEditor({ navigation, route }) {
               "display_width:",
               displayWidth
             );
+
             console.log(
               "display_ratio:",
               (
                 (displayWidth * (height / width).toFixed(2)) /
                 displayWidth
               ).toFixed(2)
+            );
+
+            console.log(
+              "diff_height:",
+              height - displayWidth * (height / width).toFixed(2),
+              "diff_width:",
+              width - displayWidth
             );
 
             setDisplayDocHeight(displayWidth * (height / width).toFixed(2));
@@ -238,6 +244,9 @@ export default function DocumentEditor({ navigation, route }) {
           currPage={currPage}
           coordinateX={coordinateX}
           coordinateY={coordinateY}
+          pageRatio={pageRatio}
+          displayWidth={displayWidth}
+          displayHeight={displayHeight}
           pdfWidth={pdfWidth}
           pdfHeight={pdfHeight}
           elementSizeWidth={elementSizeWidth}
