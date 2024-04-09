@@ -20,11 +20,11 @@ export const SaveDocument = ({
   coordinateX,
   coordinateY,
   pageRatio,
-  diplayWidth,
-  displayHeight,
   pdfWidth,
   pdfHeight,
+  diffInDisplays,
   elementSizeWidth,
+  elementSizeHeight,
   setEditedPdfPath,
   setPdfBase64,
   signatureArrayBuffer,
@@ -44,29 +44,19 @@ export const SaveDocument = ({
     renameRef.current.focus();
   }, []);
 
-  console.log("x_save: ", coordinateX, "y_save: ", coordinateY);
-  console.log("pdf_height: ", pdfHeight, "pdf_width: ", pdfWidth);
-
-  console.log(diplayWidth, displayHeight);
-
-  console.log("x_final:", x, "y_final:", y);
-
-  const x = (pdfWidth * coordinateX) / Dimensions.get("window").width;
-  const y =
-    (pdfHeight * coordinateY) /
-    (Dimensions.get("window").width * pageRatio).toFixed(2);
-
-  console.log("dim_width:", Dimensions.get("window").width);
-
-  console.log("pageRatio:", pageRatio);
+  // console.log(diplayWidth, displayHeight);
+  // console.log("x_save: ", coordinateX, "y_save: ", coordinateY);
+  // console.log("pdf_height: ", pdfHeight, "pdf_width: ", pdfWidth);
 
   async function saveSignedDocument() {
-    setSavingInProgress(true);
-    // TODO: Work of encrypted pdf files
-    // TODO: Place a lot of try-catch clauses for protection against crashes
-
     let pdfDoc = null;
 
+    try {
+      setSavingInProgress(true);
+    } catch (err) {}
+
+    // Encrypted document check-up
+    // TODO: Work of encrypted pdf files
     try {
       pdfDoc = await PDFDocument.load(pdfArrayBuffer);
     } catch (err) {
@@ -83,65 +73,73 @@ export const SaveDocument = ({
       return setIsNamingModal(false);
     }
 
-    const pages = pdfDoc.getPages();
-    console.log("pages:", pages);
-    const firstPage = pages[currPage - 1];
+    try {
+      // The x-coordinate anchor point for signature inputted
+      const x = (pdfWidth * coordinateX) / Dimensions.get("window").width;
 
-    // Inputting the signature inside the PDF document
-    if (signatureArrayBuffer) {
-      const signatureImage = await pdfDoc.embedPng(signatureArrayBuffer);
+      // The y-coordinate anchor point for the signature to be inputted
+      // Starting from the bottom so it should be divided on itself
+      const y =
+        pdfHeight -
+        (pdfHeight * (coordinateY + elementSizeWidth - 10)) /
+          (Dimensions.get("window").width * pageRatio).toFixed(2);
 
-      console.log("pdf_height: ", pdfHeight, "pdf_width: ", pdfWidth);
-      console.log("x_save: ", coordinateX, "y_save: ", coordinateY);
+      const pages = pdfDoc.getPages();
+      console.log("pages:", pages);
+      const firstPage = pages[currPage - 1];
 
-      firstPage.drawImage(signatureImage, {
-        x: (pdfWidth * coordinateX) / Dimensions.get("window").width,
-        y:
-          (pdfHeight * coordinateY) /
-          (Dimensions.get("window").width * pageRatio).toFixed(2),
-        width: elementSizeWidth + 60,
-        height: elementSizeWidth + 50,
-      });
+      // Inputting the signature inside the PDF document
+      if (signatureArrayBuffer) {
+        const signatureImage = await pdfDoc.embedPng(signatureArrayBuffer);
 
-      // x: (pdfWidth * (coordinateX - 115)) / Dimensions.get("window").width,
-      // y: pdfHeight - (pdfHeight * (coordinateY + 40)) / 540,
-      // width: elementSizeWidth + 50,
-      // height: elementSizeWidth + 50,
-
-      // Saving the new editted document
-      const pdfEditedBytes = await pdfDoc.save();
-      const pdfBase64 = uint8ToBase64Conversion(pdfEditedBytes);
-      // console.log("pdfBase64:", pdfBase64);
-
-      // Check if directory path exists
-      if (!(await RNFS.exists(`${RNFS.DocumentDirectoryPath}/Completed/`)))
-        RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/Completed/`);
-
-      const editedDocPath = `${
-        RNFS.DocumentDirectoryPath
-      }/Completed/${newName.trim()}.pdf`;
-
-      try {
-        await RNFS.writeFile(editedDocPath, pdfBase64, "base64");
-
-        setEditedPdfPath(editedDocPath);
-        setPdfBase64(pdfBase64);
-
-        console.log("Success, you have your newly edited document");
-        editingPalette.current.close();
-        bottomSheetChooseDocument.current.close();
-        await setIsNamingModal(false);
-
-        navigation.navigate("DocumentSuccess", { editedDocPath });
-        updateDocuments(setDocList, setFilteredDocList);
-      } catch (err) {
-        showMessage({
-          message: "Error Occured",
-          description: err.toString(),
-          duration: 3000,
-          type: "danger",
+        firstPage.drawImage(signatureImage, {
+          x,
+          y,
+          width: elementSizeWidth * diffInDisplays,
+          height: elementSizeHeight * diffInDisplays,
         });
+
+        // Saving the new editted document
+        const pdfEditedBytes = await pdfDoc.save();
+        const pdfBase64 = uint8ToBase64Conversion(pdfEditedBytes);
+
+        // Check if directory path exists
+        if (!(await RNFS.exists(`${RNFS.DocumentDirectoryPath}/Completed/`)))
+          RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/Completed/`);
+
+        const editedDocPath = `${
+          RNFS.DocumentDirectoryPath
+        }/Completed/${newName.trim()}.pdf`;
+
+        try {
+          await RNFS.writeFile(editedDocPath, pdfBase64, "base64");
+
+          setEditedPdfPath(editedDocPath);
+          setPdfBase64(pdfBase64);
+
+          console.log("Success, you have your newly edited document");
+          editingPalette.current.close();
+          bottomSheetChooseDocument.current.close();
+          await setIsNamingModal(false);
+
+          navigation.navigate("DocumentSuccess", { editedDocPath });
+          updateDocuments(setDocList, setFilteredDocList);
+        } catch (err) {
+          showMessage({
+            message: "Error Occured",
+            description: err.toString(),
+            duration: 3000,
+            type: "danger",
+          });
+        }
       }
+    } catch (err) {
+      showMessage({
+        message: "Error While Saving Document",
+        description: err.toString(),
+        duration: 3000,
+        type: "danger",
+      });
     }
   }
 

@@ -225,6 +225,7 @@ function Main({ navigation }) {
           message: "User cancelled access to files from Google Drive.",
           type: "danger",
         });
+      signOut();
     }
   }
 
@@ -451,7 +452,7 @@ function Main({ navigation }) {
           <Text className="text-lg font-semibold">Open a Document</Text>
         </View>
 
-        <View className="flex-row px-3 h-16 gap-x-2">
+        <View className="flex-row px-3 h-16 gap-x-2 mb-2">
           <TouchableOpacity
             onPress={() =>
               openDocument(navigation, signatureList, bottomSheetChooseDocument)
@@ -463,6 +464,7 @@ function Main({ navigation }) {
               <Text className="font-semibold">Files</Text>
             </View>
           </TouchableOpacity>
+
           <TouchableOpacity
             onPress={preopeningGoogleDriveCheckups}
             className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
@@ -473,21 +475,16 @@ function Main({ navigation }) {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => WebBrowser.openBrowserAsync("https://expo.dev")}
-            className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
-          >
-            <View className="flex-row items-center gap-x-2">
-              <DropBox />
-            </View>
-          </TouchableOpacity>
+          <DropBox />
+        </View>
 
+        <View className="flex-row px-3 h-16 gap-x-2">
           <TouchableOpacity
             onPress={signOut}
             className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
           >
             <View className="flex-row items-center gap-x-2">
-              <AntDesign name="dropbox" size={26} color="black" />
+              <Entypo name="google-drive" size={24} color="black" />
               <Text className="font-semibold">SignOut</Text>
             </View>
           </TouchableOpacity>

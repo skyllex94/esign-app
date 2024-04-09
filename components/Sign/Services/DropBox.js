@@ -1,7 +1,8 @@
 import * as React from "react";
 import * as WebBrowser from "expo-web-browser";
 import { makeRedirectUri, useAuthRequest } from "expo-auth-session";
-import { Button } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
+import { AntDesign } from "@expo/vector-icons";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -15,7 +16,7 @@ export default function App() {
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId: "iyb3rx4tx9vjkt3",
-      clientSecret: "p113uhdcy2qhvg2",
+      // clientSecret: "p113uhdcy2qhvg2",
       // There are no scopes so just pass an empty array
       scopes: [],
       redirectUri: makeRedirectUri({
@@ -32,13 +33,18 @@ export default function App() {
   }, [response]);
 
   return (
-    <Button
-      disabled={!request}
-      title="Dropbox"
+    <TouchableOpacity
+      // disabled={!request}
       onPress={() => {
         promptAsync();
       }}
-    />
+      className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2 ml-2"
+    >
+      <View className="flex-row items-center gap-x-2">
+        <AntDesign name="dropbox" size={26} color="black" />
+        <Text className="font-semibold">DropBox</Text>
+      </View>
+    </TouchableOpacity>
   );
 }
 
@@ -53,23 +59,35 @@ export default function App() {
 
 // export default function DropBox() {
 //   const config = {
+//     issuer: "",
 //     clientId: "iyb3rx4tx9vjkt3",
-//     clientSecret: "p113uhdcy2qhvg2",
 //     redirectUrl: "com.kkanchev94.esignapp://oauth",
 //     scopes: [],
 //     serviceConfiguration: {
 //       authorizationEndpoint: "https://www.dropbox.com/oauth2/authorize",
-//       tokenEndpoint: `https://www.dropbox.com/oauth2/token`,
-//     },
-//     additionalParameters: {
-//       token_access_type: "offline",
+//       tokenEndpoint: "https://www.dropbox.com/oauth2/token",
 //     },
 //   };
 
+//   // const config = {
+//   //   issuer: "",
+//   //   clientId: "iyb3rx4tx9vjkt3",
+//   //   clientSecret: "p113uhdcy2qhvg2",
+//   //   redirectUrl: "com.kkanchev94.esignapp://oauth",
+//   //   scopes: [],
+//   //   serviceConfiguration: {
+//   //     authorizationEndpoint: "https://www.dropbox.com/oauth2/authorize",
+//   //     tokenEndpoint: "https://www.dropbox.com/oauth2/token",
+//   //   },
+//   //   additionalParameters: {
+//   //     token_access_type: "offline",
+//   //   },
+//   // };
+
 //   async function openDropbox() {
 //     // Log in to get an authentication token
-//     const authState = await authorize(config);
-//     const dropboxUID = authState.tokenAdditionalParameters.kkanchev94;
+//     await authorize(config);
+//     // const dropboxUID = authState.tokenAdditionalParameters.kkanchev94;
 //   }
 
 //   return <Button title="DropBox" onPress={() => openDropbox()} />;

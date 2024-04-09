@@ -22,6 +22,7 @@ import DraggableElement from "./DraggableElement";
 // PDF editing
 import { SaveDocument } from "./SaveDocument";
 import { StatusBar } from "expo-status-bar";
+import { signatureRatio } from "../../constants/Utils";
 
 export default function DocumentEditor({ navigation, route }) {
   const [selectedPrinter, setSelectedPrinter] = useState();
@@ -58,7 +59,8 @@ export default function DocumentEditor({ navigation, route }) {
   // Current page of the pdf
   const [currPage, setCurrPage] = useState(1);
   // Size of the element/signature
-  const [elementSizeWidth, setElementSizeWidth] = useState(80);
+  const [elementSizeWidth, setElementSizeWidth] = useState(80 * signatureRatio);
+  const [elementSizeHeight, setElementSizeHeight] = useState(80);
 
   // Naming Modal
   const [isNamingModal, setIsNamingModal] = useState(false);
@@ -83,8 +85,7 @@ export default function DocumentEditor({ navigation, route }) {
   const displayWidth = Dimensions.get("window").width;
   const displayHeight = Dimensions.get("window").width * pageRatio;
 
-  const [displayDocHeight, setDisplayDocHeight] = useState();
-  const [displayDocWidth, setDisplayDocWidth] = useState(displayWidth);
+  const [diffInDisplays, setDiffInDisplays] = useState();
 
   // Bottomsheet refs and values
   const editingPalette = useRef();
@@ -197,14 +198,8 @@ export default function DocumentEditor({ navigation, route }) {
               ).toFixed(2)
             );
 
-            console.log(
-              "diff_height:",
-              height - displayWidth * (height / width).toFixed(2),
-              "diff_width:",
-              width - displayWidth
-            );
-
-            setDisplayDocHeight(displayWidth * (height / width).toFixed(2));
+            console.log("diff_in_displays:", (width / displayWidth).toFixed(2));
+            setDiffInDisplays((width / displayWidth).toFixed(2));
           }}
           onPageChanged={(page, numOfPages) => {
             console.log("Current Page", page);
@@ -230,8 +225,8 @@ export default function DocumentEditor({ navigation, route }) {
               setCoordinateY={setCoordinateY}
               elementSizeWidth={elementSizeWidth}
               setElementSizeWidth={setElementSizeWidth}
-              pdfWidth={pdfWidth}
-              pdfHeight={pdfHeight}
+              elementSizeHeight={elementSizeHeight}
+              setElementSizeHeight={setElementSizeHeight}
             />
           ) : null}
         </Pdf>
@@ -245,11 +240,11 @@ export default function DocumentEditor({ navigation, route }) {
           coordinateX={coordinateX}
           coordinateY={coordinateY}
           pageRatio={pageRatio}
-          displayWidth={displayWidth}
-          displayHeight={displayHeight}
           pdfWidth={pdfWidth}
           pdfHeight={pdfHeight}
+          diffInDisplays={diffInDisplays}
           elementSizeWidth={elementSizeWidth}
+          elementSizeHeight={elementSizeHeight}
           setEditedPdfPath={setEditedPdfPath}
           setPdfBase64={setPdfBase64}
           signatureArrayBuffer={signatureArrayBuffer}

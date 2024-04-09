@@ -3,9 +3,10 @@ import React, { useContext, useState } from "react";
 import { AntDesign, Feather, MaterialIcons } from "@expo/vector-icons";
 import { RenameDocumentModal } from "./RenameDocModal";
 import { ScrollView } from "react-native-gesture-handler";
-import { deleteDocument } from "./functions";
+import { deleteDocument, emailDocument, openShareOptions } from "./functions";
 import { Context } from "../contexts/Global";
 import { getFileName, getFileType } from "../functions/Global";
+import { shareAsync } from "expo-sharing";
 
 export default function DocumentDetails({ route, navigation }) {
   const { doc } = route.params;
@@ -78,13 +79,21 @@ export default function DocumentDetails({ route, navigation }) {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => setShowRenameModal((curr) => !curr)}
-            className="flex-row bg-white rounded-lg mb-6 items-center px-3 h-16 w-full shadow"
+            onPress={() => emailDocument(docPath)}
+            className="flex-row bg-white rounded-lg mb-2 items-center px-3 h-16 w-full shadow"
+          >
+            <MaterialIcons name="mail-outline" size={24} color="black" />
+            <Text className="mx-2">Email</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => openShareOptions(docPath)}
+            className="flex-row bg-white rounded-lg mb-4 items-center px-3 h-16 w-full shadow"
           >
             <Feather name="share-2" size={22} color="black" />
             <Text className="mx-2">Share</Text>
           </TouchableOpacity>
-          <View className="border-b-[0.5px] border-gray-300 w-[90%] mb-6 px-6" />
+          <View className="border-b-[0.5px] border-gray-300 w-[90%] mb-4 px-6" />
 
           <TouchableOpacity
             onPress={() =>

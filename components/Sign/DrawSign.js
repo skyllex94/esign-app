@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   Alert,
+  Dimensions,
 } from "react-native";
 import React, { useContext, useEffect, useRef, useState } from "react";
 // UI Imports
@@ -27,6 +28,7 @@ import { actionButton } from "../../constants/UI";
 import * as FileSystem from "expo-file-system";
 import { SignatureDetails } from "./SignatureDetails";
 import { openDocument } from "../functions/Global";
+import { signatureCanvasHeight } from "../../constants/Utils";
 
 export default function DrawSignCapture({ navigation }) {
   const signature = useRef();
@@ -133,7 +135,7 @@ export default function DrawSignCapture({ navigation }) {
       <View>
         {updateSignatureCapture ? (
           <SignatureCapture
-            style={{ width: "100%", height: 344 }}
+            style={{ width: "100%", height: signatureCanvasHeight }}
             ref={signature}
             saveImageFileInExtStorage={true}
             viewMode={"portrait"}
@@ -143,7 +145,7 @@ export default function DrawSignCapture({ navigation }) {
             strokeColor={signatureColor}
           />
         ) : (
-          <View className="h-[314px]" />
+          <View className="h-[344px]" />
         )}
 
         <View className="flex-row absolute left-5 top-5 justify-end">

@@ -4,6 +4,7 @@ import Pdf from "react-native-pdf";
 import { actionButton } from "../../constants/UI";
 import { showMessage } from "react-native-flash-message";
 import { getFileName } from "../functions/Global";
+import { openShareOptions } from "./functions";
 
 export default function DocumentPreview({ route, navigation }) {
   const { doc } = route.params;
@@ -41,7 +42,10 @@ export default function DocumentPreview({ route, navigation }) {
             <Feather name="info" size={24} color="black" />
           </TouchableOpacity>
 
-          <TouchableOpacity className="p-3">
+          <TouchableOpacity
+            className="p-3"
+            onPress={() => openShareOptions(path)}
+          >
             <Feather name="share" size={24} color="black" />
           </TouchableOpacity>
         </View>

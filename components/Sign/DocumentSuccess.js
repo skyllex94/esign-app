@@ -11,84 +11,19 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import { shareAsync } from "expo-sharing";
 import { showMessage } from "react-native-flash-message";
 import ReactNativeBlobUtil from "react-native-blob-util";
+import {
+  emailDocument,
+  emailToThirdParty,
+  openShareOptions,
+} from "./functions";
 
 export default function DocumentSuccess({ route, navigation }) {
   const animation = useRef(null);
   const { editedDocPath } = route.params;
   const name = editedDocPath?.split("Completed/")[1];
   const { bottomSheetChooseDocument } = useContext(Context);
-
-  console.log("editedDocPath:", editedDocPath);
-
-  async function openShareOptions() {
-    await shareAsync(editedDocPath, {
-      UTI: ".pdf",
-      mimeType: "application/pdf",
-    });
-  }
-
-  async function emailDocument() {
-    const canUseMailService = await MailComposer.isAvailableAsync();
-
-    if (canUseMailService === false) {
-      showMessage({
-        message: "Email Service cannot be used",
-        description: "The email cannot be used on this device unfortunately.",
-        duration: 3000,
-        type: "danger",
-      });
-      return;
-    }
-
-    try {
-      await MailComposer.composeAsync({
-        subject: "Document to be Signed",
-        body: "Here's the signed document for you to review/have. Signed via SimpleSign™.",
-        attachments: editedDocPath,
-      });
-    } catch (err) {
-      showMessage({
-        message: "Error Occured",
-        description: err.toString(),
-        duration: 3000,
-        type: "danger",
-      });
-    }
-  }
-
-  async function emailToThirdParty() {
-    const canUseMailService = await MailComposer.isAvailableAsync();
-
-    if (canUseMailService === false) {
-      showMessage({
-        message: "Email Service cannot be used",
-        description: "The email cannot be used on this device unfortunately.",
-        duration: 3000,
-        type: "danger",
-      });
-      return;
-    }
-
-    try {
-      await MailComposer.composeAsync({
-        subject: `Signed Document`,
-        body: `Here's the signed document - ${name} for you to review/have. Signed via SimpleSign™.`,
-        attachments: editedDocPath,
-      });
-    } catch (err) {
-      showMessage({
-        message: "Error Occured",
-        description: err.toString(),
-        duration: 3000,
-        type: "danger",
-      });
-    }
-  }
-
-  async function openSharingOptions() {}
 
   async function previewDocument() {
     ReactNativeBlobUtil.ios.openDocument(editedDocPath);
@@ -133,7 +68,7 @@ export default function DocumentSuccess({ route, navigation }) {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={emailDocument}
+            onPress={() => emailDocument(editedDocPath)}
             className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
           >
             <MaterialCommunityIcons
@@ -145,7 +80,7 @@ export default function DocumentSuccess({ route, navigation }) {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={emailToThirdParty}
+            onPress={() => emailToThirdParty(editedDocPath, name)}
             className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
           >
             <MaterialCommunityIcons
@@ -157,7 +92,7 @@ export default function DocumentSuccess({ route, navigation }) {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={openShareOptions}
+            onPress={() => openShareOptions(editedDocPath)}
             className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
           >
             <Feather name="share" size={24} color="black" />

@@ -4,6 +4,9 @@ import { Alert } from "react-native";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import RNFS from "react-native-fs";
 import { updateDocuments } from "../functions/Global";
+import { shareAsync } from "expo-sharing";
+import { showMessage } from "react-native-flash-message";
+import * as MailComposer from "expo-mail-composer";
 
 export const selectSignature = async (
   signatureFilePath,
@@ -141,3 +144,68 @@ export const deleteDocument = (
     ]
   );
 };
+
+export async function openShareOptions(path) {
+  await shareAsync(path, {
+    UTI: ".pdf",
+    mimeType: "application/pdf",
+  });
+}
+
+export async function emailDocument(docPath) {
+  const canUseMailService = await MailComposer.isAvailableAsync();
+
+  if (canUseMailService === false) {
+    showMessage({
+      message: "Email Service cannot be used",
+      description: "The email cannot be used on this device unfortunately.",
+      duration: 3000,
+      type: "danger",
+    });
+    return;
+  }
+
+  try {
+    await MailComposer.composeAsync({
+      subject: "Document to be Signed",
+      body: "Here's the signed document for you to review/have. Signed via SimpleSign™.",
+      attachments: docPath,
+    });
+  } catch (err) {
+    showMessage({
+      message: "Error Occured",
+      description: err.toString(),
+      duration: 3000,
+      type: "danger",
+    });
+  }
+}
+
+export async function emailToThirdParty(docPath, fileName) {
+  const canUseMailService = await MailComposer.isAvailableAsync();
+
+  if (canUseMailService === false) {
+    showMessage({
+      message: "Email Service cannot be used",
+      description: "The email cannot be used on this device unfortunately.",
+      duration: 3000,
+      type: "danger",
+    });
+    return;
+  }
+
+  try {
+    await MailComposer.composeAsync({
+      subject: `Signed Document`,
+      body: `Here's the signed document - ${fileName} for you to review/have. Signed via SimpleSign™.`,
+      attachments: docPath,
+    });
+  } catch (err) {
+    showMessage({
+      message: "Error Occured",
+      description: err.toString(),
+      duration: 3000,
+      type: "danger",
+    });
+  }
+}

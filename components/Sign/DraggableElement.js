@@ -16,10 +16,13 @@ export default function DraggableElement({
   setCoordinateY,
   elementSizeWidth,
   setElementSizeWidth,
+  elementSizeHeight,
+  setElementSizeHeight,
   pdfWidth,
   pdfHeight,
 }) {
   const pan = useRef(new Animated.ValueXY()).current;
+  const elementLocation = React.useRef();
 
   const panResponder = useRef(
     PanResponder.create({
@@ -29,29 +32,11 @@ export default function DraggableElement({
       }),
 
       onPanResponderRelease: (event) => {
-        console.log("event_not_changed:", event.nativeEvent);
-
-        // console.log("event_x:", event.nativeEvent.pageX); // - 60
-        console.log("event_y:", event.nativeEvent.pageY); // - 130
-
         // console.log("pdfWidth:", pdfWidth, "pdfHeight:", pdfHeight);
 
-        // setCoordinateX(event.nativeEvent.pageX + 60);
-        // setCoordinateY(event.nativeEvent.pageY - 130);
-
+        // Measure the relative x & y of the signature to the pdf canvas
         elementLocation.current.measure((h, w, px, py, x, y) => {
-          console.log(
-            "x_rltve",
-            h,
-            "y_rltve:",
-            w,
-            "x_sign:",
-            px,
-            "y_sign:",
-            py,
-            x,
-            y
-          );
+          console.log("rel_x", h, "rel_y", w, px, py, x, y);
 
           setCoordinateX(h);
           setCoordinateY(w);
@@ -61,8 +46,6 @@ export default function DraggableElement({
       },
     })
   ).current;
-
-  const elementLocation = React.useRef();
 
   return (
     <View className="items-center justify-center">
@@ -75,17 +58,17 @@ export default function DraggableElement({
       >
         <View className="flex-row justify-start items-start">
           <Image
-            className="border-2"
+            className="mr-2"
             style={{
-              height: elementSizeWidth,
-              width: elementSizeWidth, // * pageRatio
+              height: elementSizeHeight,
+              width: elementSizeWidth,
             }}
             source={{ uri: selectedSignaturePath }}
           />
           <View className="justify-between">
             <View className="justify-center items-start">
               <TouchableOpacity
-                className=" bg-red-600 rounded-full"
+                className="mb-3 bg-red-600 rounded-full"
                 onPress={() => setInputSignature(false)}
               >
                 <AntDesign name="close" size={24} color="white" />
@@ -93,12 +76,19 @@ export default function DraggableElement({
             </View>
 
             <TouchableOpacity
-              onPress={() => setElementSizeWidth((curr) => curr + 10)}
+              className="mb-1"
+              onPress={() => {
+                setElementSizeWidth((curr) => curr + 10);
+                setElementSizeHeight((curr) => curr + 10);
+              }}
             >
               <AntDesign name="pluscircleo" size={24} color="black" />
             </TouchableOpacity>
             <TouchableOpacity
-              onPress={() => setElementSizeWidth((curr) => curr - 10)}
+              onPress={() => {
+                setElementSizeWidth((curr) => curr - 10);
+                setElementSizeHeight((curr) => curr - 10);
+              }}
             >
               <AntDesign name="minuscircleo" size={24} color="black" />
             </TouchableOpacity>
