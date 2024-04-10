@@ -18,23 +18,18 @@ import {
   MaterialIcons,
 } from "@expo/vector-icons";
 // Signature Imports
-import SignatureCapture from "react-native-signature-capture";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import { ScrollView } from "react-native-gesture-handler";
 import { Context } from "../contexts/Global";
-import { deleteSignature, loadStoredSignatures } from "./functions";
+import { deleteSignature } from "./functions";
 import Checkbox from "expo-checkbox";
 import { actionButton } from "../../constants/UI";
 import * as FileSystem from "expo-file-system";
 import { SignatureDetails } from "./SignatureDetails";
 import { openDocument } from "../functions/Global";
-import { signatureCanvasHeight } from "../../constants/Utils";
+import SignatureCanvas from "./SignatureCanvas";
 
 export default function DrawSignCapture({ navigation }) {
-  const signature = useRef();
-  const [signatureColor, setSignatureColor] = useState("black");
-  const [updateSignatureCapture, setUpdateSignatureCapture] = useState(true);
-
   // Signature Details Modal
   const [signatureDetailsModal, setSignatureDetailsModal] = useState(false);
   const [detailsInfo, setDetailsInfo] = useState(null);
@@ -48,50 +43,8 @@ export default function DrawSignCapture({ navigation }) {
     bottomSheetChooseDocument.current.dismiss();
   }, []);
 
-  // Needed to update when signature color is changed
-  useEffect(() => {
-    setUpdateSignatureCapture(true);
-  }, [signatureColor]);
-
-  async function saveSignature(signature) {
-    // signature.encoded - for the base64 encoded png
-    // signature.pathName - for the file path name
-
-    const dirs = ReactNativeBlobUtil.fs.dirs;
-
-    const filePath =
-      dirs.DocumentDir +
-      "/Signatures" +
-      "/signature" +
-      new Date().getMilliseconds() +
-      ".png";
-
-    console.log("filePath:", filePath);
-
-    ReactNativeBlobUtil.fs
-      .writeStream(filePath, "base64")
-      .then((data) => data.write(signature.encoded))
-      .then(() => {
-        // ReactNativeBlobUtil.ios.previewDocument("file://" + filePath);
-        console.log("Successfully saved to: " + filePath);
-      })
-      .catch((errorMessage) => {
-        console.log(errorMessage);
-      });
-
-    // Include filePath into the signature array
-    setSignatureList([...signatureList, filePath]);
-    loadStoredSignatures(setSignatureList);
-  }
-
   async function previewSignature(signatureFilePath) {
     ReactNativeBlobUtil.ios.openDocument(signatureFilePath);
-  }
-
-  function changeSignatureColor(color) {
-    if (color === signatureColor) return;
-    setSignatureColor(color);
-    setUpdateSignatureCapture(false);
   }
 
   function addNewSignature() {
@@ -107,72 +60,14 @@ export default function DrawSignCapture({ navigation }) {
 
   return (
     <SafeAreaView className="flex-1">
-      <View className="flex-row justify-between">
-        <TouchableOpacity
-          className="flex-row items-center m-3"
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="arrow-back" size={24} color="black" />
-          <Text className="text-lg mx-1">Back</Text>
-        </TouchableOpacity>
+      <SignatureCanvas navigation={navigation} />
 
-        <View className="flex-row justify-between p-4">
-          <Button
-            className="p-3"
-            color="#007AFF"
-            onPress={() => signature.current.saveImage()}
-            title="Save Signature"
-          />
-          <Button
-            className="p-3"
-            color="#007AFF"
-            onPress={() => signature.current.resetImage()}
-            title="Clear"
-          />
-        </View>
-      </View>
-
-      <View>
-        {updateSignatureCapture ? (
-          <SignatureCapture
-            style={{ width: "100%", height: signatureCanvasHeight }}
-            ref={signature}
-            saveImageFileInExtStorage={true}
-            viewMode={"portrait"}
-            showTitleLabel={false}
-            showNativeButtons={false}
-            onSaveEvent={saveSignature}
-            strokeColor={signatureColor}
-          />
-        ) : (
-          <View className="h-[344px]" />
-        )}
-
-        <View className="flex-row absolute left-5 top-5 justify-end">
-          <TouchableOpacity
-            className="h-8 w-8 bg-black rounded-full mx-1"
-            onPress={() => changeSignatureColor("black")}
-          />
-          <TouchableOpacity
-            className="h-8 w-8 bg-[#0047ab] rounded-full mx-1"
-            onPress={() => changeSignatureColor("#0047ab")}
-          />
-          <TouchableOpacity
-            className="h-8 w-8 bg-[#4F7942] rounded-full mx-1"
-            onPress={() => changeSignatureColor("#4F7942")}
-          />
-        </View>
-
-        <View className="line justify-center absolute w-[90%] left-5 top-64">
-          <View className="border-[0.5px] border-dashed border-gray-500"></View>
-        </View>
-      </View>
       <View className="flex-1 m-4">
         <View className="flex-row items-center justify-between mt-2">
           <Text className="text-lg">My Signatures</Text>
 
           <TouchableOpacity
-            onPress={addNewSignature}
+            // onPress={addNewSignature}
             className="bg-slate-50 border-slate-400 rounded-lg p-2 mx-1"
           >
             <FontAwesome6 name="add" size={24} color="black" />

@@ -23,6 +23,7 @@ import DraggableElement from "./DraggableElement";
 import { SaveDocument } from "./SaveDocument";
 import { StatusBar } from "expo-status-bar";
 import { signatureRatio } from "../../constants/Utils";
+import AddSignatureModal from "./AddSignatureModal";
 
 export default function DocumentEditor({ navigation, route }) {
   const [selectedPrinter, setSelectedPrinter] = useState();
@@ -65,6 +66,9 @@ export default function DocumentEditor({ navigation, route }) {
   // Naming Modal
   const [isNamingModal, setIsNamingModal] = useState(false);
 
+  // Add Signature Modal
+  const [showSignatureModal, setShowSignatureModal] = useState(false);
+
   useEffect(() => {
     editingPalette.current.present();
   }, [editingPalette, navigation]);
@@ -105,8 +109,7 @@ export default function DocumentEditor({ navigation, route }) {
   };
 
   function addNewSignature() {
-    editingPalette.current.close();
-    navigation.navigate("DrawSign");
+    setShowSignatureModal(true);
   }
 
   function toggleSignatureList() {
@@ -251,6 +254,14 @@ export default function DocumentEditor({ navigation, route }) {
           pdfArrayBuffer={pdfArrayBuffer}
           navigation={navigation}
           editingPalette={editingPalette}
+        />
+      )}
+
+      {showSignatureModal && (
+        <AddSignatureModal
+          navigation={navigation}
+          showSignatureModal={showSignatureModal}
+          setShowSignatureModal={setShowSignatureModal}
         />
       )}
 

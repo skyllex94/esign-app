@@ -28,7 +28,7 @@ import { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 // Stack Navigation
 import { createStackNavigator } from "@react-navigation/stack";
-import DrawSignCapture from "../Sign/DrawSign";
+import DrawSignCapture from "../Sign/SignatureLibrary";
 import DocumentEditor from "../Sign/DocumentEditor";
 // Other Dependency Import
 import { Context } from "../contexts/Global";
