@@ -1,4 +1,4 @@
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, TextInput } from "react-native";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { signatureCanvasHeight } from "../../constants/Utils";
 import SignatureCapture from "react-native-signature-capture";
@@ -76,6 +76,16 @@ export default function SignatureCanvas({
     }, 1000);
   }
 
+  useEffect(() => {
+    // Auto focus on the rename field
+    writeSignature?.current?.focus();
+  }, [writeSignature]);
+
+  const writeSignature = useRef();
+  const [text, onChangeText] = useState("Signature");
+
+  const [signatureInputOption, setSignatureInputOption] = useState("draw");
+
   return (
     <React.Fragment>
       <View className="flex-row items-center justify-between">
@@ -89,9 +99,13 @@ export default function SignatureCanvas({
           </TouchableOpacity>
         )}
 
-        <Text style={{ fontFamily: "Cedarville-Cursive", color: "black" }}>
-          Asdfsdf
-        </Text>
+        <TouchableOpacity onPress={() => setSignatureInputOption("draw")}>
+          <Text>Draw</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => setSignatureInputOption("write")}>
+          <Text>Write</Text>
+        </TouchableOpacity>
 
         <View className="flex-row justify-between py-4">
           <Button onPress={saveAndUse} title="Save Signature" />
@@ -112,7 +126,50 @@ export default function SignatureCanvas({
       </View>
 
       <View>
-        {updateSignatureCapture ? (
+        {signatureInputOption === "draw" &&
+          (updateSignatureCapture ? (
+            <SignatureCapture
+              style={{ width: "100%", height: signatureCanvasHeight }}
+              ref={signature}
+              saveImageFileInExtStorage={true}
+              viewMode={"portrait"}
+              showTitleLabel={false}
+              showNativeButtons={false}
+              onSaveEvent={saveSignature}
+              strokeColor={signatureColor}
+            />
+          ) : (
+            <View className="h-[344px]" />
+          ))}
+
+        {signatureInputOption === "write" && (
+          <View className="items-center justify-center h-[344px] border-0.5 border-dashed">
+            <TextInput
+              ref={writeSignature}
+              style={{
+                fontFamily: "Cedarville-Cursive",
+                color: "black",
+                fontSize: 72,
+              }}
+              onChangeText={onChangeText}
+              value={text}
+            />
+          </View>
+        )}
+
+        {/* {showWriteSignature ? (
+          <View className="items-center justify-center h-[344px]">
+            <TextInput
+              style={{
+                fontFamily: "Cedarville-Cursive",
+                color: "black",
+                fontSize: 72,
+              }}
+              onChangeText={onChangeText}
+              value={text}
+            />
+          </View>
+        ) : updateSignatureCapture ? (
           <SignatureCapture
             style={{ width: "100%", height: signatureCanvasHeight }}
             ref={signature}
@@ -125,7 +182,7 @@ export default function SignatureCanvas({
           />
         ) : (
           <View className="h-[344px]" />
-        )}
+        )}   */}
 
         <View className="flex-row absolute left-5 top-5 justify-end">
           <TouchableOpacity

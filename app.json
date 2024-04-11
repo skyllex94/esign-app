@@ -3,7 +3,7 @@
     "name": "SimpleSign",
     "slug": "esign-app",
     "version": "1.0.0",
-    "scheme": "com.kkanchev94.esignapp://oauth",
+    "scheme": ["com.kkanchev94.esignapp://oauth"],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -23,6 +23,7 @@
         "CFBundleURLTypes": [
           {
             "CFBundleURLSchemes": [
+              "com.kkanchev94.esignapp://oauth",
               "com.googleusercontent.apps.926245312325-otb9msahg4nice3l71uqa71gfdlborer"
             ]
           }
@@ -45,6 +46,15 @@
         "expo-font",
         {
           "fonts": ["./assets/fonts/CedarvilleCursive-Regular.ttf"]
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "13.4",
+            "useFrameworks": "static"
+          }
         }
       ]
     ],
