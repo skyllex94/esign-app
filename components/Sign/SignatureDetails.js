@@ -1,7 +1,13 @@
 import { AntDesign } from "@expo/vector-icons";
 import React from "react";
-import { Alert, Modal, StyleSheet, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import {
+  Alert,
+  Modal,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from "react-native";
 
 export const SignatureDetails = ({
   detailsInfo,
@@ -20,6 +26,13 @@ export const SignatureDetails = ({
         setSignatureDetailsModal(!signatureDetailsModal);
       }}
     >
+      <TouchableOpacity
+        className="flex-1"
+        onPress={() => {
+          setSignatureDetailsModal(false);
+        }}
+      />
+
       <View className="flex-1 justify-center items-center">
         <View
           className="items-center m-8 bg-white rounded-lg p-5 shadow"
@@ -58,6 +71,13 @@ export const SignatureDetails = ({
           </View>
         </View>
       </View>
+
+      <TouchableOpacity
+        className="flex-1"
+        onPress={() => {
+          setSignatureDetailsModal(false);
+        }}
+      />
     </Modal>
   );
 };

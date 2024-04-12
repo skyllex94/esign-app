@@ -1,7 +1,6 @@
 import { AntDesign } from "@expo/vector-icons";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Modal, StyleSheet, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Modal, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 // UI
 import { TextInput, Dimensions } from "react-native";
 import { Context } from "../contexts/Global";
@@ -150,6 +149,13 @@ export const SaveDocument = ({
       visible={isNamingModal}
       onRequestClose={() => setIsNamingModal((curr) => !curr)}
     >
+      <TouchableOpacity
+        className="flex-1"
+        onPress={() => {
+          setIsNamingModal(false);
+        }}
+      />
+
       <View className="flex-1 justify-center items-center">
         <View
           className="m-8 bg-white rounded-lg p-5 shadow"
@@ -202,6 +208,13 @@ export const SaveDocument = ({
           )}
         </View>
       </View>
+
+      <TouchableOpacity
+        className="flex-1"
+        onPress={() => {
+          setIsNamingModal(false);
+        }}
+      />
     </Modal>
   );
 };

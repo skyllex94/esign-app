@@ -1,12 +1,12 @@
 import { AntDesign } from "@expo/vector-icons";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Modal, StyleSheet, Text, View } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Modal, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 import * as FileSystem from "expo-file-system";
 // UI
 import { TextInput } from "react-native";
 import { Context } from "../contexts/Global";
 import { updateDocuments } from "../functions/Global";
+import { actionButton } from "../../constants/UI";
 
 export const RenameDocumentModal = ({
   docName,
@@ -29,7 +29,6 @@ export const RenameDocumentModal = ({
     if (newName === null) return;
 
     // Split path and file name
-
     const onlyPath = docPath.split(docName)[0];
     const newPath = onlyPath + newName.trim() + ".pdf";
 
@@ -55,19 +54,17 @@ export const RenameDocumentModal = ({
       visible={showRenameModal}
       onRequestClose={() => setShowRenameModal((curr) => !curr)}
     >
+      <TouchableOpacity
+        className="flex-1"
+        onPress={() => {
+          setShowRenameModal(false);
+        }}
+      />
+
       <View className="flex-1 justify-center items-center">
-        <View
-          className="m-8 bg-white rounded-lg p-5 shadow"
-          style={styles.modalView}
-        >
+        <View className="m-8 bg-white rounded-lg p-5 shadow">
           <View className="flex-row items-center justify-between mb-3 w-full">
             <Text className="mr-6">Rename Document</Text>
-            <TouchableOpacity
-              className={`bg-[#e6867a] rounded-full p-2`}
-              onPress={() => setShowRenameModal((curr) => !curr)}
-            >
-              <AntDesign name="close" size={20} color="white" />
-            </TouchableOpacity>
           </View>
 
           <View className="flex-row items-center justify-between my-2 w-full">
@@ -79,31 +76,29 @@ export const RenameDocumentModal = ({
             />
           </View>
 
-          <View className="flex-row my-3 w-full">
-            <TouchableOpacity onPress={renameDocument}>
-              <Text className="text-[16px]">Save</Text>
+          <View className="flex-row justify-between mt-2">
+            <TouchableOpacity
+              onPress={renameDocument}
+              className={`rounded-lg bg-[${actionButton}] py-3 px-10`}
+            >
+              <Text className="text-[16px] text-white">Save</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setShowRenameModal(false)}
+              className={`rounded-lg bg-slate-200 py-3 px-10`}
+            >
+              <Text className="text-[16px]">Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
+
+      <TouchableOpacity
+        className="flex-1"
+        onPress={() => {
+          setShowRenameModal(false);
+        }}
+      />
     </Modal>
   );
 };
-
-const styles = StyleSheet.create({
-  modalView: {
-    margin: 20,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 35,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-});

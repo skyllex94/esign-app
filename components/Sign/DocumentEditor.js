@@ -24,6 +24,7 @@ import { SaveDocument } from "./SaveDocument";
 import { StatusBar } from "expo-status-bar";
 import { signatureRatio } from "../../constants/Utils";
 import AddSignatureModal from "./AddSignatureModal";
+import TabViewNow from "../Sign/TabViewNow";
 
 export default function DocumentEditor({ navigation, route }) {
   const [selectedPrinter, setSelectedPrinter] = useState();
@@ -264,6 +265,12 @@ export default function DocumentEditor({ navigation, route }) {
           setShowSignatureModal={setShowSignatureModal}
         />
       )}
+
+      {/*  <AddSignatureModal
+          navigation={navigation}
+          showSignatureModal={showSignatureModal}
+          setShowSignatureModal={setShowSignatureModal}
+        /> */}
 
       <BottomSheetModal
         ref={editingPalette}

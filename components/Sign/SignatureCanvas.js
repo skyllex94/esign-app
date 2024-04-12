@@ -22,44 +22,44 @@ export default function SignatureCanvas({
 
   const { signatureList, setSignatureList } = useContext(Context);
 
-  //   const [fontsLoaded, fontError] = useFonts({
-  //     "Cedarville-Cursive": require("./assets/fonts/CedarvilleCursive-Regular.ttf"),
-  //   });
-
   // Needed to update when signature color is changed
   useEffect(() => {
     setUpdateSignatureCapture(true);
   }, [signatureColor]);
 
-  async function saveSignature(signature) {
+  async function saveSignature(signature, type) {
+    console.log("type:", type);
+    console.log("signature:", signature);
     // signature.encoded - for the base64 encoded png
     // signature.pathName - for the file path name
 
-    const dirs = ReactNativeBlobUtil.fs.dirs;
+    if (type === "draw") {
+      const dirs = ReactNativeBlobUtil.fs.dirs;
 
-    const filePath =
-      dirs.DocumentDir +
-      "/Signatures" +
-      "/signature" +
-      new Date().getMilliseconds() +
-      ".png";
+      const filePath =
+        dirs.DocumentDir +
+        "/Signatures" +
+        "/signature" +
+        new Date().getMilliseconds() +
+        ".png";
 
-    console.log("filePath:", filePath);
+      console.log("filePath:", filePath);
 
-    ReactNativeBlobUtil.fs
-      .writeStream(filePath, "base64")
-      .then((data) => data.write(signature.encoded))
-      .then(() => {
-        // ReactNativeBlobUtil.ios.previewDocument("file://" + filePath);
-        console.log("Successfully saved to: " + filePath);
-      })
-      .catch((errorMessage) => {
-        console.log(errorMessage);
-      });
+      ReactNativeBlobUtil.fs
+        .writeStream(filePath, "base64")
+        .then((data) => data.write(signature.encoded))
+        .then(() => {
+          // ReactNativeBlobUtil.ios.previewDocument("file://" + filePath);
+          console.log("Successfully saved to: " + filePath);
+        })
+        .catch((errorMessage) => {
+          console.log(errorMessage);
+        });
 
-    // Include filePath into the signature array
-    setSignatureList([...signatureList, filePath]);
-    loadStoredSignatures(setSignatureList);
+      // Include filePath into the signature array
+      setSignatureList([...signatureList, filePath]);
+      loadStoredSignatures(setSignatureList);
+    }
   }
 
   function changeSignatureColor(color) {
@@ -76,13 +76,18 @@ export default function SignatureCanvas({
     }, 1000);
   }
 
+  function switchToWriting() {
+    setSignatureInputOption("write");
+    writeSignature?.current?.focus();
+  }
+
   useEffect(() => {
     // Auto focus on the rename field
     writeSignature?.current?.focus();
   }, [writeSignature]);
 
   const writeSignature = useRef();
-  const [text, onChangeText] = useState("Signature");
+  const [text, onChangeText] = useState("");
 
   const [signatureInputOption, setSignatureInputOption] = useState("draw");
 
@@ -103,7 +108,7 @@ export default function SignatureCanvas({
           <Text>Draw</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => setSignatureInputOption("write")}>
+        <TouchableOpacity onPress={switchToWriting}>
           <Text>Write</Text>
         </TouchableOpacity>
 
@@ -135,7 +140,7 @@ export default function SignatureCanvas({
               viewMode={"portrait"}
               showTitleLabel={false}
               showNativeButtons={false}
-              onSaveEvent={saveSignature}
+              onSaveEvent={(signature) => saveSignature(signature, "draw")}
               strokeColor={signatureColor}
             />
           ) : (
@@ -152,37 +157,11 @@ export default function SignatureCanvas({
                 fontSize: 72,
               }}
               onChangeText={onChangeText}
+              placeholder="Sign"
               value={text}
             />
           </View>
         )}
-
-        {/* {showWriteSignature ? (
-          <View className="items-center justify-center h-[344px]">
-            <TextInput
-              style={{
-                fontFamily: "Cedarville-Cursive",
-                color: "black",
-                fontSize: 72,
-              }}
-              onChangeText={onChangeText}
-              value={text}
-            />
-          </View>
-        ) : updateSignatureCapture ? (
-          <SignatureCapture
-            style={{ width: "100%", height: signatureCanvasHeight }}
-            ref={signature}
-            saveImageFileInExtStorage={true}
-            viewMode={"portrait"}
-            showTitleLabel={false}
-            showNativeButtons={false}
-            onSaveEvent={saveSignature}
-            strokeColor={signatureColor}
-          />
-        ) : (
-          <View className="h-[344px]" />
-        )}   */}
 
         <View className="flex-row absolute left-5 top-5 justify-end">
           <TouchableOpacity

@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { View, Modal } from "react-native";
+import React from "react";
+import { View, Modal, TouchableOpacity } from "react-native";
 
 import SignatureCanvas from "./SignatureCanvas";
 
@@ -8,16 +8,22 @@ export default function AddSignatureModal({
   showSignatureModal,
   setShowSignatureModal,
 }) {
-  const showSignatureModalRef = useRef();
-
   return (
     <Modal
       animationType="slide"
       transparent={true}
       visible={showSignatureModal}
+      onBackdropPress={() => setShowSignatureModal(false)}
       onRequestClose={() => setShowSignatureModal((curr) => !curr)}
     >
-      <View className="flex-1 justify-center items-center">
+      <TouchableOpacity
+        className="flex-1"
+        onPress={() => {
+          setShowSignatureModal(false);
+        }}
+      />
+
+      <View className="justify-center items-center">
         <View className=" bg-white rounded-lg p-3 shadow w-[95%]">
           <View className="flex-row items-center justify-between"></View>
           <SignatureCanvas
@@ -27,6 +33,13 @@ export default function AddSignatureModal({
           />
         </View>
       </View>
+
+      <TouchableOpacity
+        className="flex-1"
+        onPress={() => {
+          setShowSignatureModal(false);
+        }}
+      />
     </Modal>
   );
 }
