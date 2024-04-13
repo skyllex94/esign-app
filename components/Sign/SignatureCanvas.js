@@ -4,22 +4,29 @@ import { signatureCanvasHeight } from "../../constants/Utils";
 import SignatureCapture from "react-native-signature-capture";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import { Context } from "../contexts/Global";
-import { Ionicons } from "@expo/vector-icons";
 import { Button, Text } from "react-native";
 import { loadStoredSignatures } from "./functions";
-import { AntDesign } from "@expo/vector-icons";
+import { captureRef } from "react-native-view-shot";
 
-import { useFonts } from "expo-font";
+import { AntDesign } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function SignatureCanvas({
   navigation,
   isModal,
   setShowSignatureModal,
 }) {
+  // Drawn signature states
   const signature = useRef();
-  const [signatureColor, setSignatureColor] = useState("black");
   const [updateSignatureCapture, setUpdateSignatureCapture] = useState(true);
 
+  // Written signature states
+  const writtenSignatureRef = useRef();
+  const [text, onChangeText] = useState("");
+
+  // Shares states for the options
+  const [signatureColor, setSignatureColor] = useState("black");
+  const [signatureInputOption, setSignatureInputOption] = useState("draw");
   const { signatureList, setSignatureList } = useContext(Context);
 
   // Needed to update when signature color is changed
@@ -27,69 +34,84 @@ export default function SignatureCanvas({
     setUpdateSignatureCapture(true);
   }, [signatureColor]);
 
-  async function saveSignature(signature, type) {
-    console.log("type:", type);
-    console.log("signature:", signature);
-    // signature.encoded - for the base64 encoded png
-    // signature.pathName - for the file path name
+  async function createSignatureFile(signatureBase64) {
+    const dirs = ReactNativeBlobUtil.fs.dirs;
 
-    if (type === "draw") {
-      const dirs = ReactNativeBlobUtil.fs.dirs;
+    const filePath =
+      dirs.DocumentDir +
+      "/Signatures" +
+      "/signature" +
+      new Date().getMilliseconds() +
+      ".png";
 
-      const filePath =
-        dirs.DocumentDir +
-        "/Signatures" +
-        "/signature" +
-        new Date().getMilliseconds() +
-        ".png";
+    console.log("filePath:", filePath);
 
-      console.log("filePath:", filePath);
+    ReactNativeBlobUtil.fs
+      .writeStream(filePath, "base64")
+      .then((data) => data.write(signatureBase64))
+      .then(() => {
+        // ReactNativeBlobUtil.ios.previewDocument("file://" + filePath);
+        console.log("Successfully saved to: " + filePath);
+      })
+      .catch((errorMessage) => {
+        console.log(errorMessage);
+      });
 
-      ReactNativeBlobUtil.fs
-        .writeStream(filePath, "base64")
-        .then((data) => data.write(signature.encoded))
-        .then(() => {
-          // ReactNativeBlobUtil.ios.previewDocument("file://" + filePath);
-          console.log("Successfully saved to: " + filePath);
-        })
-        .catch((errorMessage) => {
-          console.log(errorMessage);
-        });
+    // Include filePath into the signature array
+    setSignatureList([...signatureList, filePath]);
+    loadStoredSignatures(setSignatureList);
 
-      // Include filePath into the signature array
-      setSignatureList([...signatureList, filePath]);
-      loadStoredSignatures(setSignatureList);
-    }
+    // Close Modal after completion
+    setShowSignatureModal(false);
   }
 
   function changeSignatureColor(color) {
     if (color === signatureColor) return;
-    setSignatureColor(color);
-    setUpdateSignatureCapture(false);
+
+    if (signatureInputOption === "draw") {
+      setSignatureColor(color);
+      setUpdateSignatureCapture(false);
+    }
+
+    if (signatureInputOption === "write") {
+      writtenSignatureRef.current.setNativeProps({ color: color });
+    }
   }
 
-  async function saveAndUse() {
-    signature.current.saveImage();
+  async function saveSignature() {
+    if (signatureInputOption === "write") {
+      writtenSignatureRef.current.blur();
 
-    setTimeout(() => {
-      setShowSignatureModal(false);
-    }, 1000);
+      // Capturing the signature textInput through the ref
+      const writtenSignatureBase64 = await captureRef(writtenSignatureRef, {
+        format: "png",
+        result: "base64",
+      });
+
+      createSignatureFile(writtenSignatureBase64);
+    }
+
+    if (signatureInputOption === "draw") {
+      // Method that will trigger the onSaveEvent()
+      signature.current.saveImage();
+    }
   }
 
   function switchToWriting() {
     setSignatureInputOption("write");
-    writeSignature?.current?.focus();
+    writtenSignatureRef?.current?.focus();
   }
 
   useEffect(() => {
     // Auto focus on the rename field
-    writeSignature?.current?.focus();
-  }, [writeSignature]);
+    writtenSignatureRef?.current?.focus();
+  }, [writtenSignatureRef]);
 
-  const writeSignature = useRef();
-  const [text, onChangeText] = useState("");
+  function clearSignature() {
+    if (signatureInputOption === "draw") signature.current.resetImage();
 
-  const [signatureInputOption, setSignatureInputOption] = useState("draw");
+    onChangeText("");
+  }
 
   return (
     <React.Fragment>
@@ -113,11 +135,8 @@ export default function SignatureCanvas({
         </TouchableOpacity>
 
         <View className="flex-row justify-between py-4">
-          <Button onPress={saveAndUse} title="Save Signature" />
-          <Button
-            onPress={() => signature.current.resetImage()}
-            title="Clear"
-          />
+          <Button onPress={saveSignature} title="Save Signature" />
+          <Button onPress={clearSignature} title="Clear" />
         </View>
 
         {isModal && (
@@ -140,7 +159,9 @@ export default function SignatureCanvas({
               viewMode={"portrait"}
               showTitleLabel={false}
               showNativeButtons={false}
-              onSaveEvent={(signature) => saveSignature(signature, "draw")}
+              onSaveEvent={(signature) =>
+                createSignatureFile(signature.encoded)
+              }
               strokeColor={signatureColor}
             />
           ) : (
@@ -150,11 +171,12 @@ export default function SignatureCanvas({
         {signatureInputOption === "write" && (
           <View className="items-center justify-center h-[344px] border-0.5 border-dashed">
             <TextInput
-              ref={writeSignature}
+              ref={writtenSignatureRef}
               style={{
                 fontFamily: "Cedarville-Cursive",
                 color: "black",
                 fontSize: 72,
+                height: 344,
               }}
               onChangeText={onChangeText}
               placeholder="Sign"
@@ -166,7 +188,7 @@ export default function SignatureCanvas({
         <View className="flex-row absolute left-5 top-5 justify-end">
           <TouchableOpacity
             className="h-8 w-8 bg-black rounded-full mx-1"
-            onPress={() => changeSignatureColor("black")}
+            onPress={() => changeSignatureColor("#000")}
           />
           <TouchableOpacity
             className="h-8 w-8 bg-[#0047ab] rounded-full mx-1"
