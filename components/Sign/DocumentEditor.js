@@ -24,18 +24,19 @@ import { SaveDocument } from "./SaveDocument";
 import { StatusBar } from "expo-status-bar";
 import { signatureRatio } from "../../constants/Utils";
 import AddSignatureModal from "./AddSignatureModal";
-import TabViewNow from "../Sign/TabViewNow";
+import DatePR from "./PanResponders/DatePR";
 
 export default function DocumentEditor({ navigation, route }) {
   const [selectedPrinter, setSelectedPrinter] = useState();
   // Show current signatures
   const [showSignatures, setShowSignatures] = useState(false);
   // Input chosen signature into the pdf
-  const [inputSignature, setInputSignature] = useState(false);
+  const [showSignaturePanResponder, setShowSignaturePanResponder] =
+    useState(false);
   // Selected signature path
   const [selectedSignaturePath, setSelectedSignaturePath] = useState(null);
   // Signature list context
-  const { signatureList, setSignatureList, setDocList } = useContext(Context);
+  const { signatureList, setSignatureList } = useContext(Context);
 
   // Relative width and height of inputed element
   const [coordinateX, setCoordinateX] = useState(0);
@@ -118,10 +119,14 @@ export default function DocumentEditor({ navigation, route }) {
   }
 
   async function readPdf() {
-    const readDocument = await RNFS.readFile(pickedDocument, "base64");
+    try {
+      const readDocument = await RNFS.readFile(pickedDocument, "base64");
 
-    setPdfBase64(readDocument);
-    setPdfArrayBuffer(base64ToArrayBuffer(readDocument));
+      setPdfBase64(readDocument);
+      setPdfArrayBuffer(base64ToArrayBuffer(readDocument));
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   const base64ToArrayBuffer = (base64) => {
@@ -132,6 +137,19 @@ export default function DocumentEditor({ navigation, route }) {
 
     return bytes;
   };
+
+  function addCurrentDate() {
+    setShowDatePanResponder(true);
+  }
+
+  const [showDatePanResponder, setShowDatePanResponder] = useState(false);
+
+  console.log(coordinateX, coordinateY);
+  const [date_x, setDate_x] = useState(0);
+  const [date_y, setDate_y] = useState(0);
+
+  const [dateSize, setDateSize] = useState(15);
+  const [date, setDate] = useState(new Date().toLocaleDateString());
 
   return (
     <SafeAreaView className="flex-1 ">
@@ -179,6 +197,7 @@ export default function DocumentEditor({ navigation, route }) {
           enablePaging={true}
           style={{ width: displayWidth, height: displayHeight }}
           onLoadComplete={(pages, path, { height, width }) => {
+            // Taking crucial metrics for saving the elements on the pdf
             console.log("pdf_height:", height, ":", "pdf_width:", width);
             console.log("pdf_ratio:", (height / width).toFixed(2));
 
@@ -220,10 +239,10 @@ export default function DocumentEditor({ navigation, route }) {
             console.log(`Link pressed: ${uri}`);
           }}
         >
-          {inputSignature ? (
+          {showSignaturePanResponder ? (
             <DraggableElement
               pageRatio={pageRatio}
-              setInputSignature={setInputSignature}
+              setShowSignaturePanResponder={setShowSignaturePanResponder}
               selectedSignaturePath={selectedSignaturePath}
               setCoordinateX={setCoordinateX}
               setCoordinateY={setCoordinateY}
@@ -233,6 +252,17 @@ export default function DocumentEditor({ navigation, route }) {
               setElementSizeHeight={setElementSizeHeight}
             />
           ) : null}
+
+          {showDatePanResponder ? (
+            <DatePR
+              date={date}
+              setDate_x={setDate_x}
+              setDate_y={setDate_y}
+              dateSize={dateSize}
+              setDateSize={setDateSize}
+              setShowDatePanResponder={setShowDatePanResponder}
+            />
+          ) : null}
         </Pdf>
       </View>
 
@@ -240,6 +270,7 @@ export default function DocumentEditor({ navigation, route }) {
         <SaveDocument
           isNamingModal={isNamingModal}
           setIsNamingModal={setIsNamingModal}
+          showSignaturePanResponder={showSignaturePanResponder}
           currPage={currPage}
           coordinateX={coordinateX}
           coordinateY={coordinateY}
@@ -255,6 +286,12 @@ export default function DocumentEditor({ navigation, route }) {
           pdfArrayBuffer={pdfArrayBuffer}
           navigation={navigation}
           editingPalette={editingPalette}
+          // Date props
+          date={date}
+          date_x={date_x}
+          date_y={date_y}
+          dateSize={dateSize}
+          showDatePanResponder={showDatePanResponder}
         />
       )}
 
@@ -265,12 +302,6 @@ export default function DocumentEditor({ navigation, route }) {
           setShowSignatureModal={setShowSignatureModal}
         />
       )}
-
-      {/*  <AddSignatureModal
-          navigation={navigation}
-          showSignatureModal={showSignatureModal}
-          setShowSignatureModal={setShowSignatureModal}
-        /> */}
 
       <BottomSheetModal
         ref={editingPalette}
@@ -316,7 +347,7 @@ export default function DocumentEditor({ navigation, route }) {
                         onPress={() =>
                           selectSignature(
                             path,
-                            setInputSignature,
+                            setShowSignaturePanResponder,
                             selectedSignaturePath,
                             setSelectedSignaturePath,
                             setSignatureBase64Data
@@ -339,14 +370,26 @@ export default function DocumentEditor({ navigation, route }) {
               </ScrollView>
             </View>
           ) : (
-            <View className="flex-row items-center justify-center">
-              <TouchableOpacity
-                className="bg-gray-200 rounded-full mt-3 py-3 px-10"
-                onPress={toggleSignatureList}
-              >
-                <FontAwesome6 name="signature" size={24} color="black" />
-                <Text>eSign</Text>
-              </TouchableOpacity>
+            <View className="flex-row gap-2">
+              <View className="flex-row items-center justify-center">
+                <TouchableOpacity
+                  className="bg-gray-200 rounded-full mt-3 py-3 px-10"
+                  onPress={toggleSignatureList}
+                >
+                  <FontAwesome6 name="signature" size={24} color="black" />
+                  <Text>eSign</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className="flex-row items-center justify-center">
+                <TouchableOpacity
+                  className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
+                  onPress={addCurrentDate}
+                >
+                  <MaterialIcons name="date-range" size={24} color="black" />
+                  <Text>Date</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           )}
         </View>

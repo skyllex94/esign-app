@@ -10,7 +10,7 @@ import {
 
 export default function DraggableElement({
   pageRatio,
-  setInputSignature,
+  setShowSignaturePanResponder,
   selectedSignaturePath,
   setCoordinateX,
   setCoordinateY,
@@ -48,7 +48,8 @@ export default function DraggableElement({
   ).current;
 
   return (
-    <View className="items-center justify-center">
+    <View className="items-center justify-center ">
+      {/* absolute left-10 */}
       <Animated.View
         ref={elementLocation}
         style={{
@@ -69,7 +70,7 @@ export default function DraggableElement({
             <View className="justify-center items-start">
               <TouchableOpacity
                 className="mb-3 bg-red-600 rounded-full"
-                onPress={() => setInputSignature(false)}
+                onPress={() => setShowSignaturePanResponder(false)}
               >
                 <AntDesign name="close" size={24} color="white" />
               </TouchableOpacity>

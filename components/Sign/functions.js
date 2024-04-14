@@ -10,7 +10,7 @@ import * as MailComposer from "expo-mail-composer";
 
 export const selectSignature = async (
   signatureFilePath,
-  setInputSignature,
+  setShowSignaturePanResponder,
   selectedSignaturePath,
   setSelectedSignaturePath,
   setSignatureBase64Data
@@ -19,10 +19,10 @@ export const selectSignature = async (
   setSignatureBase64Data(signatureBase64);
 
   if (selectedSignaturePath == signatureFilePath)
-    setInputSignature((curr) => !curr);
+    setShowSignaturePanResponder((curr) => !curr);
   else {
     setSelectedSignaturePath(() => signatureFilePath);
-    setInputSignature(true);
+    setShowSignaturePanResponder(true);
   }
 };
 

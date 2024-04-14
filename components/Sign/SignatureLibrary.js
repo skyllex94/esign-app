@@ -1,22 +1,13 @@
 import {
   View,
   SafeAreaView,
-  Button,
   Image,
   Text,
   TouchableOpacity,
-  Alert,
-  Dimensions,
 } from "react-native";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 // UI Imports
-import {
-  AntDesign,
-  EvilIcons,
-  FontAwesome6,
-  Ionicons,
-  MaterialIcons,
-} from "@expo/vector-icons";
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
 // Signature Imports
 import ReactNativeBlobUtil from "react-native-blob-util";
 import { ScrollView } from "react-native-gesture-handler";
@@ -47,11 +38,6 @@ export default function DrawSignCapture({ navigation }) {
     ReactNativeBlobUtil.ios.openDocument(signatureFilePath);
   }
 
-  function addNewSignature() {
-    signature.current.saveImage();
-    signature.current.resetImage();
-  }
-
   async function showSignatureDetails(path) {
     const signatureInfo = await FileSystem.getInfoAsync(path);
     setDetailsInfo(signatureInfo);
@@ -62,20 +48,9 @@ export default function DrawSignCapture({ navigation }) {
     <SafeAreaView className="flex-1">
       <SignatureCanvas navigation={navigation} />
 
-      <View className="flex-1 m-4">
-        <View className="flex-row items-center justify-between mt-2">
-          <Text className="text-lg">My Signatures</Text>
-
-          <TouchableOpacity
-            // onPress={addNewSignature}
-            className="bg-slate-50 border-slate-400 rounded-lg p-2 mx-1"
-          >
-            <FontAwesome6 name="add" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
-
-        <ScrollView showsVerticalScrollIndicator={false} className="mt-2">
-          <View className="flex-1 mt-2">
+      <View className="flex-1 mx-3 mb-2">
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <View className="flex-1">
             {signatureList.map((path, idx) => (
               <View
                 key={idx}
@@ -126,7 +101,8 @@ export default function DrawSignCapture({ navigation }) {
           />
         )}
 
-        <View className="mt-3">
+        {/* 
+       <View className="mt-3">
           <TouchableOpacity
             onPress={() =>
               openDocument(navigation, signatureList, bottomSheetChooseDocument)
@@ -138,6 +114,7 @@ export default function DrawSignCapture({ navigation }) {
             </Text>
           </TouchableOpacity>
         </View>
+      */}
       </View>
     </SafeAreaView>
   );

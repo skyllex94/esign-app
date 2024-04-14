@@ -62,7 +62,7 @@ export default function SignatureCanvas({
     loadStoredSignatures(setSignatureList);
 
     // Close Modal after completion
-    setShowSignatureModal(false);
+    if (isModal) setShowSignatureModal(false);
   }
 
   function changeSignatureColor(color) {
@@ -80,6 +80,7 @@ export default function SignatureCanvas({
 
   async function saveSignature() {
     if (signatureInputOption === "write") {
+      if (text === "") return;
       writtenSignatureRef.current.blur();
 
       // Capturing the signature textInput through the ref
@@ -126,17 +127,26 @@ export default function SignatureCanvas({
           </TouchableOpacity>
         )}
 
-        <TouchableOpacity onPress={() => setSignatureInputOption("draw")}>
-          <Text>Draw</Text>
-        </TouchableOpacity>
+        <View
+          className={`flex-row gap-4 ${isModal ? "my-1 pb-4" : "my-3 mx-5"} `}
+        >
+          <TouchableOpacity
+            className={`${
+              signatureInputOption === "draw" && "border-b-2"
+            } border-b-[#7851A9] pb-1 ml-2`}
+            onPress={() => setSignatureInputOption("draw")}
+          >
+            <Text className="text-[16px]">Draw</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity onPress={switchToWriting}>
-          <Text>Write</Text>
-        </TouchableOpacity>
-
-        <View className="flex-row justify-between py-4">
-          <Button onPress={saveSignature} title="Save Signature" />
-          <Button onPress={clearSignature} title="Clear" />
+          <TouchableOpacity
+            className={`${
+              signatureInputOption === "write" && "border-b-2"
+            } border-b-[#7851A9] pb-1`}
+            onPress={switchToWriting}
+          >
+            <Text className="text-[16px]">Write</Text>
+          </TouchableOpacity>
         </View>
 
         {isModal && (
@@ -169,7 +179,7 @@ export default function SignatureCanvas({
           ))}
 
         {signatureInputOption === "write" && (
-          <View className="items-center justify-center h-[344px] border-0.5 border-dashed">
+          <View className="items-center bg-white justify-center h-[344px] border-0.5 border-dashed">
             <TextInput
               ref={writtenSignatureRef}
               style={{
@@ -202,6 +212,19 @@ export default function SignatureCanvas({
 
         <View className="line justify-center absolute w-[90%] left-5 top-64">
           <View className="border-[0.5px] border-dashed border-gray-500"></View>
+        </View>
+
+        <View
+          className={`flex-row items-center ${
+            isModal ? "justify-end my-4" : "justify-between m-4"
+          } `}
+        >
+          {!isModal && <Text className="text-[18px]">My Signatures</Text>}
+
+          <View className="flex-row ">
+            <Button onPress={saveSignature} title="Save" />
+            <Button onPress={clearSignature} title="Clear" />
+          </View>
         </View>
       </View>
     </React.Fragment>
