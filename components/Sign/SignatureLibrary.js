@@ -18,7 +18,7 @@ import { actionButton } from "../../constants/UI";
 import * as FileSystem from "expo-file-system";
 import { SignatureDetails } from "./SignatureDetails";
 import { openDocument } from "../functions/Global";
-import SignatureCanvas from "./SignatureCanvas";
+import DrawingCanvas from "./DrawingCanvas";
 
 export default function DrawSignCapture({ navigation }) {
   // Signature Details Modal
@@ -46,7 +46,7 @@ export default function DrawSignCapture({ navigation }) {
 
   return (
     <SafeAreaView className="flex-1">
-      <SignatureCanvas navigation={navigation} />
+      <DrawingCanvas navigation={navigation} />
 
       <View className="flex-1 mx-3 mb-2">
         <ScrollView showsVerticalScrollIndicator={false}>
@@ -100,21 +100,6 @@ export default function DrawSignCapture({ navigation }) {
             setSignatureDetailsModal={setSignatureDetailsModal}
           />
         )}
-
-        {/* 
-       <View className="mt-3">
-          <TouchableOpacity
-            onPress={() =>
-              openDocument(navigation, signatureList, bottomSheetChooseDocument)
-            }
-            className={`bg-[${actionButton}] items-center justify-center rounded-lg h-12 w-full`}
-          >
-            <Text className="text-white text-[15px] font-bold">
-              Open Document
-            </Text>
-          </TouchableOpacity>
-        </View>
-      */}
       </View>
     </SafeAreaView>
   );

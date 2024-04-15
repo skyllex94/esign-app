@@ -37,6 +37,13 @@ export const SaveDocument = ({
   date_y,
   dateSize,
   showDatePanResponder,
+  // Initials props
+  showInitials,
+  initialsX,
+  initialsY,
+  initialsWidthSize,
+  initialsHeightSize,
+  initialsArrayBuffer,
 }) => {
   const renameRef = useRef();
   const animation = useRef();
@@ -146,6 +153,42 @@ export const SaveDocument = ({
         });
       } catch (err) {
         console.log(err);
+      }
+    }
+
+    if (showInitials === true) {
+      try {
+        // The x-coordinate anchor point for signature inputted
+        const x = (pdfWidth * initialsX) / Dimensions.get("window").width;
+
+        // The y-coordinate anchor point for the signature to be inputted
+        // Starting from the bottom so it should be divided on itself
+        const y =
+          pdfHeight -
+          (pdfHeight * (initialsY + initialsWidthSize - 10)) /
+            (Dimensions.get("window").width * pageRatio).toFixed(2);
+
+        const pages = pdfDoc.getPages();
+        const selectedPage = pages[currPage - 1];
+
+        // Inputting the signature inside the PDF document
+        if (initialsArrayBuffer) {
+          const initialsFile = await pdfDoc.embedPng(initialsArrayBuffer);
+
+          selectedPage.drawImage(initialsFile, {
+            x,
+            y,
+            width: initialsWidthSize * diffInDisplays,
+            height: initialsHeightSize * diffInDisplays,
+          });
+        }
+      } catch (err) {
+        showMessage({
+          message: "Error While Saving Document",
+          description: err.toString(),
+          duration: 3000,
+          type: "danger",
+        });
       }
     }
 

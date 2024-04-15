@@ -26,6 +26,23 @@ export const selectSignature = async (
   }
 };
 
+export const selectInitials = async (
+  path,
+  setShowInitials,
+  selectedInitialsPath,
+  setSelectedInitialsPath,
+  setInitialsBase64Data
+) => {
+  const initialsBase64 = await RNFS.readFile(path, "base64");
+  setInitialsBase64Data(initialsBase64);
+
+  if (selectedInitialsPath == path) setShowInitials((curr) => !curr);
+  else {
+    setSelectedInitialsPath(() => path);
+    setShowInitials(true);
+  }
+};
+
 export const deleteSignature = (
   fileWtPath,
   signatureList,
@@ -86,6 +103,20 @@ export async function loadStoredSignatures(setSignatureList) {
   });
 
   setSignatureList([...updatedSignatureList]);
+}
+
+export async function loadStoredInitials(setInitialsList) {
+  const updatedInitialsList = [];
+
+  let dir = await FileSystem.readDirectoryAsync(
+    FileSystem.documentDirectory + "Initials"
+  );
+
+  dir.forEach((val) => {
+    updatedInitialsList.push(FileSystem.documentDirectory + "Initials/" + val);
+  });
+
+  setInitialsList([...updatedInitialsList]);
 }
 
 export const uint8ToBase64Conversion = (u8Arr) => {

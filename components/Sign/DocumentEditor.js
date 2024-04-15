@@ -16,15 +16,17 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import { deleteSignature, selectSignature } from "./functions";
+import { deleteSignature, selectInitials, selectSignature } from "./functions";
 
-import DraggableElement from "./DraggableElement";
+import Signature from "./PanResponders/Signature";
 // PDF editing
 import { SaveDocument } from "./SaveDocument";
 import { StatusBar } from "expo-status-bar";
 import { signatureRatio } from "../../constants/Utils";
 import AddSignatureModal from "./AddSignatureModal";
-import DatePR from "./PanResponders/DatePR";
+import DateTime from "./PanResponders/DateTime";
+import Initials from "./PanResponders/Initials";
+import AddInitialsModal from "./Initials/AddInitialsModal";
 
 export default function DocumentEditor({ navigation, route }) {
   const [selectedPrinter, setSelectedPrinter] = useState();
@@ -36,7 +38,8 @@ export default function DocumentEditor({ navigation, route }) {
   // Selected signature path
   const [selectedSignaturePath, setSelectedSignaturePath] = useState(null);
   // Signature list context
-  const { signatureList, setSignatureList } = useContext(Context);
+  const { signatureList, setSignatureList, initialsList, setInitialsList } =
+    useContext(Context);
 
   // Relative width and height of inputed element
   const [coordinateX, setCoordinateX] = useState(0);
@@ -71,6 +74,16 @@ export default function DocumentEditor({ navigation, route }) {
   // Add Signature Modal
   const [showSignatureModal, setShowSignatureModal] = useState(false);
 
+  // Date states
+  const [showDatePanResponder, setShowDatePanResponder] = useState(false);
+
+  // Date coordinates of the pan responder
+  const [date_x, setDate_x] = useState(0);
+  const [date_y, setDate_y] = useState(0);
+
+  const [dateSize, setDateSize] = useState(15);
+  const [date] = useState(new Date().toLocaleDateString());
+
   useEffect(() => {
     editingPalette.current.present();
   }, [editingPalette, navigation]);
@@ -82,7 +95,13 @@ export default function DocumentEditor({ navigation, route }) {
     if (signatureBase64Data) {
       setSignatureArrayBuffer(base64ToArrayBuffer(signatureBase64Data));
     }
-  }, [signatureBase64Data]);
+
+    // TODO: Make sure it's actually going through here on load
+    if (initialsBase64Data) {
+      console.log("INside");
+      setInitialsArrayBuffer(base64ToArrayBuffer(initialsBase64Data));
+    }
+  }, [signatureBase64Data, initialsBase64Data]);
 
   // Passed path name for the documents pickeda
   const { pickedDocument } = route.params;
@@ -114,10 +133,6 @@ export default function DocumentEditor({ navigation, route }) {
     setShowSignatureModal(true);
   }
 
-  function toggleSignatureList() {
-    setShowSignatures((curr) => !curr);
-  }
-
   async function readPdf() {
     try {
       const readDocument = await RNFS.readFile(pickedDocument, "base64");
@@ -138,21 +153,22 @@ export default function DocumentEditor({ navigation, route }) {
     return bytes;
   };
 
-  function addCurrentDate() {
-    setShowDatePanResponder(true);
-  }
+  const [showInitials, setShowInitials] = useState(false);
+  const [showInitialsList, setShowInitialsList] = useState(false);
+  const [showInitialsModal, setShowInitialsModal] = useState(false);
+  const [selectedInitialsPath, setSelectedInitialsPath] = useState(null);
+  const [initialsBase64Data, setInitialsBase64Data] = useState(null);
 
-  const [showDatePanResponder, setShowDatePanResponder] = useState(false);
-
-  console.log(coordinateX, coordinateY);
-  const [date_x, setDate_x] = useState(0);
-  const [date_y, setDate_y] = useState(0);
-
-  const [dateSize, setDateSize] = useState(15);
-  const [date, setDate] = useState(new Date().toLocaleDateString());
+  const [initialsX, setInitialsX] = useState(0);
+  const [initialsY, setInitialsY] = useState(0);
+  const [initialsWidthSize, setInitialsWidthSize] = useState(
+    80 * signatureRatio
+  );
+  const [initialsHeightSize, setInitialsHeightSize] = useState(80);
+  const [initialsArrayBuffer, setInitialsArrayBuffer] = useState(null);
 
   return (
-    <SafeAreaView className="flex-1 ">
+    <SafeAreaView className="flex-1">
       <StatusBar style="dark" />
       <View className="flex-row items-center justify-between m-2">
         <TouchableOpacity
@@ -240,8 +256,7 @@ export default function DocumentEditor({ navigation, route }) {
           }}
         >
           {showSignaturePanResponder ? (
-            <DraggableElement
-              pageRatio={pageRatio}
+            <Signature
               setShowSignaturePanResponder={setShowSignaturePanResponder}
               selectedSignaturePath={selectedSignaturePath}
               setCoordinateX={setCoordinateX}
@@ -254,7 +269,7 @@ export default function DocumentEditor({ navigation, route }) {
           ) : null}
 
           {showDatePanResponder ? (
-            <DatePR
+            <DateTime
               date={date}
               setDate_x={setDate_x}
               setDate_y={setDate_y}
@@ -263,6 +278,19 @@ export default function DocumentEditor({ navigation, route }) {
               setShowDatePanResponder={setShowDatePanResponder}
             />
           ) : null}
+
+          {showInitials && (
+            <Initials
+              setShowInitials={setShowInitials}
+              selectedInitialsPath={selectedInitialsPath}
+              setInitialsX={setInitialsX}
+              setInitialsY={setInitialsY}
+              initialsWidthSize={initialsWidthSize}
+              setInitialsWidthSize={setInitialsWidthSize}
+              initialsHeightSize={initialsHeightSize}
+              setInitialsHeightSize={setInitialsHeightSize}
+            />
+          )}
         </Pdf>
       </View>
 
@@ -292,6 +320,13 @@ export default function DocumentEditor({ navigation, route }) {
           date_y={date_y}
           dateSize={dateSize}
           showDatePanResponder={showDatePanResponder}
+          // Initials props
+          showInitials={showInitials}
+          initialsX={initialsX}
+          initialsY={initialsY}
+          initialsWidthSize={initialsWidthSize}
+          initialsHeightSize={initialsHeightSize}
+          initialsArrayBuffer={initialsArrayBuffer}
         />
       )}
 
@@ -300,6 +335,14 @@ export default function DocumentEditor({ navigation, route }) {
           navigation={navigation}
           showSignatureModal={showSignatureModal}
           setShowSignatureModal={setShowSignatureModal}
+        />
+      )}
+
+      {showInitialsModal && (
+        <AddInitialsModal
+          navigation={navigation}
+          showInitialsModal={showInitialsModal}
+          setShowInitialsModal={setShowInitialsModal}
         />
       )}
 
@@ -369,12 +412,66 @@ export default function DocumentEditor({ navigation, route }) {
                 </View>
               </ScrollView>
             </View>
+          ) : showInitialsList ? (
+            <View className="flex-row mt-2">
+              <View className="flex-row items-start mt-2">
+                <TouchableOpacity
+                  onPress={() => setShowInitialsList((curr) => !curr)}
+                  className="bg-slate-50 border-slate-400 border-solid border-2 rounded-lg p-4 mx-1"
+                >
+                  <Ionicons name="arrow-back" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <TouchableOpacity
+                  onPress={() => setShowInitialsModal(true)}
+                  className="bg-slate-50 mt-2 border-slate-400 border-solid border-2 rounded-lg p-4 mx-1"
+                >
+                  <FontAwesome6 name="add" size={24} color="black" />
+                </TouchableOpacity>
+
+                <View className="flex-row items-start mt-2">
+                  {initialsList.map((path, idx) => (
+                    <View
+                      key={idx}
+                      className="flex-row items-start mx-1 bg-slate-50 border-slate-300 border-dashed border-2 rounded-lg"
+                    >
+                      <TouchableOpacity
+                        onPress={() =>
+                          selectInitials(
+                            path,
+                            setShowInitials,
+                            selectedInitialsPath,
+                            setSelectedInitialsPath,
+                            setInitialsBase64Data
+                          )
+                        }
+                        className="flex-row p-1"
+                      >
+                        <Image className="h-12 w-20" source={{ uri: path }} />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() =>
+                          deleteSignature(path, signatureList, setSignatureList)
+                        }
+                      >
+                        <Ionicons name="close" size={20} color="black" />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
           ) : (
-            <View className="flex-row gap-2">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              className="flex-row gap-2"
+            >
               <View className="flex-row items-center justify-center">
                 <TouchableOpacity
                   className="bg-gray-200 rounded-full mt-3 py-3 px-10"
-                  onPress={toggleSignatureList}
+                  onPress={() => setShowSignatures((curr) => !curr)}
                 >
                   <FontAwesome6 name="signature" size={24} color="black" />
                   <Text>eSign</Text>
@@ -384,13 +481,23 @@ export default function DocumentEditor({ navigation, route }) {
               <View className="flex-row items-center justify-center">
                 <TouchableOpacity
                   className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
-                  onPress={addCurrentDate}
+                  onPress={() => setShowDatePanResponder((curr) => !curr)}
                 >
                   <MaterialIcons name="date-range" size={24} color="black" />
                   <Text>Date</Text>
                 </TouchableOpacity>
               </View>
-            </View>
+
+              <View className="flex-row items-center justify-center">
+                <TouchableOpacity
+                  className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
+                  onPress={() => setShowInitialsList(true)}
+                >
+                  <MaterialIcons name="draw" size={24} color="black" />
+                  <Text>Initials</Text>
+                </TouchableOpacity>
+              </View>
+            </ScrollView>
           )}
         </View>
       </BottomSheetModal>

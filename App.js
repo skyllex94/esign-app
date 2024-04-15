@@ -38,6 +38,7 @@ function Main() {
   const bottomSheetChooseDocument = useRef();
   // Shared state for DrawSign & DocumentEditor
   const [signatureList, setSignatureList] = useState([]);
+  const [initialsList, setInitialsList] = useState([]);
   const [docList, setDocList] = useState([]);
   const [filteredDocList, setFilteredDocList] = useState([]);
 
@@ -59,6 +60,8 @@ function Main() {
       value={{
         signatureList,
         setSignatureList,
+        initialsList,
+        setInitialsList,
         docList,
         setDocList,
         filteredDocList,

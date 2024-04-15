@@ -1,20 +1,21 @@
 import { View, TouchableOpacity, TextInput } from "react-native";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { signatureCanvasHeight } from "../../constants/Utils";
+import { DrawingCanvasHeight } from "../../constants/Utils";
 import SignatureCapture from "react-native-signature-capture";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import { Context } from "../contexts/Global";
 import { Button, Text } from "react-native";
-import { loadStoredSignatures } from "./functions";
+import { loadStoredInitials, loadStoredSignatures } from "./functions";
 import { captureRef } from "react-native-view-shot";
 
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function SignatureCanvas({
+export default function DrawingCanvas({
   navigation,
   isModal,
   setShowSignatureModal,
+  type,
 }) {
   // Drawn signature states
   const signature = useRef();
@@ -27,7 +28,8 @@ export default function SignatureCanvas({
   // Shares states for the options
   const [signatureColor, setSignatureColor] = useState("black");
   const [signatureInputOption, setSignatureInputOption] = useState("draw");
-  const { signatureList, setSignatureList } = useContext(Context);
+  const { signatureList, setSignatureList, initialsList, setInitialsList } =
+    useContext(Context);
 
   // Needed to update when signature color is changed
   useEffect(() => {
@@ -37,12 +39,23 @@ export default function SignatureCanvas({
   async function createSignatureFile(signatureBase64) {
     const dirs = ReactNativeBlobUtil.fs.dirs;
 
-    const filePath =
-      dirs.DocumentDir +
-      "/Signatures" +
-      "/signature" +
-      new Date().getMilliseconds() +
-      ".png";
+    let filePath = null;
+
+    if (type && type === "initials") {
+      filePath =
+        dirs.DocumentDir +
+        "/Initials" +
+        "/initials-" +
+        new Date().getMilliseconds() +
+        ".png";
+    } else {
+      filePath =
+        dirs.DocumentDir +
+        "/Signatures" +
+        "/signature" +
+        new Date().getMilliseconds() +
+        ".png";
+    }
 
     console.log("filePath:", filePath);
 
@@ -57,9 +70,14 @@ export default function SignatureCanvas({
         console.log(errorMessage);
       });
 
-    // Include filePath into the signature array
-    setSignatureList([...signatureList, filePath]);
-    loadStoredSignatures(setSignatureList);
+    if (type === "initials") {
+      setInitialsList([...initialsList, filePath]);
+      loadStoredInitials(setInitialsList);
+    } else {
+      // Include filePath into the signature array
+      setSignatureList([...signatureList, filePath]);
+      loadStoredSignatures(setSignatureList);
+    }
 
     // Close Modal after completion
     if (isModal) setShowSignatureModal(false);
@@ -163,7 +181,7 @@ export default function SignatureCanvas({
         {signatureInputOption === "draw" &&
           (updateSignatureCapture ? (
             <SignatureCapture
-              style={{ width: "100%", height: signatureCanvasHeight }}
+              style={{ width: "100%", height: DrawingCanvasHeight }}
               ref={signature}
               saveImageFileInExtStorage={true}
               viewMode={"portrait"}

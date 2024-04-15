@@ -8,18 +8,15 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-export default function DraggableElement({
-  pageRatio,
-  setShowSignaturePanResponder,
-  selectedSignaturePath,
-  setCoordinateX,
-  setCoordinateY,
-  elementSizeWidth,
-  setElementSizeWidth,
-  elementSizeHeight,
-  setElementSizeHeight,
-  pdfWidth,
-  pdfHeight,
+export default function Initials({
+  setShowInitials,
+  selectedInitialsPath,
+  setInitialsX,
+  setInitialsY,
+  initialsWidthSize,
+  setInitialsWidthSize,
+  initialsHeightSize,
+  setInitialsHeightSize,
 }) {
   const pan = useRef(new Animated.ValueXY()).current;
   const elementLocation = React.useRef();
@@ -38,8 +35,8 @@ export default function DraggableElement({
         elementLocation.current.measure((h, w, px, py, x, y) => {
           console.log("rel_x", h, "rel_y", w, px, py, x, y);
 
-          setCoordinateX(h);
-          setCoordinateY(w);
+          setInitialsX(h);
+          setInitialsY(w);
         });
 
         pan.extractOffset();
@@ -48,10 +45,10 @@ export default function DraggableElement({
   ).current;
 
   return (
-    <View className="items-center justify-center ">
-      {/* absolute left-10 */}
+    <View className="items-center justify-center relative">
       <Animated.View
         ref={elementLocation}
+        className="absolute mx-auto top-10"
         style={{
           transform: [{ translateX: pan.x }, { translateY: pan.y }],
         }}
@@ -61,16 +58,16 @@ export default function DraggableElement({
           <Image
             className="mr-2"
             style={{
-              height: elementSizeHeight,
-              width: elementSizeWidth,
+              height: initialsHeightSize,
+              width: initialsWidthSize,
             }}
-            source={{ uri: selectedSignaturePath }}
+            source={{ uri: selectedInitialsPath }}
           />
           <View className="justify-between">
             <View className="justify-center items-start">
               <TouchableOpacity
                 className="mb-3 bg-red-600 rounded-full"
-                onPress={() => setShowSignaturePanResponder(false)}
+                onPress={() => setShowInitials(false)}
               >
                 <AntDesign name="close" size={24} color="white" />
               </TouchableOpacity>
@@ -79,16 +76,16 @@ export default function DraggableElement({
             <TouchableOpacity
               className="mb-1"
               onPress={() => {
-                setElementSizeWidth((curr) => curr + 10);
-                setElementSizeHeight((curr) => curr + 10);
+                setInitialsWidthSize((curr) => curr + 10);
+                setInitialsHeightSize((curr) => curr + 10);
               }}
             >
               <AntDesign name="pluscircleo" size={24} color="black" />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                setElementSizeWidth((curr) => curr - 10);
-                setElementSizeHeight((curr) => curr - 10);
+                setInitialsWidthSize((curr) => curr - 10);
+                setInitialsHeightSize((curr) => curr - 10);
               }}
             >
               <AntDesign name="minuscircleo" size={24} color="black" />

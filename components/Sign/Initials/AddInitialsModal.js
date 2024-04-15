@@ -1,25 +1,25 @@
 import React from "react";
 import { View, Modal, TouchableOpacity } from "react-native";
 
-import DrawingCanvas from "./DrawingCanvas";
+import DrawingCanvas from "../DrawingCanvas";
 
-export default function AddSignatureModal({
+export default function AddInitialsModal({
   navigation,
-  showSignatureModal,
-  setShowSignatureModal,
+  showInitialsModal,
+  setShowInitialsModal,
 }) {
   return (
     <Modal
       animationType="slide"
       transparent={true}
-      visible={showSignatureModal}
-      onBackdropPress={() => setShowSignatureModal(false)}
-      onRequestClose={() => setShowSignatureModal((curr) => !curr)}
+      visible={showInitialsModal}
+      onBackdropPress={() => setShowInitialsModal(false)}
+      onRequestClose={() => setShowInitialsModal((curr) => !curr)}
     >
       <TouchableOpacity
         className="flex-1"
         onPress={() => {
-          setShowSignatureModal(false);
+          setShowInitialsModal(false);
         }}
       />
 
@@ -29,7 +29,8 @@ export default function AddSignatureModal({
           <DrawingCanvas
             navigation={navigation}
             isModal={true}
-            setShowSignatureModal={setShowSignatureModal}
+            setShowSignatureModal={setShowInitialsModal}
+            type={"initials"}
           />
         </View>
       </View>
@@ -37,7 +38,7 @@ export default function AddSignatureModal({
       <TouchableOpacity
         className="flex-1"
         onPress={() => {
-          setShowSignatureModal(false);
+          setShowInitialsModal(false);
         }}
       />
     </Modal>

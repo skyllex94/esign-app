@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-export default function DatePR({
+export default function DateTime({
   date,
   setShowDatePanResponder,
   setDate_x,
@@ -43,9 +43,10 @@ export default function DatePR({
   console.log(dateSize);
 
   return (
-    <View className="items-center justify-center">
+    <View className="items-center justify-center relative">
       <Animated.View
         ref={elementLocation}
+        className="absolute mx-auto top-10"
         style={{
           transform: [{ translateX: pan.x }, { translateY: pan.y }],
         }}
