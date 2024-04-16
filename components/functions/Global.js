@@ -32,16 +32,7 @@ export async function getFileInfo(path) {
   return infoObj;
 }
 
-export async function openDocument(
-  navigation,
-  signatureList,
-  bottomSheetChooseDocument
-) {
-  if (signatureList.length < 1) {
-    navigation.navigate("DrawSign");
-    return;
-  }
-
+export async function openDocument(navigation, bottomSheetChooseDocument) {
   const pickedDocument = await DocumentPicker.getDocumentAsync({
     type: "application/pdf",
     copyToCacheDirectory: true, // enabled to be found by FileSystem

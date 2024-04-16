@@ -46,9 +46,8 @@ import {
   retrieveStoredData,
   storeData,
 } from "../functions/Global";
-import { loadStoredSignatures } from "../Sign/functions";
+import { loadStoredInitials, loadStoredSignatures } from "../Sign/functions";
 // OAuth imports
-import * as WebBrowser from "expo-web-browser";
 import LottieView from "lottie-react-native";
 import {
   GoogleSignin,
@@ -58,6 +57,7 @@ import { showMessage } from "react-native-flash-message";
 import GoogleDrive from "../Sign/GoogleDrive";
 import { GDrive } from "@robinbobin/react-native-google-drive-api-wrapper";
 import DropBox from "../Sign/Services/DropBox";
+import ImageSelection from "../Sign/Image/ImageSelection";
 
 const Stack = createStackNavigator();
 
@@ -98,6 +98,11 @@ export default function SignScreen() {
         component={GoogleDrive}
         options={{ presentation: "modal" }}
       />
+      <Stack.Screen
+        name="ImageSelection"
+        component={ImageSelection}
+        options={{ presentation: "modal" }}
+      />
     </Stack.Navigator>
   );
 }
@@ -107,6 +112,7 @@ function Main({ navigation }) {
     docList,
     signatureList,
     setSignatureList,
+    setInitialsList,
     filteredDocList,
     setFilteredDocList,
     bottomSheetChooseDocument,
@@ -118,9 +124,10 @@ function Main({ navigation }) {
 
   const lottieAstronautRef = useRef();
 
-  // Load stored signatures from app's data
+  // Load stored signatures, initials from app's data
   useEffect(() => {
     loadStoredSignatures(setSignatureList);
+    loadStoredInitials(setInitialsList);
     configureGoogleSignIn();
   }, []);
 
@@ -454,9 +461,7 @@ function Main({ navigation }) {
 
         <View className="flex-row px-3 h-16 gap-x-2 mb-2">
           <TouchableOpacity
-            onPress={() =>
-              openDocument(navigation, signatureList, bottomSheetChooseDocument)
-            }
+            onPress={() => openDocument(navigation, bottomSheetChooseDocument)}
             className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
           >
             <View className="flex-row items-center gap-x-2">

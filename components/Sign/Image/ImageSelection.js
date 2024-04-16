@@ -1,5 +1,5 @@
 import { AntDesign } from "@expo/vector-icons";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
   Animated,
   View,
@@ -8,18 +8,26 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-export default function Initials({
-  setShowInitials,
-  selectedInitialsPath,
-  setInitialsX,
-  setInitialsY,
-  initialsWidthSize,
-  setInitialsWidthSize,
-  initialsHeightSize,
-  setInitialsHeightSize,
+export default function ImageSelection({
+  imagePath,
+  setImageX,
+  setImageY,
+  imageWidth,
+  setImageWidth,
+  imageHeight,
+  setImageHeight,
+  setShowImageSelection,
 }) {
   const pan = useRef(new Animated.ValueXY()).current;
   const elementLocation = React.useRef();
+
+  Image.getSize(imagePath, (width, height) => {
+    console.log("width:", width);
+    console.log("height:", height);
+
+    setImageWidth(width);
+    setImageHeight(height);
+  });
 
   const panResponder = useRef(
     PanResponder.create({
@@ -28,13 +36,13 @@ export default function Initials({
         useNativeDriver: false,
       }),
 
-      onPanResponderRelease: (event) => {
+      onPanResponderRelease: () => {
         // Measure the relative x & y of the signature to the pdf canvas
         elementLocation.current.measure((h, w, px, py, x, y) => {
           console.log("rel_x", h, "rel_y", w, px, py, x, y);
 
-          setInitialsX(h);
-          setInitialsY(w);
+          setImageX(h);
+          setImageY(w);
         });
 
         pan.extractOffset();
@@ -56,16 +64,17 @@ export default function Initials({
           <Image
             className="mr-2"
             style={{
-              height: initialsHeightSize,
-              width: initialsWidthSize,
+              // TODO: Figure out the error message and fixture
+              height: 80 * (imageHeight / imageWidth),
+              width: 80,
             }}
-            source={{ uri: selectedInitialsPath }}
+            source={{ uri: imagePath }}
           />
           <View className="justify-between">
             <View className="justify-center items-start">
               <TouchableOpacity
                 className="mb-3 bg-red-600 rounded-full"
-                onPress={() => setShowInitials(false)}
+                onPress={() => setShowImageSelection(false)}
               >
                 <AntDesign name="close" size={24} color="white" />
               </TouchableOpacity>
@@ -74,16 +83,16 @@ export default function Initials({
             <TouchableOpacity
               className="mb-1"
               onPress={() => {
-                setInitialsWidthSize((curr) => curr + 10);
-                setInitialsHeightSize((curr) => curr + 10);
+                setImageWidth((curr) => curr + 10);
+                setImageHeight((curr) => curr + 10);
               }}
             >
               <AntDesign name="pluscircleo" size={24} color="black" />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
-                setInitialsWidthSize((curr) => curr - 10);
-                setInitialsHeightSize((curr) => curr - 10);
+                setImageWidth((curr) => curr - 10);
+                setImageHeight((curr) => curr - 10);
               }}
             >
               <AntDesign name="minuscircleo" size={24} color="black" />

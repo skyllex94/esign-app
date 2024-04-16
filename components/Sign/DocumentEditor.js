@@ -6,7 +6,7 @@ import Pdf from "react-native-pdf";
 import * as Print from "expo-print";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import RNFS from "react-native-fs";
-import { decode, encode } from "base-64";
+import { decode } from "base-64";
 // BottomSheet
 import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
 import {
@@ -16,7 +16,13 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
-import { deleteSignature, selectInitials, selectSignature } from "./functions";
+import {
+  deleteInitials,
+  deleteSignature,
+  selectImage,
+  selectInitials,
+  selectSignature,
+} from "./functions";
 
 import Signature from "./PanResponders/Signature";
 // PDF editing
@@ -27,6 +33,8 @@ import AddSignatureModal from "./AddSignatureModal";
 import DateTime from "./PanResponders/DateTime";
 import Initials from "./PanResponders/Initials";
 import AddInitialsModal from "./Initials/AddInitialsModal";
+import { showMessage } from "react-native-flash-message";
+import ImageSelection from "./Image/ImageSelection";
 
 export default function DocumentEditor({ navigation, route }) {
   const [selectedPrinter, setSelectedPrinter] = useState();
@@ -54,8 +62,6 @@ export default function DocumentEditor({ navigation, route }) {
   const [pdfBase64, setPdfBase64] = useState(null);
   // Signature's array buffer state
   const [signatureArrayBuffer, setSignatureArrayBuffer] = useState(null);
-  // Signature's Base64 data state
-  const [signatureBase64Data, setSignatureBase64Data] = useState(null);
 
   // PDF page dimension states
   const [pdfHeight, setPdfHeight] = useState();
@@ -90,20 +96,24 @@ export default function DocumentEditor({ navigation, route }) {
 
   useEffect(() => {
     // Reads the raw data from the chosen PDF
+    async function readPdf() {
+      try {
+        const readDocument = await RNFS.readFile(pickedDocument, "base64");
+        setPdfArrayBuffer(base64ToArrayBuffer(readDocument));
+      } catch (err) {
+        showMessage({
+          message: "Couldn't load the document properly",
+          description: err.toString(),
+          duration: 3000,
+          type: "danger",
+        });
+      }
+    }
+
     readPdf();
+  }, []);
 
-    if (signatureBase64Data) {
-      setSignatureArrayBuffer(base64ToArrayBuffer(signatureBase64Data));
-    }
-
-    // TODO: Make sure it's actually going through here on load
-    if (initialsBase64Data) {
-      console.log("INside");
-      setInitialsArrayBuffer(base64ToArrayBuffer(initialsBase64Data));
-    }
-  }, [signatureBase64Data, initialsBase64Data]);
-
-  // Passed path name for the documents pickeda
+  // Passed path name for the picked document
   const { pickedDocument } = route.params;
   const source = { uri: pickedDocument, cache: true };
 
@@ -117,7 +127,7 @@ export default function DocumentEditor({ navigation, route }) {
   const snapPoints = useMemo(() => ["16%"], []);
 
   const printDocument = async () => {
-    // On iOS/android prints the given html. On web prints the HTML from the current page.
+    // On iOS/Android prints the given html. On web prints the HTML from the current page.
     await Print.printAsync({
       html,
       printerUrl: selectedPrinter?.url, // iOS only
@@ -129,21 +139,6 @@ export default function DocumentEditor({ navigation, route }) {
     setSelectedPrinter(printer);
   };
 
-  function addNewSignature() {
-    setShowSignatureModal(true);
-  }
-
-  async function readPdf() {
-    try {
-      const readDocument = await RNFS.readFile(pickedDocument, "base64");
-
-      setPdfBase64(readDocument);
-      setPdfArrayBuffer(base64ToArrayBuffer(readDocument));
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
   const base64ToArrayBuffer = (base64) => {
     const binary_string = decode(base64);
     const len = binary_string.length;
@@ -153,11 +148,11 @@ export default function DocumentEditor({ navigation, route }) {
     return bytes;
   };
 
+  // Initials states
   const [showInitials, setShowInitials] = useState(false);
   const [showInitialsList, setShowInitialsList] = useState(false);
   const [showInitialsModal, setShowInitialsModal] = useState(false);
   const [selectedInitialsPath, setSelectedInitialsPath] = useState(null);
-  const [initialsBase64Data, setInitialsBase64Data] = useState(null);
 
   const [initialsX, setInitialsX] = useState(0);
   const [initialsY, setInitialsY] = useState(0);
@@ -166,6 +161,15 @@ export default function DocumentEditor({ navigation, route }) {
   );
   const [initialsHeightSize, setInitialsHeightSize] = useState(80);
   const [initialsArrayBuffer, setInitialsArrayBuffer] = useState(null);
+
+  // Image import states
+  const [showImageSelection, setShowImageSelection] = useState(false);
+  const [imagePath, setImagePath] = useState();
+  const [imageArrayBuffer, setImageArrayBuffer] = useState();
+  const [imageX, setImageX] = useState(0);
+  const [imageY, setImageY] = useState(0);
+  const [imageWidth, setImageWidth] = useState(0);
+  const [imageHeight, setImageHeight] = useState(0);
 
   return (
     <SafeAreaView className="flex-1">
@@ -291,6 +295,19 @@ export default function DocumentEditor({ navigation, route }) {
               setInitialsHeightSize={setInitialsHeightSize}
             />
           )}
+
+          {showImageSelection && (
+            <ImageSelection
+              imagePath={imagePath}
+              setImageX={setImageX}
+              setImageY={setImageY}
+              imageWidth={imageWidth}
+              setImageWidth={setImageWidth}
+              imageHeight={imageHeight}
+              setImageHeight={setImageHeight}
+              setShowImageSelection={setShowImageSelection}
+            />
+          )}
         </Pdf>
       </View>
 
@@ -327,6 +344,11 @@ export default function DocumentEditor({ navigation, route }) {
           initialsWidthSize={initialsWidthSize}
           initialsHeightSize={initialsHeightSize}
           initialsArrayBuffer={initialsArrayBuffer}
+          // Image props
+          showImageSelection={showImageSelection}
+          imageX={imageX}
+          imageY={imageY}
+          imageArrayBuffer={imageArrayBuffer}
         />
       )}
 
@@ -360,27 +382,24 @@ export default function DocumentEditor({ navigation, route }) {
       >
         <View className="flex-row items-center justify-between px-3 pb-6">
           {showSignatures ? (
-            <View className="flex-1">
-              <View className="flex-row justify-between">
-                <Text className="text-lg">My Signatures</Text>
-
+            <View className="flex-row mt-2">
+              <View className="flex-row items-start mt-2">
                 <TouchableOpacity
                   onPress={() => setShowSignatures((curr) => !curr)}
-                  className="bg-gray-200 rounded-full p-1"
+                  className="bg-slate-50 border-slate-400 border-solid border-2 rounded-lg p-4 mx-1"
                 >
                   <Ionicons name="arrow-back" size={24} color="black" />
                 </TouchableOpacity>
               </View>
-
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View className="flex-row items-start mt-2">
-                  <TouchableOpacity
-                    onPress={addNewSignature}
-                    className="bg-slate-50 border-slate-400 border-solid border-2 rounded-lg p-3 mx-1"
-                  >
-                    <FontAwesome6 name="add" size={24} color="black" />
-                  </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => setShowSignatures(true)}
+                  className="bg-slate-50 mt-2 border-slate-400 border-solid border-2 rounded-lg p-4 mx-1"
+                >
+                  <FontAwesome6 name="add" size={24} color="black" />
+                </TouchableOpacity>
 
+                <View className="flex-row items-start mt-2">
                   {signatureList.map((path, idx) => (
                     <View
                       key={idx}
@@ -393,12 +412,12 @@ export default function DocumentEditor({ navigation, route }) {
                             setShowSignaturePanResponder,
                             selectedSignaturePath,
                             setSelectedSignaturePath,
-                            setSignatureBase64Data
+                            setSignatureArrayBuffer
                           )
                         }
                         className="flex-row p-1"
                       >
-                        <Image className="h-10 w-20" source={{ uri: path }} />
+                        <Image className="h-12 w-20" source={{ uri: path }} />
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() =>
@@ -443,7 +462,7 @@ export default function DocumentEditor({ navigation, route }) {
                             setShowInitials,
                             selectedInitialsPath,
                             setSelectedInitialsPath,
-                            setInitialsBase64Data
+                            setInitialsArrayBuffer
                           )
                         }
                         className="flex-row p-1"
@@ -452,7 +471,7 @@ export default function DocumentEditor({ navigation, route }) {
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() =>
-                          deleteSignature(path, signatureList, setSignatureList)
+                          deleteInitials(path, initialsList, setInitialsList)
                         }
                       >
                         <Ionicons name="close" size={20} color="black" />
@@ -470,11 +489,11 @@ export default function DocumentEditor({ navigation, route }) {
             >
               <View className="flex-row items-center justify-center">
                 <TouchableOpacity
-                  className="bg-gray-200 rounded-full mt-3 py-3 px-10"
+                  className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
                   onPress={() => setShowSignatures((curr) => !curr)}
                 >
                   <FontAwesome6 name="signature" size={24} color="black" />
-                  <Text>eSign</Text>
+                  <Text>Sign</Text>
                 </TouchableOpacity>
               </View>
 
@@ -495,6 +514,22 @@ export default function DocumentEditor({ navigation, route }) {
                 >
                   <MaterialIcons name="draw" size={24} color="black" />
                   <Text>Initials</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className="flex-row items-center justify-center">
+                <TouchableOpacity
+                  className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
+                  onPress={() =>
+                    selectImage(
+                      setImagePath,
+                      setImageArrayBuffer,
+                      setShowImageSelection
+                    )
+                  }
+                >
+                  <Ionicons name="image" size={24} color="black" />
+                  <Text>Image</Text>
                 </TouchableOpacity>
               </View>
             </ScrollView>

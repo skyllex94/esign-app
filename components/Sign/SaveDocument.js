@@ -44,6 +44,11 @@ export const SaveDocument = ({
   initialsWidthSize,
   initialsHeightSize,
   initialsArrayBuffer,
+  // Image props
+  showImageSelection,
+  imageX,
+  imageY,
+  imageArrayBuffer,
 }) => {
   const renameRef = useRef();
   const animation = useRef();
@@ -152,7 +157,12 @@ export const SaveDocument = ({
           size: dateSize * diffInDisplays,
         });
       } catch (err) {
-        console.log(err);
+        showMessage({
+          message: "Error while saving date",
+          description: err.toString(),
+          duration: 3000,
+          type: "danger",
+        });
       }
     }
 
@@ -184,7 +194,43 @@ export const SaveDocument = ({
         }
       } catch (err) {
         showMessage({
-          message: "Error While Saving Document",
+          message: "Error While Saving Initials",
+          description: err.toString(),
+          duration: 3000,
+          type: "danger",
+        });
+      }
+    }
+
+    if (showImageSelection === true) {
+      try {
+        // The x-coordinate anchor point for signature inputted
+        const x = (pdfWidth * imageX) / Dimensions.get("window").width;
+
+        // The y-coordinate anchor point for the signature to be inputted
+        // Starting from the bottom so it should be divided on itself
+        const y =
+          pdfHeight -
+          (pdfHeight * (imageY + initialsWidthSize - 10)) /
+            (Dimensions.get("window").width * pageRatio).toFixed(2);
+
+        const pages = pdfDoc.getPages();
+        const selectedPage = pages[currPage - 1];
+
+        // Inputting the signature inside the PDF document
+        if (imageArrayBuffer) {
+          const imageFile = await pdfDoc.embedPng(imageArrayBuffer);
+
+          selectedPage.drawImage(imageFile, {
+            x,
+            y,
+            width: initialsWidthSize * diffInDisplays,
+            height: initialsHeightSize * diffInDisplays,
+          });
+        }
+      } catch (err) {
+        showMessage({
+          message: "Error While Saving Initials",
           description: err.toString(),
           duration: 3000,
           type: "danger",

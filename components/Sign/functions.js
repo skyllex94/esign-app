@@ -1,4 +1,3 @@
-import { encode } from "base-64";
 import * as FileSystem from "expo-file-system";
 import { Alert } from "react-native";
 import ReactNativeBlobUtil from "react-native-blob-util";
@@ -7,16 +6,18 @@ import { updateDocuments } from "../functions/Global";
 import { shareAsync } from "expo-sharing";
 import { showMessage } from "react-native-flash-message";
 import * as MailComposer from "expo-mail-composer";
+import { decode, encode } from "base-64";
+import * as DocumentPicker from "expo-document-picker";
 
 export const selectSignature = async (
   signatureFilePath,
   setShowSignaturePanResponder,
   selectedSignaturePath,
   setSelectedSignaturePath,
-  setSignatureBase64Data
+  setSignatureArrayBuffer
 ) => {
   const signatureBase64 = await RNFS.readFile(signatureFilePath, "base64");
-  setSignatureBase64Data(signatureBase64);
+  setSignatureArrayBuffer(base64ToArrayBuffer(signatureBase64));
 
   if (selectedSignaturePath == signatureFilePath)
     setShowSignaturePanResponder((curr) => !curr);
@@ -26,21 +27,55 @@ export const selectSignature = async (
   }
 };
 
+export async function selectImage(
+  setImagePath,
+  setImageArrayBuffer,
+  setShowImageSelection
+) {
+  const pickedDocument = await DocumentPicker.getDocumentAsync({
+    type: ["image/jpg", "image/png", "image/bmp", "image/jpeg"],
+    copyToCacheDirectory: true, // enabled to be found by FileSystem
+  });
+  if (pickedDocument.canceled === true) return;
+
+  try {
+    const imagePath = pickedDocument.assets[0].uri;
+
+    setImagePath(imagePath);
+    const imageBase64 = await RNFS.readFile(imagePath, "base64");
+    setImageArrayBuffer(base64ToArrayBuffer(imageBase64));
+    setShowImageSelection(true);
+  } catch (err) {
+    return;
+  }
+}
+
 export const selectInitials = async (
   path,
   setShowInitials,
   selectedInitialsPath,
   setSelectedInitialsPath,
-  setInitialsBase64Data
+  setInitialsArrayBuffer
 ) => {
   const initialsBase64 = await RNFS.readFile(path, "base64");
-  setInitialsBase64Data(initialsBase64);
+
+  // Get image ready for being inputted into the pdf document
+  setInitialsArrayBuffer(base64ToArrayBuffer(initialsBase64));
 
   if (selectedInitialsPath == path) setShowInitials((curr) => !curr);
   else {
     setSelectedInitialsPath(() => path);
     setShowInitials(true);
   }
+};
+
+export const base64ToArrayBuffer = (base64) => {
+  const binary_string = decode(base64);
+  const len = binary_string.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) bytes[i] = binary_string.charCodeAt(i);
+
+  return bytes;
 };
 
 export const deleteSignature = (
@@ -74,6 +109,42 @@ export const deleteSignature = (
           console.log("updatedSignatureList", updatedSignatureList);
 
           setSignatureList(updatedSignatureList);
+        },
+      },
+
+      {
+        text: "No",
+        onPress: () => {},
+      },
+    ]
+  );
+};
+
+export const deleteInitials = (fileWtPath, initialsList, setInitialsList) => {
+  return Alert.alert(
+    "Initials Deletion",
+    "Are you sure you want to delete these initials?",
+    [
+      {
+        text: "Yes",
+        onPress: () => {
+          const path = fileWtPath.split("//");
+
+          ReactNativeBlobUtil.fs
+            .unlink(path[1])
+            .then(() => {
+              console.log("Deleted File from - ", path[1]);
+            })
+            .catch((err) => console.log(err));
+
+          // Updating initials array list for the UI
+          const updatedInitialsList = initialsList.filter((initials) => {
+            return initials !== fileWtPath;
+          });
+
+          console.log("updatedInitialsList", updatedInitialsList);
+
+          setInitialsList(updatedInitialsList);
         },
       },
 

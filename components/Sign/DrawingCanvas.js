@@ -157,14 +157,16 @@ export default function DrawingCanvas({
             <Text className="text-[16px]">Draw</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            className={`${
-              signatureInputOption === "write" && "border-b-2"
-            } border-b-[#7851A9] pb-1`}
-            onPress={switchToWriting}
-          >
-            <Text className="text-[16px]">Write</Text>
-          </TouchableOpacity>
+          {!type === "initials" && (
+            <TouchableOpacity
+              className={`${
+                signatureInputOption === "write" && "border-b-2"
+              } border-b-[#7851A9] pb-1`}
+              onPress={switchToWriting}
+            >
+              <Text className="text-[16px]">Write</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {isModal && (
