@@ -1,5 +1,5 @@
 import { AntDesign } from "@expo/vector-icons";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Animated,
   View,
@@ -19,15 +19,18 @@ export default function ImageSelection({
   setShowImageSelection,
 }) {
   const pan = useRef(new Animated.ValueXY()).current;
-  const elementLocation = React.useRef();
+  const elementLocation = useRef();
+  const [imageRatio, setImageRatio] = useState();
 
-  Image.getSize(imagePath, (width, height) => {
-    console.log("width:", width);
-    console.log("height:", height);
+  useEffect(() => {
+    // Figure out the width and height of image
+    Image.getSize(imagePath, (width, height) => {
+      setImageRatio((height / width).toFixed(2));
 
-    setImageWidth(width);
-    setImageHeight(height);
-  });
+      setImageWidth(80);
+      setImageHeight(80 * (height / width).toFixed(2));
+    });
+  }, []);
 
   const panResponder = useRef(
     PanResponder.create({
@@ -64,9 +67,8 @@ export default function ImageSelection({
           <Image
             className="mr-2"
             style={{
-              // TODO: Figure out the error message and fixture
-              height: 80 * (imageHeight / imageWidth),
-              width: 80,
+              height: imageHeight,
+              width: imageWidth,
             }}
             source={{ uri: imagePath }}
           />
@@ -83,16 +85,16 @@ export default function ImageSelection({
             <TouchableOpacity
               className="mb-1"
               onPress={() => {
+                setImageHeight((curr) => curr + 10 * imageRatio);
                 setImageWidth((curr) => curr + 10);
-                setImageHeight((curr) => curr + 10);
               }}
             >
               <AntDesign name="pluscircleo" size={24} color="black" />
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => {
+                setImageHeight((curr) => curr - 10 * imageRatio);
                 setImageWidth((curr) => curr - 10);
-                setImageHeight((curr) => curr - 10);
               }}
             >
               <AntDesign name="minuscircleo" size={24} color="black" />

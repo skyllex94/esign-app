@@ -57,7 +57,7 @@ import { showMessage } from "react-native-flash-message";
 import GoogleDrive from "../Sign/GoogleDrive";
 import { GDrive } from "@robinbobin/react-native-google-drive-api-wrapper";
 import DropBox from "../Sign/Services/DropBox";
-import ImageSelection from "../Sign/Image/ImageSelection";
+import ImageSelection from "../Sign/PanResponders/ImageSelection";
 
 const Stack = createStackNavigator();
 

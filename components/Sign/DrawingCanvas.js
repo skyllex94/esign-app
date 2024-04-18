@@ -108,6 +108,7 @@ export default function DrawingCanvas({
       });
 
       createSignatureFile(writtenSignatureBase64);
+      onChangeText("");
     }
 
     if (signatureInputOption === "draw") {
@@ -157,7 +158,7 @@ export default function DrawingCanvas({
             <Text className="text-[16px]">Draw</Text>
           </TouchableOpacity>
 
-          {!type === "initials" && (
+          {(!type === "initials" || !isModal) && (
             <TouchableOpacity
               className={`${
                 signatureInputOption === "write" && "border-b-2"

@@ -1,4 +1,3 @@
-import { AntDesign } from "@expo/vector-icons";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Modal, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 // UI
@@ -6,7 +5,7 @@ import { TextInput, Dimensions } from "react-native";
 import { Context } from "../contexts/Global";
 import { updateDocuments } from "../functions/Global";
 import { actionButton } from "../../constants/UI";
-import { PDFDocument, StandardFonts } from "pdf-lib";
+import { PDFDocument, PDFFont, StandardFonts } from "pdf-lib";
 import { uint8ToBase64Conversion } from "./functions";
 import RNFS from "react-native-fs";
 import LottieView from "lottie-react-native";
@@ -48,7 +47,20 @@ export const SaveDocument = ({
   showImageSelection,
   imageX,
   imageY,
+  imageWidth,
+  imageHeight,
   imageArrayBuffer,
+  // Text props
+  text,
+  showText,
+  textPositionX,
+  textPositionY,
+  textSize,
+  // Checkbox props
+  showCheckbox,
+  checkboxPositionX,
+  checkboxPositionY,
+  checkboxSize,
 }) => {
   const renameRef = useRef();
   const animation = useRef();
@@ -64,19 +76,8 @@ export const SaveDocument = ({
 
   async function saveSignedDocument() {
     let pdfDoc = null;
+    setSavingInProgress(true);
 
-    try {
-      setSavingInProgress(true);
-    } catch (err) {
-      showMessage({
-        message: "Unable to Start",
-        description: "Couldn't start the saving process. Please try again.",
-        duration: 4000,
-        type: "danger",
-      });
-    }
-
-    // Encrypted document check-up
     // TODO: Work of encrypted pdf files
     try {
       pdfDoc = await PDFDocument.load(pdfArrayBuffer);
@@ -104,7 +105,7 @@ export const SaveDocument = ({
         // Starting from the bottom so it should be divided on itself
         const y =
           pdfHeight -
-          (pdfHeight * (coordinateY + elementSizeWidth - 10)) /
+          (pdfHeight * (coordinateY + elementSizeHeight)) /
             (Dimensions.get("window").width * pageRatio).toFixed(2);
 
         const pages = pdfDoc.getPages();
@@ -211,7 +212,7 @@ export const SaveDocument = ({
         // Starting from the bottom so it should be divided on itself
         const y =
           pdfHeight -
-          (pdfHeight * (imageY + initialsWidthSize - 10)) /
+          (pdfHeight * (imageY + imageHeight)) /
             (Dimensions.get("window").width * pageRatio).toFixed(2);
 
         const pages = pdfDoc.getPages();
@@ -224,15 +225,76 @@ export const SaveDocument = ({
           selectedPage.drawImage(imageFile, {
             x,
             y,
-            width: initialsWidthSize * diffInDisplays,
-            height: initialsHeightSize * diffInDisplays,
+            width: imageWidth * diffInDisplays,
+            height: imageHeight * diffInDisplays,
           });
         }
       } catch (err) {
         showMessage({
-          message: "Error While Saving Initials",
+          message: "Error while saving image",
           description: err.toString(),
           duration: 3000,
+          type: "danger",
+        });
+      }
+    }
+
+    if (showText === true) {
+      try {
+        const x = (pdfWidth * textPositionX) / Dimensions.get("window").width;
+
+        const y =
+          pdfHeight -
+          (pdfHeight * (textPositionY + dateSize)) /
+            (Dimensions.get("window").width * pageRatio).toFixed(2);
+
+        const size = textSize * diffInDisplays;
+
+        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+
+        const pages = pdfDoc.getPages();
+        const selectedPage = pages[currPage - 1];
+
+        // Input the date in the designated place
+        selectedPage.drawText(text, { x, y, font, size });
+      } catch (err) {
+        showMessage({
+          message: "Error while saving custom text",
+          description: err.toString(),
+          duration: 3000,
+          type: "danger",
+        });
+      }
+    }
+
+    if (showCheckbox === true) {
+      try {
+        const x =
+          (pdfWidth * checkboxPositionX) / Dimensions.get("window").width;
+
+        const y =
+          pdfHeight -
+          (pdfHeight * (checkboxPositionY + checkboxSize)) /
+            (Dimensions.get("window").width * pageRatio).toFixed(2);
+
+        const pages = pdfDoc.getPages();
+        const selectedPage = pages[currPage - 1];
+
+        const form = pdfDoc.getForm();
+        const checkbox = form.createCheckBox("checkbox_field");
+        checkbox.check();
+
+        checkbox.addToPage(selectedPage, {
+          x,
+          y,
+          width: checkboxSize,
+          height: checkboxSize,
+        });
+      } catch (err) {
+        showMessage({
+          message: "Error while saving checkbox",
+          description: err.toString(),
+          duration: 8000,
           type: "danger",
         });
       }
@@ -273,7 +335,12 @@ export const SaveDocument = ({
         });
       }
     } catch (err) {
-      console.log(err);
+      showMessage({
+        message: "Error while finishing",
+        description: err.toString(),
+        duration: 3000,
+        type: "danger",
+      });
     }
 
     setSavingInProgress(false);

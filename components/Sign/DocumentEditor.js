@@ -34,7 +34,12 @@ import DateTime from "./PanResponders/DateTime";
 import Initials from "./PanResponders/Initials";
 import AddInitialsModal from "./Initials/AddInitialsModal";
 import { showMessage } from "react-native-flash-message";
-import ImageSelection from "./Image/ImageSelection";
+import ImageSelection from "./PanResponders/ImageSelection";
+import AddTextModal from "./AddTextModal";
+import TextField from "./PanResponders/TextField";
+import Checkbox from "./PanResponders/Checkbox";
+import Mani from "./Mani";
+import Mani2 from "./Mani2";
 
 export default function DocumentEditor({ navigation, route }) {
   const [selectedPrinter, setSelectedPrinter] = useState();
@@ -170,6 +175,21 @@ export default function DocumentEditor({ navigation, route }) {
   const [imageY, setImageY] = useState(0);
   const [imageWidth, setImageWidth] = useState(0);
   const [imageHeight, setImageHeight] = useState(0);
+
+  // Text import states
+  const [showText, setShowText] = useState(false);
+  const [showTextModal, setShowTextModal] = useState(false);
+
+  const [text, setText] = useState("");
+  const [textSize, setTextSize] = useState(15);
+  const [textPositionX, setTextPositionX] = useState(0);
+  const [textPositionY, setTextPositionY] = useState(0);
+
+  // Checkbox import states
+  const [showCheckbox, setShowCheckbox] = useState(false);
+  const [checkboxPositionX, setCheckboxPositionX] = useState(0);
+  const [checkboxPositionY, setCheckboxPositionY] = useState(0);
+  const [checkboxSize, setCheckboxSize] = useState(25);
 
   return (
     <SafeAreaView className="flex-1">
@@ -308,6 +328,29 @@ export default function DocumentEditor({ navigation, route }) {
               setShowImageSelection={setShowImageSelection}
             />
           )}
+
+          <Mani2 />
+
+          {showText && (
+            <TextField
+              text={text}
+              setShowText={setShowText}
+              textSize={textSize}
+              setTextSize={setTextSize}
+              setTextPositionX={setTextPositionX}
+              setTextPositionY={setTextPositionY}
+            />
+          )}
+
+          {showCheckbox && (
+            <Checkbox
+              setShowCheckbox={setShowCheckbox}
+              setCheckboxPositionX={setCheckboxPositionX}
+              setCheckboxPositionY={setCheckboxPositionY}
+              checkboxSize={checkboxSize}
+              setCheckboxSize={setCheckboxSize}
+            />
+          )}
         </Pdf>
       </View>
 
@@ -348,7 +391,20 @@ export default function DocumentEditor({ navigation, route }) {
           showImageSelection={showImageSelection}
           imageX={imageX}
           imageY={imageY}
+          imageWidth={imageWidth}
+          imageHeight={imageHeight}
           imageArrayBuffer={imageArrayBuffer}
+          // Text props
+          text={text}
+          showText={showText}
+          textPositionX={textPositionX}
+          textPositionY={textPositionY}
+          textSize={textSize}
+          // Checkbox props
+          showCheckbox={showCheckbox}
+          checkboxPositionX={checkboxPositionX}
+          checkboxPositionY={checkboxPositionY}
+          checkboxSize={checkboxSize}
         />
       )}
 
@@ -365,6 +421,15 @@ export default function DocumentEditor({ navigation, route }) {
           navigation={navigation}
           showInitialsModal={showInitialsModal}
           setShowInitialsModal={setShowInitialsModal}
+        />
+      )}
+
+      {showTextModal && (
+        <AddTextModal
+          showTextModal={showTextModal}
+          setShowTextModal={setShowTextModal}
+          setText={setText}
+          setShowText={setShowText}
         />
       )}
 
@@ -520,6 +585,16 @@ export default function DocumentEditor({ navigation, route }) {
               <View className="flex-row items-center justify-center">
                 <TouchableOpacity
                   className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
+                  onPress={() => setShowTextModal(true)}
+                >
+                  <Ionicons name="text-sharp" size={24} color="black" />
+                  <Text>Text</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className="flex-row items-center justify-center">
+                <TouchableOpacity
+                  className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
                   onPress={() =>
                     selectImage(
                       setImagePath,
@@ -530,6 +605,16 @@ export default function DocumentEditor({ navigation, route }) {
                 >
                   <Ionicons name="image" size={24} color="black" />
                   <Text>Image</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className="flex-row items-center justify-center">
+                <TouchableOpacity
+                  className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
+                  onPress={() => setShowCheckbox((curr) => !curr)}
+                >
+                  <FontAwesome name="check-square-o" size={24} color="black" />
+                  <Text>Check</Text>
                 </TouchableOpacity>
               </View>
             </ScrollView>

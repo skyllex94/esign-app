@@ -8,13 +8,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-export default function DateTime({
-  date,
-  setShowDatePanResponder,
-  setDate_x,
-  setDate_y,
-  dateSize,
-  setDateSize,
+export default function TextField({
+  text,
+  setShowText,
+  textSize,
+  setTextSize,
+  setTextPositionX,
+  setTextPositionY,
 }) {
   const pan = useRef(new Animated.ValueXY()).current;
   const elementLocation = React.useRef();
@@ -28,11 +28,9 @@ export default function DateTime({
 
       onPanResponderRelease: (event) => {
         // Measure the relative x & y of the signature to the pdf canvas
-        elementLocation.current.measure((h, w, px, py, x, y) => {
-          console.log("rel_x", h, "rel_y", w, px, py, x, y);
-
-          setDate_x(h);
-          setDate_y(w);
+        elementLocation.current.measure((h, w) => {
+          setTextPositionX(h);
+          setTextPositionY(w);
         });
 
         pan.extractOffset();
@@ -51,22 +49,22 @@ export default function DateTime({
         {...panResponder.panHandlers}
       >
         <View className="flex-row justify-center items-start">
-          <Text style={{ fontSize: dateSize }}>{date}</Text>
+          <Text style={{ fontSize: textSize }}>{text}</Text>
 
           <View className="flex-row justify-center items-center">
             <TouchableOpacity
               className="bg-red-600 rounded-full mx-1"
-              onPress={() => setShowDatePanResponder(false)}
+              onPress={() => setShowText(false)}
             >
               <AntDesign name="close" size={24} color="white" />
             </TouchableOpacity>
           </View>
 
           <View className="flex-row gap-1 justify-between mx-1">
-            <TouchableOpacity onPress={() => setDateSize((curr) => curr + 1)}>
+            <TouchableOpacity onPress={() => setTextSize((curr) => curr + 1)}>
               <AntDesign name="pluscircleo" size={24} color="black" />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setDateSize((curr) => curr - 1)}>
+            <TouchableOpacity onPress={() => setTextSize((curr) => curr - 1)}>
               <AntDesign name="minuscircleo" size={24} color="black" />
             </TouchableOpacity>
           </View>
