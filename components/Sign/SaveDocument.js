@@ -245,7 +245,7 @@ export const SaveDocument = ({
 
         const y =
           pdfHeight -
-          (pdfHeight * (textPositionY + dateSize)) /
+          (pdfHeight * (textPositionY + textSize)) /
             (Dimensions.get("window").width * pageRatio).toFixed(2);
 
         const size = textSize * diffInDisplays;

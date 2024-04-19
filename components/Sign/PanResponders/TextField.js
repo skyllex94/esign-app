@@ -1,12 +1,7 @@
-import { AntDesign } from "@expo/vector-icons";
-import React, { useRef } from "react";
-import {
-  Animated,
-  View,
-  PanResponder,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, PanResponder, Animated } from "react-native";
+import React, { useMemo, useRef } from "react";
+import { AntDesign, FontAwesome } from "@expo/vector-icons";
+import { TouchableOpacity } from "react-native";
 
 export default function TextField({
   text,
@@ -19,16 +14,35 @@ export default function TextField({
   const pan = useRef(new Animated.ValueXY()).current;
   const elementLocation = React.useRef();
 
-  const panResponder = useRef(
+  const panResponderResize = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onPanResponderGrant: () => {},
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderMove: (_, gesture) => {
+          // If value is below -10 (5px text), ignore it since it will flip the date
+          if (gesture.dy > -10) setTextSize(textSize + gesture.dy);
+        },
+        onPanResponderEnd: (_, gesture) => {
+          if (gesture.dy > -10) setTextSize(textSize + gesture.dy);
+        },
+      }),
+    [setTextSize]
+  );
+
+  const panResponderMovement = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
       onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
         useNativeDriver: false,
       }),
 
-      onPanResponderRelease: (event) => {
+      onPanResponderRelease: () => {
         // Measure the relative x & y of the signature to the pdf canvas
-        elementLocation.current.measure((h, w) => {
+        elementLocation.current.measure((h, w, px, py, x, y) => {
+          console.log("rel_x", h, "rel_y", w, px, py, x, y);
+
           setTextPositionX(h);
           setTextPositionY(w);
         });
@@ -42,31 +56,38 @@ export default function TextField({
     <View className="items-center justify-center relative">
       <Animated.View
         ref={elementLocation}
-        className="absolute mx-auto top-10"
         style={{
           transform: [{ translateX: pan.x }, { translateY: pan.y }],
         }}
-        {...panResponder.panHandlers}
+        className="items-start absolute mx-auto top-10"
       >
-        <View className="flex-row justify-center items-start">
-          <Text style={{ fontSize: textSize }}>{text}</Text>
+        <View className="flex-row border-dashed border items-end">
+          <TouchableOpacity
+            className="absolute left-[-15] top-[-15] h-[30px] w-[30px]"
+            onPress={() => setShowText(false)}
+            {...panResponderResize.panHandlers}
+          >
+            <AntDesign name="closecircle" size={24} color="red" />
+          </TouchableOpacity>
 
-          <View className="flex-row justify-center items-center">
-            <TouchableOpacity
-              className="bg-red-600 rounded-full mx-1"
-              onPress={() => setShowText(false)}
-            >
-              <AntDesign name="close" size={24} color="white" />
-            </TouchableOpacity>
-          </View>
+          <Text
+            style={{ fontSize: textSize }}
+            {...panResponderMovement.panHandlers}
+          >
+            {text}
+          </Text>
 
-          <View className="flex-row gap-1 justify-between mx-1">
-            <TouchableOpacity onPress={() => setTextSize((curr) => curr + 1)}>
-              <AntDesign name="pluscircleo" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setTextSize((curr) => curr - 1)}>
-              <AntDesign name="minuscircleo" size={24} color="black" />
-            </TouchableOpacity>
+          <View
+            className="absolute items-center justify-center
+            right-[-15] bottom-[-15] h-[25px] w-[25px] bg-purple-500 rounded-full"
+            {...panResponderResize.panHandlers}
+          >
+            <FontAwesome
+              name="expand"
+              style={{ transform: [{ rotateY: "180deg" }] }}
+              size={15}
+              color="white"
+            />
           </View>
         </View>
       </Animated.View>

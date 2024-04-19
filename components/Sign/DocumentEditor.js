@@ -38,8 +38,6 @@ import ImageSelection from "./PanResponders/ImageSelection";
 import AddTextModal from "./AddTextModal";
 import TextField from "./PanResponders/TextField";
 import Checkbox from "./PanResponders/Checkbox";
-import Mani from "./Mani";
-import Mani2 from "./Mani2";
 
 export default function DocumentEditor({ navigation, route }) {
   const [selectedPrinter, setSelectedPrinter] = useState();
@@ -329,8 +327,6 @@ export default function DocumentEditor({ navigation, route }) {
             />
           )}
 
-          <Mani2 />
-
           {showText && (
             <TextField
               text={text}
@@ -458,7 +454,7 @@ export default function DocumentEditor({ navigation, route }) {
               </View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <TouchableOpacity
-                  onPress={() => setShowSignatures(true)}
+                  onPress={() => setShowSignatureModal(true)}
                   className="bg-slate-50 mt-2 border-slate-400 border-solid border-2 rounded-lg p-4 mx-1"
                 >
                   <FontAwesome6 name="add" size={24} color="black" />

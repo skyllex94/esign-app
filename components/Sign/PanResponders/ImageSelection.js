@@ -1,12 +1,12 @@
-import { AntDesign } from "@expo/vector-icons";
-import React, { useEffect, useRef, useState } from "react";
 import {
-  Animated,
   View,
   PanResponder,
   Image,
+  Animated,
   TouchableOpacity,
 } from "react-native";
+import React, { useMemo, useRef, useState } from "react";
+import { AntDesign, FontAwesome } from "@expo/vector-icons";
 
 export default function ImageSelection({
   imagePath,
@@ -22,17 +22,65 @@ export default function ImageSelection({
   const elementLocation = useRef();
   const [imageRatio, setImageRatio] = useState();
 
-  useEffect(() => {
+  let widthGlobal = null;
+  let heightGlobal = null;
+
+  useMemo(() => {
+    // Doesn't wait until re-render is completed
     // Figure out the width and height of image
     Image.getSize(imagePath, (width, height) => {
+      console.log("height:", height);
+      console.log("width:", width);
       setImageRatio((height / width).toFixed(2));
+      console.log("imageRatio:", imageRatio);
+
+      heightGlobal = height;
+      widthGlobal = width;
 
       setImageWidth(80);
       setImageHeight(80 * (height / width).toFixed(2));
     });
   }, []);
 
-  const panResponder = useRef(
+  const panResponderResize = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onPanResponderGrant: () => {
+          setImageRatio((imageHeight / imageWidth).toFixed(2));
+          console.log("imageWidth:", imageWidth);
+          console.log("imageRatiooo:", heightGlobal / widthGlobal);
+        },
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderMove: (event, gesture) => {
+          setImageRatio((imageHeight / imageWidth).toFixed(2));
+
+          if (heightGlobal) {
+            setImageHeight(
+              ((imageWidth + gesture.dy) * heightGlobal) / widthGlobal
+            );
+            setImageWidth(imageWidth + gesture.dy);
+          } else {
+            setImageHeight(imageWidth + gesture.dy);
+            setImageWidth(imageWidth + gesture.dy);
+          }
+        },
+        onPanResponderEnd: (event, gesture) => {
+          if (heightGlobal) {
+            setImageHeight(
+              ((imageWidth + gesture.dy) * heightGlobal) / widthGlobal
+            );
+            setImageWidth(imageWidth + gesture.dy);
+          } else {
+            setImageHeight(imageWidth + gesture.dy);
+            setImageWidth(imageWidth + gesture.dy);
+          }
+        },
+      }),
+    [setImageWidth]
+  );
+
+  const panResponderMovement = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
       onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
@@ -41,9 +89,7 @@ export default function ImageSelection({
 
       onPanResponderRelease: () => {
         // Measure the relative x & y of the signature to the pdf canvas
-        elementLocation.current.measure((h, w, px, py, x, y) => {
-          console.log("rel_x", h, "rel_y", w, px, py, x, y);
-
+        elementLocation.current.measure((h, w) => {
           setImageX(h);
           setImageY(w);
         });
@@ -57,48 +103,39 @@ export default function ImageSelection({
     <View className="items-center justify-center relative">
       <Animated.View
         ref={elementLocation}
-        className="absolute mx-auto top-10"
         style={{
           transform: [{ translateX: pan.x }, { translateY: pan.y }],
         }}
-        {...panResponder.panHandlers}
+        className="items-start absolute mx-auto top-10"
       >
-        <View className="flex-row justify-start items-start">
+        <View className="flex-row border-dashed border items-end">
+          <TouchableOpacity
+            className="absolute left-[-15] top-[-15] h-[25px] w-[25px] z-10 bg-white rounded-full"
+            onPress={() => setShowImageSelection(false)}
+          >
+            <AntDesign name="closecircle" size={25} color="red" />
+          </TouchableOpacity>
+
           <Image
-            className="mr-2"
+            source={{ uri: imagePath }}
             style={{
               height: imageHeight,
               width: imageWidth,
             }}
-            source={{ uri: imagePath }}
+            {...panResponderMovement.panHandlers}
           />
-          <View className="justify-between">
-            <View className="justify-center items-start">
-              <TouchableOpacity
-                className="mb-3 bg-red-600 rounded-full"
-                onPress={() => setShowImageSelection(false)}
-              >
-                <AntDesign name="close" size={24} color="white" />
-              </TouchableOpacity>
-            </View>
 
-            <TouchableOpacity
-              className="mb-1"
-              onPress={() => {
-                setImageHeight((curr) => curr + 10 * imageRatio);
-                setImageWidth((curr) => curr + 10);
-              }}
-            >
-              <AntDesign name="pluscircleo" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setImageHeight((curr) => curr - 10 * imageRatio);
-                setImageWidth((curr) => curr - 10);
-              }}
-            >
-              <AntDesign name="minuscircleo" size={24} color="black" />
-            </TouchableOpacity>
+          <View
+            className="absolute items-center justify-center
+            right-[-15] bottom-[-15] h-[25px] w-[25px] bg-purple-500 rounded-full"
+            {...panResponderResize.panHandlers}
+          >
+            <FontAwesome
+              name="expand"
+              style={{ transform: [{ rotateY: "180deg" }] }}
+              size={15}
+              color="white"
+            />
           </View>
         </View>
       </Animated.View>

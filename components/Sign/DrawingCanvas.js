@@ -158,7 +158,7 @@ export default function DrawingCanvas({
             <Text className="text-[16px]">Draw</Text>
           </TouchableOpacity>
 
-          {(!type === "initials" || !isModal) && (
+          {type === "initials" ? null : (
             <TouchableOpacity
               className={`${
                 signatureInputOption === "write" && "border-b-2"

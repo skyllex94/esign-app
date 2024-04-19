@@ -1,12 +1,7 @@
-import { AntDesign } from "@expo/vector-icons";
-import React, { useRef } from "react";
-import {
-  Animated,
-  View,
-  PanResponder,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { View, PanResponder, Image, Animated } from "react-native";
+import React, { useMemo, useRef } from "react";
+import { AntDesign, FontAwesome } from "@expo/vector-icons";
+import { TouchableOpacity } from "react-native";
 
 export default function Signature({
   setShowSignaturePanResponder,
@@ -19,18 +14,35 @@ export default function Signature({
   setElementSizeHeight,
 }) {
   const pan = useRef(new Animated.ValueXY()).current;
-  const elementLocation = React.useRef();
+  const elementLocation = useRef();
 
-  const panResponder = useRef(
+  const panResponderResize = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onPanResponderGrant: () => {},
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderMove: (event, gesture) => {
+          //panning
+          setElementSizeHeight(elementSizeHeight + gesture.dy);
+          setElementSizeWidth(elementSizeWidth + gesture.dy);
+        },
+        onPanResponderEnd: (event, gesture) => {
+          setElementSizeHeight(elementSizeHeight + gesture.dy);
+          setElementSizeWidth(elementSizeWidth + gesture.dy);
+        },
+      }),
+    [setElementSizeHeight]
+  );
+
+  const panResponderMovement = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: () => true,
       onPanResponderMove: Animated.event([null, { dx: pan.x, dy: pan.y }], {
         useNativeDriver: false,
       }),
 
-      onPanResponderRelease: (event) => {
-        // console.log("pdfWidth:", pdfWidth, "pdfHeight:", pdfHeight);
-
+      onPanResponderRelease: () => {
         // Measure the relative x & y of the signature to the pdf canvas
         elementLocation.current.measure((h, w, px, py, x, y) => {
           console.log("rel_x", h, "rel_y", w, px, py, x, y);
@@ -48,48 +60,36 @@ export default function Signature({
     <View className="items-center justify-center relative">
       <Animated.View
         ref={elementLocation}
-        className="absolute mx-auto top-10"
         style={{
           transform: [{ translateX: pan.x }, { translateY: pan.y }],
         }}
-        {...panResponder.panHandlers}
+        className="items-start absolute mx-auto top-10"
       >
-        <View className="flex-row justify-start items-start">
-          <Image
-            className="mr-2"
-            style={{
-              height: elementSizeHeight,
-              width: elementSizeWidth,
-            }}
-            source={{ uri: selectedSignaturePath }}
-          />
-          <View className="justify-between">
-            <View className="justify-center items-start">
-              <TouchableOpacity
-                className="mb-3 bg-red-600 rounded-full"
-                onPress={() => setShowSignaturePanResponder(false)}
-              >
-                <AntDesign name="close" size={24} color="white" />
-              </TouchableOpacity>
-            </View>
+        <View className="flex-row border-dashed border items-end">
+          <TouchableOpacity
+            className="absolute left-[-15] top-[-15] h-[25px] w-[25px] bg-white rounded-full"
+            onPress={() => setShowSignaturePanResponder(false)}
+          >
+            <AntDesign name="closecircle" size={25} color="red" />
+          </TouchableOpacity>
 
-            <TouchableOpacity
-              className="mb-1"
-              onPress={() => {
-                setElementSizeWidth((curr) => curr + 10);
-                setElementSizeHeight((curr) => curr + 10);
-              }}
-            >
-              <AntDesign name="pluscircleo" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setElementSizeWidth((curr) => curr - 10);
-                setElementSizeHeight((curr) => curr - 10);
-              }}
-            >
-              <AntDesign name="minuscircleo" size={24} color="black" />
-            </TouchableOpacity>
+          <Image
+            source={{ uri: selectedSignaturePath }}
+            style={{ height: elementSizeHeight, width: elementSizeWidth }}
+            {...panResponderMovement.panHandlers}
+          />
+
+          <View
+            className="absolute items-center justify-center
+            right-[-15] bottom-[-15] h-[25px] w-[25px] bg-purple-500 rounded-full"
+            {...panResponderResize.panHandlers}
+          >
+            <FontAwesome
+              name="expand"
+              style={{ transform: [{ rotateY: "180deg" }] }}
+              size={15}
+              color="white"
+            />
           </View>
         </View>
       </Animated.View>

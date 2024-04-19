@@ -17,7 +17,6 @@ import Checkbox from "expo-checkbox";
 import { actionButton } from "../../constants/UI";
 import * as FileSystem from "expo-file-system";
 import { SignatureDetails } from "./SignatureDetails";
-import { openDocument } from "../functions/Global";
 import DrawingCanvas from "./DrawingCanvas";
 
 export default function DrawSignCapture({ navigation }) {

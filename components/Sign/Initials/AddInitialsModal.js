@@ -18,9 +18,7 @@ export default function AddInitialsModal({
     >
       <TouchableOpacity
         className="flex-1"
-        onPress={() => {
-          setShowInitialsModal(false);
-        }}
+        onPress={() => setShowInitialsModal(false)}
       />
 
       <View className="justify-center items-center">
@@ -37,9 +35,7 @@ export default function AddInitialsModal({
 
       <TouchableOpacity
         className="flex-1"
-        onPress={() => {
-          setShowInitialsModal(false);
-        }}
+        onPress={() => setShowInitialsModal(false)}
       />
     </Modal>
   );
