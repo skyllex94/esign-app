@@ -365,15 +365,15 @@ function Main({ navigation }) {
           <TouchableOpacity
             onPress={handlePresentModalPress}
             className={`flex-row items-center justify-center bg-[${actionButton}]
-            z-20 w-[50%] h-[75px] rounded-full `}
+            z-20 w-[50%] h-[75px] rounded-full`}
           >
             <AntDesign name="plus" size={30} color="white" />
             <Text className="pl-2 text-white">Open Document</Text>
           </TouchableOpacity>
 
           <View
-            className={`absolute items-center justify-center z-10 bg-[#f2f2f2] 
-              rounded-full w-[55%] h-[80px]`}
+            className={`absolute items-center justify-center top-[-8] z-10 bg-[#f2f2f2] 
+              rounded-full w-[55%] h-[91px]`}
           />
 
           <TouchableOpacity
@@ -406,57 +406,13 @@ function Main({ navigation }) {
         animateOnMount={true}
       >
         <View className="bottomSheet flex-row items-center justify-between px-3 pb-6 z-[10]">
-          <Text className="text-lg font-semibold">E-Sign Document</Text>
+          <Text className="text-lg font-semibold">Open a Document</Text>
           <TouchableOpacity
             className="bg-gray-200 rounded-full p-2"
             onPress={() => bottomSheetChooseDocument.current.close()}
           >
             <AntDesign name="close" size={20} color="black" />
           </TouchableOpacity>
-        </View>
-
-        <View className="flex-row px-3 gap-x-2 h-16">
-          <TouchableOpacity
-            onPress={openDrawSign}
-            className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
-          >
-            <View className="flex-row items-center">
-              <FontAwesome name="pencil-square-o" size={24} color="black" />
-              <Text className="mx-2 font-semibold">Draw</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={openDrawSign}
-            className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
-          >
-            <View className="flex-row items-center">
-              <MaterialCommunityIcons
-                name="keyboard-settings-outline"
-                size={24}
-                color="black"
-              />
-              <Text className="mx-2 font-semibold">Type</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={openDrawSign}
-            className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
-          >
-            <View className="flex-row items-center">
-              <MaterialCommunityIcons
-                name="upload-outline"
-                size={24}
-                color="black"
-              />
-              <Text className="mx-2 font-semibold">Upload</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        <View className="flex-row items-center justify-between px-3 py-6 z-[10]">
-          <Text className="text-lg font-semibold">Open a Document</Text>
         </View>
 
         <View className="flex-row px-3 h-16 gap-x-2 mb-2">
