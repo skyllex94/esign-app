@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   ActivityIndicator,
+  TouchableHighlight,
 } from "react-native";
 import {
   AntDesign,
