@@ -5,28 +5,23 @@ import {
   View,
   TouchableOpacity,
   ActivityIndicator,
-  TouchableHighlight,
 } from "react-native";
 import {
   AntDesign,
-  Entypo,
   Feather,
   FontAwesome,
   FontAwesome6,
   Ionicons,
-  MaterialCommunityIcons,
 } from "@expo/vector-icons";
 // Bottom Sheet Imports
 import React, {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
-import { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
+
 // Stack Navigation
 import { createStackNavigator } from "@react-navigation/stack";
 import DrawSignCapture from "../Sign/SignatureLibrary";
@@ -57,8 +52,15 @@ import {
 import { showMessage } from "react-native-flash-message";
 import GoogleDrive from "../Sign/GoogleDrive";
 import { GDrive } from "@robinbobin/react-native-google-drive-api-wrapper";
-import DropBox from "../Sign/Services/DropBox";
+
 import ImageSelection from "../Sign/PanResponders/ImageSelection";
+import BottomSheetModal from "../Sign/BottomSheetModal";
+
+// Image(s) to pdf converter
+import * as ImagePicker from "expo-image-picker";
+import { createPdf } from "react-native-images-to-pdf";
+import ReactNativeBlobUtil from "react-native-blob-util";
+import LoadingModal from "../Sign/LoadingModal";
 
 const Stack = createStackNavigator();
 
@@ -111,7 +113,6 @@ export default function SignScreen() {
 function Main({ navigation }) {
   const {
     docList,
-    signatureList,
     setSignatureList,
     setInitialsList,
     filteredDocList,
@@ -119,7 +120,7 @@ function Main({ navigation }) {
     bottomSheetChooseDocument,
     loadDocuments,
   } = useContext(Context);
-  const snapPoints = useMemo(() => ["50%"], []);
+
   const [search, setSearch] = useState(null);
   const [googleUserInfo, setGoogleUserInfo] = useState();
 
@@ -179,17 +180,29 @@ function Main({ navigation }) {
 
   async function signOut() {
     setGoogleUserInfo(null);
-    console.log("googleUserInfo:", googleUserInfo);
-    GoogleSignin.revokeAccess();
-    GoogleSignin.signOut();
-    await deleteStoredData("gdrive_tkn");
+    const fetchedStoredData = await retrieveStoredData("gdrive_tkn");
+
+    try {
+      const res = await GoogleSignin.revokeAccess();
+      console.log("res:", res);
+      GoogleSignin.signOut();
+      await deleteStoredData("gdrive_tkn");
+
+      if (fetchedStoredData)
+        showMessage({
+          duration: 4000,
+          title: "Signout",
+          message: "You are signed out from your Google Drive Account",
+          type: "success",
+        });
+    } catch (err) {}
   }
 
   // Retrieve data from the AsyncStorage if any
   async function preopeningGoogleDriveCheckups() {
     const fetchedStoredData = await retrieveStoredData("gdrive_tkn");
 
-    if (fetchedStoredData === null) openGoogleDriveOath();
+    // if (fetchedStoredData === null) openGoogleDriveOAuth();
 
     try {
       const gdrive = new GDrive();
@@ -203,27 +216,64 @@ function Main({ navigation }) {
         await signOut();
       }
 
-      return openGoogleDriveOath();
+      return openGoogleDriveOAuth();
     }
 
     console.log("Fetched Tkn From Storage");
     navigation.navigate("GoogleDrive", { token: fetchedStoredData });
   }
 
-  async function openGoogleDriveOath() {
+  const [showLoadingModal, setShowLoadingModal] = useState(false);
+
+  const pickImageAsync = async () => {
+    try {
+      let pickedDocument = await ImagePicker.launchImageLibraryAsync({
+        allowsMultipleSelection: true,
+        selectionLimit: 1,
+      });
+
+      setShowLoadingModal(true);
+
+      const uri = pickedDocument.assets[0].uri;
+      console.log("uri:", uri);
+
+      const dirs = ReactNativeBlobUtil.fs.dirs;
+      const outputPath = `file://${
+        dirs.DocumentDir
+      }/doc${new Date().getMilliseconds()}.pdf`;
+
+      console.log("outputPath:", outputPath);
+
+      const options = { pages: [{ imagePath: uri }], outputPath };
+
+      try {
+        const imageToPdf = await createPdf(options);
+        console.log("imageToPdf:", imageToPdf);
+
+        navigation.navigate("DocumentEditor", {
+          pickedDocument: imageToPdf,
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    } catch (err) {
+      console.log("err:", err);
+      if (err.canceled)
+        showMessage({
+          duration: 4000,
+          type: "danger",
+          title: "Cancelled",
+          message: "No image was chosen from the selection",
+        });
+    }
+    setShowLoadingModal(false);
+  };
+
+  async function openGoogleDriveOAuth() {
     console.log("GoogleSignIn");
 
+    // Try-catch clause creating issues with cancelation
     try {
-      await GoogleSignin.hasPlayServices();
-
-      const userInfo = await GoogleSignin.signIn();
-      const token = await GoogleSignin.getTokens();
-
-      setGoogleUserInfo(userInfo);
-      await storeData(token);
-
-      // Open Google Drive Documents Modal
-      navigation.navigate("GoogleDrive", { token });
     } catch (err) {
       console.log("err:", err);
       if (err.code === statusCodes.SIGN_IN_CANCELLED)
@@ -235,6 +285,19 @@ function Main({ navigation }) {
         });
       signOut();
     }
+
+    await GoogleSignin.hasPlayServices();
+
+    const userInfo = await GoogleSignin.signIn();
+    console.log("userInfo:", userInfo);
+    const token = await GoogleSignin.getTokens();
+    console.log("token:", token);
+
+    setGoogleUserInfo(userInfo);
+    await storeData(token);
+
+    // Open Google Drive Documents Modal
+    navigation.navigate("GoogleDrive", { token });
   }
 
   return (
@@ -351,6 +414,13 @@ function Main({ navigation }) {
           </ScrollView>
         </View>
 
+        {showLoadingModal && (
+          <LoadingModal
+            showModal={showLoadingModal}
+            setShowModal={setShowLoadingModal}
+          />
+        )}
+
         <View className="flex-row items-center justify-center gap-y-1 mb-2 rounded-lg ">
           <TouchableOpacity
             onPress={() => navigation.navigate("DrawSign")}
@@ -390,68 +460,16 @@ function Main({ navigation }) {
         </View>
       </View>
 
-      <BottomSheetModal
-        ref={bottomSheetChooseDocument}
-        index={0}
-        snapPoints={snapPoints}
-        backdropComponent={(props) => (
-          <BottomSheetBackdrop
-            {...props}
-            appearsOnIndex={2}
-            disappearsOnIndex={-1}
-            enableTouchThrough={true}
-          />
-        )}
-        enableOverDrag={true}
-        enablePanDownToClose={true}
-        animateOnMount={true}
-      >
-        <View className="bottomSheet flex-row items-center justify-between px-3 pb-6 z-[10]">
-          <Text className="text-lg font-semibold">Open a Document</Text>
-          <TouchableOpacity
-            className="bg-gray-200 rounded-full p-2"
-            onPress={() => bottomSheetChooseDocument.current.close()}
-          >
-            <AntDesign name="close" size={20} color="black" />
-          </TouchableOpacity>
-        </View>
-
-        <View className="flex-row px-3 h-16 gap-x-2 mb-2">
-          <TouchableOpacity
-            onPress={() => openDocument(navigation, bottomSheetChooseDocument)}
-            className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
-          >
-            <View className="flex-row items-center gap-x-2">
-              <FontAwesome6 name="folder-open" size={24} color="black" />
-              <Text className="font-semibold">Files</Text>
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={preopeningGoogleDriveCheckups}
-            className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
-          >
-            <View className="flex-row items-center gap-x-2">
-              <Entypo name="google-drive" size={24} color="black" />
-              <Text className="font-semibold">Drive</Text>
-            </View>
-          </TouchableOpacity>
-
-          <DropBox />
-        </View>
-
-        <View className="flex-row px-3 h-16 gap-x-2">
-          <TouchableOpacity
-            onPress={signOut}
-            className="flex-1 items-center justify-center bg-gray-200 rounded-md p-2"
-          >
-            <View className="flex-row items-center gap-x-2">
-              <Entypo name="google-drive" size={24} color="black" />
-              <Text className="font-semibold">SignOut</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-      </BottomSheetModal>
+      {
+        <BottomSheetModal
+          navigation={navigation}
+          openDocument={openDocument}
+          bottomSheetChooseDocument={bottomSheetChooseDocument}
+          preopeningGoogleDriveCheckups={preopeningGoogleDriveCheckups}
+          signOut={signOut}
+          pickImageAsync={pickImageAsync}
+        />
+      }
     </SafeAreaView>
   );
 }

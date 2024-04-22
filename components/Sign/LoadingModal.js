@@ -1,9 +1,9 @@
 import { View, Modal, StyleSheet } from "react-native";
 import React, { useRef } from "react";
 import LottieView from "lottie-react-native";
-import { BlurView } from "expo-blur";
 
 export default function LoadingModal({ showModal, setShowModal }) {
+  console.log("showModal:", showModal);
   const animation = useRef();
 
   return (

@@ -5,7 +5,7 @@ import { TextInput, Dimensions } from "react-native";
 import { Context } from "../contexts/Global";
 import { updateDocuments } from "../functions/Global";
 import { actionButton } from "../../constants/UI";
-import { PDFDocument, PDFFont, StandardFonts } from "pdf-lib";
+import { PDFDocument, StandardFonts } from "pdf-lib";
 import { uint8ToBase64Conversion } from "./functions";
 import RNFS from "react-native-fs";
 import LottieView from "lottie-react-native";
