@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   ActivityIndicator,
+  Dimensions,
 } from "react-native";
 import {
   AntDesign,
@@ -28,7 +29,6 @@ import DrawSignCapture from "../Sign/SignatureLibrary";
 import DocumentEditor from "../Sign/DocumentEditor";
 // Other Dependency Import
 import { Context } from "../contexts/Global";
-import filter from "lodash.filter";
 // UI Imports
 import { actionButton } from "../../constants/UI";
 import { ScrollView } from "react-native-gesture-handler";
@@ -37,7 +37,9 @@ import { SearchBar } from "react-native-elements";
 import DocumentPreview from "../Sign/DocumentPreview";
 import DocumentSuccess from "../Sign/DocumentSuccess";
 import {
+  clearSearch,
   deleteStoredData,
+  handleSearch,
   openDocument,
   retrieveStoredData,
   storeData,
@@ -147,27 +149,6 @@ function Main({ navigation }) {
     navigation.navigate("DocumentPreview", { doc });
   }
 
-  function handleSearch(query) {
-    setSearch(query);
-    const formattedQuery = query.toLowerCase();
-
-    const filteredData = filter(docList, (doc) => {
-      return contains(doc, formattedQuery);
-    });
-
-    setFilteredDocList(filteredData);
-  }
-
-  const contains = ({ name }, query) => {
-    if (name.toString().toLowerCase().includes(query)) return true;
-    return false;
-  };
-
-  function clearSearch() {
-    setSearch("");
-    setFilteredDocList(docList);
-  }
-
   function configureGoogleSignIn() {
     // Google Drive Configurations for proper scopes and connection
     GoogleSignin.configure({
@@ -243,8 +224,12 @@ function Main({ navigation }) {
       }/doc${new Date().getMilliseconds()}.pdf`;
 
       console.log("outputPath:", outputPath);
+      const width = parseInt(Dimensions.get("window").width);
 
-      const options = { pages: [{ imagePath: uri }], outputPath };
+      const options = {
+        pages: [{ imagePath: uri, imageFit: "contain", width, height: 540 }],
+        outputPath,
+      };
 
       try {
         const imageToPdf = await createPdf(options);
@@ -308,7 +293,9 @@ function Main({ navigation }) {
       <View className="search-bar mx-1">
         <SearchBar
           value={search}
-          onChangeText={(text) => handleSearch(text)}
+          onChangeText={(text) =>
+            handleSearch(text, docList, setFilteredDocList, setSearch)
+          }
           platform="ios"
           containerStyle={{
             backgroundColor: "transparent",
@@ -324,7 +311,9 @@ function Main({ navigation }) {
           placeholder="Search..."
           clearIcon={() => (
             <Ionicons
-              onPress={clearSearch}
+              onPress={() =>
+                clearSearch(setSearch, setFilteredDocList, docList)
+              }
               name="close"
               size={24}
               color="#7b7d7b"

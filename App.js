@@ -42,8 +42,13 @@ function Main() {
   const [docList, setDocList] = useState([]);
   const [filteredDocList, setFilteredDocList] = useState([]);
 
+  // Scan states
+  const [scanList, setScanList] = useState([]);
+  const [filteredScanList, setFilteredScanList] = useState([]);
+
   // UI States
   const [loadDocuments, setLoadDocuments] = useState(false);
+  const [loadScannedDocs, setLoadScannedDocs] = useState(false);
 
   useEffect(() => {
     // Update UI for documents
@@ -58,6 +63,7 @@ function Main() {
   return (
     <Context.Provider
       value={{
+        // Sign states
         signatureList,
         setSignatureList,
         initialsList,
@@ -68,6 +74,13 @@ function Main() {
         setFilteredDocList,
         bottomSheetChooseDocument,
         loadDocuments,
+        // Scan states
+        scanList,
+        setScanList,
+        filteredScanList,
+        setFilteredScanList,
+        loadScannedDocs,
+        setLoadScannedDocs,
       }}
     >
       <GestureHandlerRootView className="flex-1">

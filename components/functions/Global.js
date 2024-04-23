@@ -1,6 +1,7 @@
 import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import filter from "lodash.filter";
 
 export async function updateDocuments(setDocList, setFilteredDocList) {
   const updateCompleteDocsList = [];
@@ -84,4 +85,26 @@ export async function deleteStoredData(key) {
   } catch (err) {
     console.log("Error while deleting stored data.", err);
   }
+}
+
+// SearchBar functions
+export function handleSearch(query, list, updateFilteredList, setSearch) {
+  setSearch(query);
+  const formattedQuery = query.toLowerCase();
+
+  const filteredData = filter(list, (doc) => {
+    return contains(doc, formattedQuery);
+  });
+
+  updateFilteredList(filteredData);
+}
+
+const contains = ({ name }, query) => {
+  if (name.toString().toLowerCase().includes(query)) return true;
+  return false;
+};
+
+export function clearSearch(setSearch, setFilteredList, list) {
+  setSearch("");
+  setFilteredList(() => list);
 }
