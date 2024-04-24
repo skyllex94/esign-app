@@ -6,7 +6,7 @@ import { Context } from "../contexts/Global";
 import { updateDocuments } from "../functions/Global";
 import { actionButton } from "../../constants/UI";
 import { PDFDocument, StandardFonts } from "pdf-lib";
-import { uint8ToBase64Conversion } from "./functions";
+import { directoryExists, uint8ToBase64Conversion } from "./functions";
 import RNFS from "react-native-fs";
 import LottieView from "lottie-react-native";
 import { showMessage } from "react-native-flash-message";
@@ -305,9 +305,8 @@ export const SaveDocument = ({
       const pdfEditedBytes = await pdfDoc.save();
       const pdfBase64 = uint8ToBase64Conversion(pdfEditedBytes);
 
-      // Check if directory path exists
-      if (!(await RNFS.exists(`${RNFS.DocumentDirectoryPath}/Completed/`)))
-        RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/Completed/`);
+      // Check if directory exists
+      directoryExists("Completed");
 
       const editedDocPath = `${
         RNFS.DocumentDirectoryPath
@@ -325,7 +324,7 @@ export const SaveDocument = ({
         await setIsNamingModal(false);
 
         navigation.navigate("DocumentSuccess", { editedDocPath });
-        updateDocuments(setDocList, setFilteredDocList);
+        updateDocuments("Completed", setDocList, setFilteredDocList);
       } catch (err) {
         showMessage({
           message: "Error Occured",

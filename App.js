@@ -56,7 +56,7 @@ function Main() {
   }, []);
 
   async function loadStoredDocuments() {
-    await updateDocuments(setDocList, setFilteredDocList);
+    await updateDocuments("Completed", setDocList, setFilteredDocList);
     setLoadDocuments(true);
   }
 

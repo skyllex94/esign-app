@@ -140,11 +140,6 @@ function Main({ navigation }) {
     bottomSheetChooseDocument.current?.present();
   }, []);
 
-  function openDrawSign() {
-    bottomSheetChooseDocument.current.close();
-    navigation.navigate("DrawSign");
-  }
-
   function previewDocument(doc) {
     navigation.navigate("DocumentPreview", { doc });
   }

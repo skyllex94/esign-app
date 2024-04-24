@@ -2,19 +2,25 @@ import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import filter from "lodash.filter";
+import RNFS from "react-native-fs";
 
-export async function updateDocuments(setDocList, setFilteredDocList) {
-  const updateCompleteDocsList = [];
+export async function updateDocuments(dir, setList, setFilteredList) {
+  const updateCompleteList = [];
+
+  // Check if directory path exists
+  if (!(await RNFS.exists(`${RNFS.DocumentDirectoryPath}/${dir}/`)))
+    RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${dir}/`);
 
   let docs = await FileSystem.readDirectoryAsync(
-    FileSystem.documentDirectory + "Completed"
+    `${FileSystem.documentDirectory}${dir}`
   );
 
+  // Push the new documents to the list
   for (const doc of docs) {
-    const path = FileSystem.documentDirectory + "Completed/" + doc;
+    const path = `${FileSystem.documentDirectory}${dir}/${doc}`;
     const docInfo = await FileSystem.getInfoAsync(path);
 
-    updateCompleteDocsList.push(
+    updateCompleteList.push(
       new Object({
         name: doc,
         path,
@@ -24,8 +30,9 @@ export async function updateDocuments(setDocList, setFilteredDocList) {
     );
   }
 
-  setDocList([...updateCompleteDocsList]);
-  setFilteredDocList([...updateCompleteDocsList]);
+  // Update UI states
+  setList([...updateCompleteList]);
+  setFilteredList([...updateCompleteList]);
 }
 
 export async function getFileInfo(path) {

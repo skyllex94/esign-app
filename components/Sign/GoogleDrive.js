@@ -86,7 +86,7 @@ export default function GoogleDrive({ navigation, route }) {
       console.log("gdriveDocPath", gdriveDocPath);
 
       await RNFS.writeFile(gdriveDocPath, googleDriveFileBase64, "base64");
-      updateDocuments(setDocList, setFilteredDocList);
+      updateDocuments("Completed", setDocList, setFilteredDocList);
 
       // Navigate to editor with the document imported from Google Drive
       navigation.navigate("DocumentEditor", { pickedDocument: gdriveDocPath });

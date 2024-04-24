@@ -43,7 +43,7 @@ export const RenameDocumentModal = ({
     // TODO: Figure out a better flow
     setDocName(newName + ".pdf");
     setDocPath(newPath);
-    updateDocuments(setDocList, setFilteredDocList);
+    updateDocuments("Completed", setDocList, setFilteredDocList);
     setShowRenameModal((curr) => !curr);
   }
 

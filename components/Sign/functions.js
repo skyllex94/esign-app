@@ -160,8 +160,16 @@ export const hideSignatures = (setSignatureList) => {
   setSignatureList(() => []);
 };
 
+// Check if directory path exists
+export async function directoryExists(subfolder) {
+  if (!(await RNFS.exists(`${RNFS.DocumentDirectoryPath}/${subfolder}/`)))
+    RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${subfolder}/`);
+}
+
 export async function loadStoredSignatures(setSignatureList) {
   const updatedSignatureList = [];
+
+  directoryExists("Signatures");
 
   let dir = await FileSystem.readDirectoryAsync(
     FileSystem.documentDirectory + "Signatures"
@@ -178,6 +186,8 @@ export async function loadStoredSignatures(setSignatureList) {
 
 export async function loadStoredInitials(setInitialsList) {
   const updatedInitialsList = [];
+
+  directoryExists("Initials");
 
   let dir = await FileSystem.readDirectoryAsync(
     FileSystem.documentDirectory + "Initials"
@@ -232,7 +242,7 @@ export const deleteDocument = (
           const updatedDocList = docList.filter((doc) => doc !== fileWtPath);
 
           setDocList(updatedDocList);
-          updateDocuments(setDocList, setFilteredDocList);
+          updateDocuments("Completed", setDocList, setFilteredDocList);
           setTimeout(() => {
             navigation.navigate("Main");
           }, 1000);
