@@ -7,16 +7,18 @@ import {
   Image,
   ActivityIndicator,
 } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { SearchBar } from "react-native-elements";
 import { Context } from "../contexts/Global";
-import { AntDesign, Feather, Ionicons } from "@expo/vector-icons";
+import { AntDesign, Feather, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import {
   clearSearch,
   handleSearch,
   updateDocuments,
 } from "../functions/Global";
 import OpenScanner from "../Scan/OpenScanner";
+import LottieView from "lottie-react-native";
+import Pdf from "react-native-pdf";
 
 export default function Scan({ navigation }) {
   // Context
@@ -32,8 +34,8 @@ export default function Scan({ navigation }) {
   // Searchbar states
   const [search, setSearch] = useState("");
 
-  // Scanner states
-  const [openScanner, setOpenScanner] = useState(false);
+  // UI refs
+  const astronautRef = useRef();
 
   useEffect(() => {
     async function loadDocs() {
@@ -42,7 +44,7 @@ export default function Scan({ navigation }) {
 
     loadDocs();
     setLoadScannedDocs(true);
-  }, [scanList]);
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-slate-150">
@@ -83,52 +85,70 @@ export default function Scan({ navigation }) {
         />
       </View>
 
-      <View className="rounded-lg mx-3 h-48 border-2">
+      <View className="mx-3 h-48 ">
         <Image
+          className="rounded-lg"
           source={require("../../assets/img/banner.webp")}
           resizeMode="cover"
           style={{ flex: 1, width: undefined, height: undefined }}
         />
       </View>
 
-      <View className="flex-1 mx-3 py-3">
-        <View className="flex-1 items-start">
+      <View className="flex-1 m-2">
+        <View className="flex-1 items-start w-[100%] ml-1">
           <ScrollView
+            vertical
             showsVerticalScrollIndicator={false}
-            className="bg-white w-full rounded-lg"
+            contentContainerStyle={{ flexDirection: "row", flexWrap: "wrap" }}
+            className="w-[100%] gap-2"
           >
             {loadScannedDocs ? (
               filteredScanList.length > 0 ? (
                 filteredScanList.map((doc, idx) => (
                   <View
+                    className="items-center justify-center h-44 w-[31.3%] bg-white rounded-lg"
                     key={idx}
-                    className="flex-row items-center py-2 border-b-[0.5px] border-slate-300"
                   >
-                    <View className="m-3">
-                      <AntDesign name="checkcircle" size={24} color="#99cc33" />
-                    </View>
-
-                    <TouchableOpacity
+                    <View
                       onPress={() =>
-                        navigation.navigate("DocumentPreview", { doc })
+                        navigation.navigate("DocumentPreview", {
+                          doc,
+                          parent: "ScanScreen",
+                        })
                       }
-                      className="flex-1 items-start gap-1 my-1"
+                      className="flex-1 items-center justify-center rounded-lg pt-1.5"
                     >
+                      {/*  <TouchableOpacity
+                        className="absolute bottom-2 right-2 m-1 z-10"
+                        onPress={() =>
+                          navigation.navigate("DocumentDetails", { doc })
+                        }
+                      >
+                        <Feather
+                          name="more-horizontal"
+                          size={24}
+                          color="white"
+                        />
+                      </TouchableOpacity> */}
+
+                      <FontAwesome6 name="file-pdf" size={40} color="black" />
+
+                      {/* <Pdf
+                        minScale={1.0}
+                        maxScale={1.0}
+                        scale={1.0}
+                        spacing={0}
+                        fitPolicy={0}
+                        className="w-28 h-32 rounded-lg"
+                        source={{ uri: doc.path, cache: true }}
+                      />  */}
+                    </View>
+                    <TouchableOpacity className="flex-1 items-start gap-1 my-1">
                       <Text className="text-gray-800">{doc.name}</Text>
 
                       <View>
-                        <Text className="text-gray-400">Scanned by you</Text>
-
                         <Text className="text-gray-400">
-                          {new Date(doc.created * 1000).toLocaleDateString(
-                            "en-us",
-                            {
-                              weekday: "long",
-                              year: "numeric",
-                              month: "short",
-                              day: "numeric",
-                            }
-                          )}
+                          {new Date(doc.created * 1000).toLocaleDateString()}
                         </Text>
                       </View>
                     </TouchableOpacity>
@@ -137,7 +157,7 @@ export default function Scan({ navigation }) {
                       onPress={() =>
                         navigation.navigate("DocumentDetails", { doc })
                       }
-                      className="mx-4"
+                      className="m-4"
                     >
                       <Feather
                         name="more-horizontal"
@@ -147,7 +167,20 @@ export default function Scan({ navigation }) {
                     </TouchableOpacity>
                   </View>
                 ))
-              ) : null
+              ) : (
+                <View className="flex-1 mt-10 items-center justify-center">
+                  <LottieView
+                    autoPlay
+                    speed={0.5}
+                    ref={astronautRef}
+                    style={{ width: 250, height: 130 }}
+                    source={require("../../assets/lottie/scan_astronaut.json")}
+                  />
+                  {/*  <Text className="text-gray-500">
+                    No Documents {scanList.length > 0 ? "Found" : "Yet"}
+                  </Text>  */}
+                </View>
+              )
             ) : (
               <View className="flex-1 mt-6 items-center justify-center">
                 <ActivityIndicator size={"small"} />
@@ -156,9 +189,7 @@ export default function Scan({ navigation }) {
           </ScrollView>
         </View>
 
-        <View className="flex-row items-center justify-center mb-2 rounded-lg ">
-          <OpenScanner />
-        </View>
+        <OpenScanner />
       </View>
     </SafeAreaView>
   );

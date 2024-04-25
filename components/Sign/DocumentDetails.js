@@ -5,7 +5,7 @@ import { RenameDocumentModal } from "./RenameDocModal";
 import { ScrollView } from "react-native-gesture-handler";
 import { deleteDocument, emailDocument, openShareOptions } from "./functions";
 import { Context } from "../contexts/Global";
-import { getFileName, getFileType } from "../functions/Global";
+import { byteConverter, getFileName, getFileType } from "../functions/Global";
 import { shareAsync } from "expo-sharing";
 
 export default function DocumentDetails({ route, navigation }) {
@@ -46,9 +46,7 @@ export default function DocumentDetails({ route, navigation }) {
 
           <View className="flex-row bg-white items-center justify-between px-3 h-16 w-full border-b-[0.5px] border-gray-400">
             <Text>Size:</Text>
-            <Text className="text-gray-500">
-              {(doc.size / 1024).toFixed(2)} kB
-            </Text>
+            <Text className="text-gray-500">{byteConverter(doc.size)}</Text>
           </View>
 
           <View className="flex-row bg-white items-center rounded-b-lg justify-between px-3 h-16 w-full">

@@ -7,7 +7,7 @@ import { getFileName } from "../functions/Global";
 import { openShareOptions } from "./functions";
 
 export default function DocumentPreview({ route, navigation }) {
-  const { doc } = route.params;
+  const { doc, parent } = route.params;
   const source = { uri: doc.path, cache: true };
   const path = doc.path;
 
@@ -16,7 +16,7 @@ export default function DocumentPreview({ route, navigation }) {
       <View className="flex-row items-center justify-between mx-4">
         <Text className="text-lg font-semibold">{getFileName(doc.name)}</Text>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => navigation.navigate("ScanScreen")}
           className={`bg-gray-200 rounded-full p-2`}
         >
           <AntDesign name="close" size={20} color="black" />

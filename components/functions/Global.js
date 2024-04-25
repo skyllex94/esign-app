@@ -115,3 +115,16 @@ export function clearSearch(setSearch, setFilteredList, list) {
   setSearch("");
   setFilteredList(() => list);
 }
+
+export function byteConverter(bytes) {
+  const unit = 1024;
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB"];
+
+  if (bytes == 0) return "0 Byte";
+
+  let i = Math.floor(Math.log(bytes) / Math.log(unit));
+  let result =
+    parseFloat((bytes / Math.pow(unit, i)).toFixed(2)) + " " + sizes[i];
+
+  return result;
+}

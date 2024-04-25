@@ -52,7 +52,6 @@ export default function NameScanModal({
 
   async function cancelScannedDocument() {
     deleteResidualFiles(scannedImages);
-
     setShowNameDocument(false);
   }
 

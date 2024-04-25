@@ -31,20 +31,15 @@ export default function OpenScanner() {
   };
 
   return (
-    <React.Fragment>
+    <View className="flex-row items-center justify-center rounded-lg">
       <TouchableOpacity
         onPress={openCameraScanner}
         className={`flex-row items-center justify-center bg-[${actionButton}]
-            z-20 w-[50%] h-[75px] rounded-full`}
+            z-20 w-[98%] h-[55px] rounded-full mt-3`}
       >
         <AntDesign name="plus" size={30} color="white" />
         <Text className="pl-2 text-white">Scan</Text>
       </TouchableOpacity>
-
-      <View
-        className={`absolute items-center justify-center top-[-8] z-10 bg-[#f2f2f2] 
-              rounded-full w-[55%] h-[91px]`}
-      />
 
       {showNameDocument && (
         <NameScanModal
@@ -53,14 +48,6 @@ export default function OpenScanner() {
           scannedImages={scannedImages}
         />
       )}
-    </React.Fragment>
+    </View>
   );
-}
-
-{
-  /* <Image
-      resizeMode="contain"
-      style={{ width: "100%", height: "100%" }}
-      source={{ uri: scannedImage }}
-    /> */
 }
