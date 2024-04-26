@@ -1,12 +1,12 @@
-import { AntDesign } from "@expo/vector-icons";
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { Modal, StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { Modal, Text, View, TouchableOpacity } from "react-native";
 import * as FileSystem from "expo-file-system";
-// UI
+// UI imports
 import { TextInput } from "react-native";
 import { Context } from "../contexts/Global";
 import { updateDocuments } from "../functions/Global";
 import { actionButton } from "../../constants/UI";
+import { showMessage } from "react-native-flash-message";
 
 export const RenameDocumentModal = ({
   docName,
@@ -18,7 +18,8 @@ export const RenameDocumentModal = ({
 }) => {
   const renameRef = useRef();
   const [newName, setNewName] = useState(null);
-  const { setDocList, setFilteredDocList } = useContext(Context);
+  const { setDocList, setFilteredDocList, setScanList, setFilteredScanList } =
+    useContext(Context);
 
   useEffect(() => {
     // Auto focus on the rename field
@@ -38,12 +39,21 @@ export const RenameDocumentModal = ({
         to: newPath,
       });
     } catch (err) {
-      console.log("Error while renaming file: ", err);
+      showMessage({
+        message: "Error while renaming file",
+        description: err.toString(),
+        duration: 3000,
+        type: "danger",
+      });
     }
-    // TODO: Figure out a better flow
+
     setDocName(newName + ".pdf");
     setDocPath(newPath);
-    updateDocuments("Completed", setDocList, setFilteredDocList);
+
+    if (onlyPath.includes("Scanned"))
+      updateDocuments("Scanned", setScanList, setFilteredScanList);
+    else updateDocuments("Completed", setDocList, setFilteredDocList);
+
     setShowRenameModal((curr) => !curr);
   }
 

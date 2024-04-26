@@ -96,7 +96,7 @@ export default function SignScreen() {
       <Stack.Screen
         name="DocumentSuccess"
         component={DocumentSuccess}
-        options={{ presentation: "card" }} // gestureEnabled: false
+        options={{ presentation: "card", gestureEnabled: false }}
       />
       <Stack.Screen
         name="GoogleDrive"

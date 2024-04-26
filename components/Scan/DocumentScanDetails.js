@@ -1,13 +1,16 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, LogBox } from "react-native";
 import React, { useContext, useState } from "react";
 import { AntDesign, Feather, MaterialIcons } from "@expo/vector-icons";
-import { RenameDocumentModal } from "./RenameDocModal";
+import { RenameDocumentModal } from "../Sign/RenameDocModal";
 import { ScrollView } from "react-native-gesture-handler";
 import { deleteDocument, emailDocument, openShareOptions } from "./functions";
 import { Context } from "../contexts/Global";
 import { byteConverter, getFileName, getFileType } from "../functions/Global";
 
-export default function DocumentDetails({ route, navigation }) {
+// Ignoring warnings
+LogBox.ignoreLogs(["Sending..."]);
+
+export default function DocumentScanDetails({ route, navigation }) {
   const { doc } = route.params;
   const date = doc.created * 1000;
 
@@ -15,7 +18,7 @@ export default function DocumentDetails({ route, navigation }) {
   const [docName, setDocName] = useState(doc.name);
   const [docPath, setDocPath] = useState(doc.path);
 
-  const { docList, setDocList, setFilteredDocList } = useContext(Context);
+  const { scanList, setScanList, setFilteredScanList } = useContext(Context);
 
   return (
     <View className="mx-3 my-8">
@@ -96,9 +99,9 @@ export default function DocumentDetails({ route, navigation }) {
             onPress={() =>
               deleteDocument(
                 docPath,
-                docList,
-                setDocList,
-                setFilteredDocList,
+                scanList,
+                setScanList,
+                setFilteredScanList,
                 navigation
               )
             }

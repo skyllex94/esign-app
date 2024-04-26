@@ -4,7 +4,7 @@ import { showMessage } from "react-native-flash-message";
 
 import { Text, TouchableOpacity, View } from "react-native";
 import { actionButton } from "../../constants/UI";
-import { AntDesign } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import NameScanModal from "./NameScanModal";
 
 export default function OpenScanner() {
@@ -37,7 +37,7 @@ export default function OpenScanner() {
         className={`flex-row items-center justify-center bg-[${actionButton}]
             z-20 w-[98%] h-[55px] rounded-full mt-3`}
       >
-        <AntDesign name="plus" size={30} color="white" />
+        <MaterialCommunityIcons name="line-scan" size={24} color="white" />
         <Text className="pl-2 text-white">Scan</Text>
       </TouchableOpacity>
 

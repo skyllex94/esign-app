@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import { View, Text, Modal, TouchableOpacity, TextInput } from "react-native";
 import { actionButton } from "../../constants/UI";
 import { showMessage } from "react-native-flash-message";
@@ -17,21 +17,42 @@ export default function NameScanModal({
   const [name, setName] = useState("");
   const { setScanList, setFilteredScanList } = useContext(Context);
 
-  async function saveScannedDocument() {
-    try {
-      if (!scannedImages) return;
+  // UI text focusing ref
+  const nameRef = useRef();
 
+  useEffect(() => {
+    // Auto focus on the rename field
+    nameRef.current.focus();
+  }, []);
+
+  async function saveScannedDocument() {
+    if (!scannedImages) return;
+
+    try {
       // Check directory and create if missing
       directoryExists("Scanned");
 
       const scannedDocPath = `${RNFS.DocumentDirectoryPath}/Scanned/`;
 
-      // Convert the camera images into pdf files
-      const savedScannedDocument = await createPdf({
-        pages: scannedImages.map((imagePath) => ({ imagePath })),
-        outputPath: `file://${scannedDocPath}${name}.pdf`,
-      });
-      console.log("savedScannedDocument:", savedScannedDocument);
+      let savedScannedDocument = null;
+
+      try {
+        const fileName = name.replace(/ /g, "_");
+
+        // Convert the camera images into pdf files
+        savedScannedDocument = await createPdf({
+          pages: scannedImages.map((imagePath) => ({ imagePath })),
+          outputPath: `file://${scannedDocPath}${fileName}.pdf`,
+        });
+        console.log("savedScannedDocument:", savedScannedDocument);
+      } catch (err) {
+        showMessage({
+          message: "Error while converting document",
+          description: err.toString(),
+          duration: 5000,
+          type: "danger",
+        });
+      }
 
       // Delete the images created from the scanner
       deleteResidualFiles(scannedImages);
@@ -71,7 +92,7 @@ export default function NameScanModal({
         <View className="m-8 bg-white rounded-lg p-5 shadow">
           <View className="flex-row items-center justify-between my-2 w-full">
             <TextInput
-              // ref={renameRef}
+              ref={nameRef}
               placeholder="Document Name..."
               onChangeText={(text) => setName(text)}
               className="h-12 px-2 w-full rounded-lg border-2 border-gray-600"
@@ -80,7 +101,7 @@ export default function NameScanModal({
 
           <View className="flex-row items-center justify-between my-3 w-full">
             <TouchableOpacity
-              onPress={() => saveScannedDocument()}
+              onPress={saveScannedDocument}
               className={`rounded-lg bg-[${actionButton}] py-3 px-10`}
             >
               <Text className="text-[16px] text-white">Save</Text>

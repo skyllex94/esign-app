@@ -6,7 +6,6 @@ import {
   ScrollView,
   Image,
   ActivityIndicator,
-  LogBox,
 } from "react-native";
 import React, { useContext, useRef, useState } from "react";
 import { SearchBar } from "react-native-elements";
@@ -15,28 +14,9 @@ import { Feather, FontAwesome6, Ionicons } from "@expo/vector-icons";
 import { clearSearch, handleSearch } from "../functions/Global";
 import OpenScanner from "../Scan/OpenScanner";
 import LottieView from "lottie-react-native";
-import { createStackNavigator } from "@react-navigation/stack";
-import DocumentScanDetails from "../Scan/DocumentScanDetails";
+import { Animated } from "react-native";
 
-const Stack = createStackNavigator();
-
-export default function ScanScreen() {
-  return (
-    <Stack.Navigator
-      initialRouteName={MainNavigatorScreen}
-      screenOptions={{ headerShown: false }}
-    >
-      <Stack.Screen name="MainScan" component={MainNavigatorScreen} />
-      <Stack.Screen
-        name="DocumentScanDetails"
-        component={DocumentScanDetails}
-        options={{ presentation: "modal" }}
-      />
-    </Stack.Navigator>
-  );
-}
-
-function MainNavigatorScreen({ navigation }) {
+export function MainNavigatorScreen({ navigation }) {
   // Context
   const { scanList, filteredScanList, setFilteredScanList, loadScannedDocs } =
     useContext(Context);
@@ -47,8 +27,10 @@ function MainNavigatorScreen({ navigation }) {
   // UI refs
   const astronautRef = useRef();
 
-  // Ignoring warnings
-  LogBox.ignoreLogs(["Sending..."]);
+  const av = new Animated.Value(0);
+  av.addListener(() => {
+    return;
+  });
 
   return (
     <SafeAreaView className="flex-1 bg-slate-150">
@@ -109,10 +91,7 @@ function MainNavigatorScreen({ navigation }) {
             {loadScannedDocs ? (
               filteredScanList.length > 0 ? (
                 filteredScanList.map((doc, idx) => (
-                  <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate("DocumentPreview", { doc })
-                    }
+                  <View
                     className="items-center justify-center h-44 w-[31.3%] bg-white rounded-lg"
                     key={idx}
                   >
@@ -127,29 +106,29 @@ function MainNavigatorScreen({ navigation }) {
                       className="flex-1 items-center justify-center rounded-lg pt-1.5"
                     >
                       {/*  <TouchableOpacity
-                        className="absolute bottom-2 right-2 m-1 z-10"
-                        onPress={() =>
-                          navigation.navigate("DocumentDetails", { doc })
-                        }
-                      >
-                        <Feather
-                          name="more-horizontal"
-                          size={24}
-                          color="white"
-                        />
-                      </TouchableOpacity> */}
+                              className="absolute bottom-2 right-2 m-1 z-10"
+                              onPress={() =>
+                                navigation.navigate("DocumentDetails", { doc })
+                              }
+                            >
+                              <Feather
+                                name="more-horizontal"
+                                size={24}
+                                color="white"
+                              />
+                            </TouchableOpacity> */}
 
                       <FontAwesome6 name="file-pdf" size={40} color="black" />
 
                       {/* <Pdf
-                        minScale={1.0}
-                        maxScale={1.0}
-                        scale={1.0}
-                        spacing={0}
-                        fitPolicy={0}
-                        className="w-28 h-32 rounded-lg"
-                        source={{ uri: doc.path, cache: true }}
-                      />  */}
+                              minScale={1.0}
+                              maxScale={1.0}
+                              scale={1.0}
+                              spacing={0}
+                              fitPolicy={0}
+                              className="w-28 h-32 rounded-lg"
+                              source={{ uri: doc.path, cache: true }}
+                            />  */}
                     </View>
                     <TouchableOpacity className="flex-1 items-start gap-1 my-1">
                       <Text className="text-gray-800">{doc.name}</Text>
@@ -173,7 +152,7 @@ function MainNavigatorScreen({ navigation }) {
                         color="#b7b7b7"
                       />
                     </TouchableOpacity>
-                  </TouchableOpacity>
+                  </View>
                 ))
               ) : (
                 <View className="flex-1 mt-10 items-center justify-center">
@@ -185,8 +164,8 @@ function MainNavigatorScreen({ navigation }) {
                     source={require("../../assets/lottie/scan_astronaut.json")}
                   />
                   {/*  <Text className="text-gray-500">
-                    No Documents {scanList.length > 0 ? "Found" : "Yet"}
-                  </Text>  */}
+                          No Documents {scanList.length > 0 ? "Found" : "Yet"}
+                        </Text>  */}
                 </View>
               )
             ) : (
