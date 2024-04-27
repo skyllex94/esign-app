@@ -6,7 +6,7 @@ import { showMessage } from "react-native-flash-message";
 import { getFileName } from "../functions/Global";
 import { openShareOptions } from "./functions";
 
-export default function DocumentPreview({ route, navigation }) {
+export default function DocumentScanPreview({ route, navigation }) {
   const { doc } = route.params;
   const source = { uri: doc.path, cache: true };
   const path = doc.path;
@@ -25,9 +25,10 @@ export default function DocumentPreview({ route, navigation }) {
 
       <View className="flex-row items-center justify-between bg-white w-full mt-4 px-2 py-1">
         <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("DocumentEditor", { pickedDocument: path })
-          }
+          onPress={() => {
+            navigation.goBack();
+            navigation.navigate("DocumentEditor", { pickedDocument: path });
+          }}
           className={`flex-row items-center bg-[${actionButton}] p-2 rounded-lg`}
         >
           <Feather name="edit" size={20} color="white" />
@@ -36,7 +37,7 @@ export default function DocumentPreview({ route, navigation }) {
 
         <View className="flex-row">
           <TouchableOpacity
-            onPress={() => navigation.navigate("DocumentDetails", { doc })}
+            onPress={() => navigation.navigate("DocumentScanDetails", { doc })}
             className="p-3"
           >
             <Feather name="info" size={24} color="black" />

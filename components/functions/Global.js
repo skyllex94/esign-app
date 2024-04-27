@@ -128,3 +128,24 @@ export function byteConverter(bytes) {
 
   return result;
 }
+
+export function removeExtension(fileName) {
+  // Get the index of the last period in the file name.
+  const dotIndex = fileName.lastIndexOf(".");
+
+  // If there is no period in the file name, return the original file name.
+  if (dotIndex === -1) {
+    return fileName;
+  }
+
+  // Return the file name without the extension.
+  return fileName.substring(0, dotIndex);
+}
+
+export function truncate(str, maxLength) {
+  if (str.length <= maxLength) {
+    return str;
+  } else {
+    return str.substring(0, maxLength) + "...";
+  }
+}

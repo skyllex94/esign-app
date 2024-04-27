@@ -166,6 +166,29 @@ export async function directoryExists(subfolder) {
     RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${subfolder}/`);
 }
 
+export async function createDirectory(folderType, newFolderName) {
+  if (
+    !(await RNFS.exists(
+      `${RNFS.DocumentDirectoryPath}/${folderType}/${newFolderName}/`
+    ))
+  )
+    RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${folderType}/${newFolderName}/`);
+}
+
+export async function isFolder(path) {
+  const result = await RNFS.exists(path);
+  console.log("result:", result);
+  if (result) {
+    const readFile = await RNFS.readDir();
+    console.log("readFile:", readFile);
+    const isFolder = readFile.isDirectory();
+    console.log("isFolder:", isFolder);
+    if (isFolder === true) return true;
+
+    return false;
+  }
+}
+
 export async function loadStoredSignatures(setSignatureList) {
   const updatedSignatureList = [];
 

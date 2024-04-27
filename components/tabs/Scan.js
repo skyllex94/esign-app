@@ -11,12 +11,27 @@ import {
 import React, { useContext, useRef, useState } from "react";
 import { SearchBar } from "react-native-elements";
 import { Context } from "../contexts/Global";
-import { Feather, FontAwesome6, Ionicons } from "@expo/vector-icons";
-import { clearSearch, handleSearch } from "../functions/Global";
+import {
+  Entypo,
+  Feather,
+  FontAwesome6,
+  Ionicons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
+import {
+  clearSearch,
+  handleSearch,
+  removeExtension,
+  truncate,
+} from "../functions/Global";
 import OpenScanner from "../Scan/OpenScanner";
 import LottieView from "lottie-react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import DocumentScanDetails from "../Scan/DocumentScanDetails";
+import DocumentScanPreview from "../Scan/DocumentScanPreview";
+import { LinearGradient } from "expo-linear-gradient";
+import NewFolderModal from "../Scan/NewFolderModal";
+import { isFolder } from "../Sign/functions";
 
 const Stack = createStackNavigator();
 
@@ -32,14 +47,24 @@ export default function ScanScreen() {
         component={DocumentScanDetails}
         options={{ presentation: "modal" }}
       />
+      <Stack.Screen
+        name="DocumentScanPreview"
+        component={DocumentScanPreview}
+        options={{ presentation: "modal" }}
+      />
     </Stack.Navigator>
   );
 }
 
 function MainNavigatorScreen({ navigation }) {
   // Context
-  const { scanList, filteredScanList, setFilteredScanList, loadScannedDocs } =
-    useContext(Context);
+  const {
+    scanList,
+    docList,
+    filteredScanList,
+    setFilteredScanList,
+    loadScannedDocs,
+  } = useContext(Context);
 
   // Searchbar states
   const [search, setSearch] = useState("");
@@ -49,6 +74,9 @@ function MainNavigatorScreen({ navigation }) {
 
   // Ignoring warnings
   LogBox.ignoreLogs(["Sending..."]);
+
+  // New folder state
+  const [showNewFolderModal, setShowNewFolderModal] = useState(false);
 
   return (
     <SafeAreaView className="flex-1 bg-slate-150">
@@ -89,14 +117,53 @@ function MainNavigatorScreen({ navigation }) {
         />
       </View>
 
-      <View className="mx-3 h-48 ">
+      {/* <View className="mx-3 h-48">
         <Image
           className="rounded-lg"
           source={require("../../assets/img/banner.webp")}
           resizeMode="cover"
           style={{ flex: 1, width: undefined, height: undefined }}
         />
+      </View> */}
+
+      <View className="flex-row flex-wrap mx-3 my-1">
+        <TouchableOpacity
+          onPress={() => setShowNewFolderModal(true)}
+          className="w-[49%] h-full mr-[2%]"
+        >
+          <LinearGradient
+            // Button Linear Gradient
+            className="h-24 items-center justify-center rounded-lg gap-y-1"
+            colors={["#662D8C", "#ED1E79"]}
+            start={[0, 0]}
+            end={[1, 1]}
+            location={[0.25, 0.4, 1]}
+          >
+            <Entypo name="folder" size={34} color="white" />
+            <Text className="text-white">Create folder</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        <TouchableOpacity className="w-[49%] h-full">
+          <LinearGradient
+            className="h-24 items-center justify-center  rounded-lg gap-y-1"
+            colors={["#FF512F", "#DD2476"]}
+            start={[0, 0]}
+            end={[1, 1]}
+            location={[0.75, 0.2, 0.2]}
+          >
+            <MaterialCommunityIcons name="file-edit" size={34} color="white" />
+            <Text className="text-white">Edit Document</Text>
+          </LinearGradient>
+        </TouchableOpacity>
       </View>
+
+      {showNewFolderModal && (
+        <NewFolderModal
+          showNewFolderModal={showNewFolderModal}
+          setShowNewFolderModal={setShowNewFolderModal}
+        />
+      )}
 
       <View className="flex-1 m-2">
         <View className="flex-1 items-start w-[100%] ml-1">
@@ -104,68 +171,43 @@ function MainNavigatorScreen({ navigation }) {
             vertical
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ flexDirection: "row", flexWrap: "wrap" }}
-            className="w-[100%] gap-2"
+            className="w-[100%] gap-[2%]"
           >
             {loadScannedDocs ? (
               filteredScanList.length > 0 ? (
                 filteredScanList.map((doc, idx) => (
                   <TouchableOpacity
                     onPress={() =>
-                      navigation.navigate("DocumentPreview", { doc })
+                      navigation.navigate("DocumentScanPreview", { doc })
                     }
                     className="items-center justify-center h-44 w-[31.3%] bg-white rounded-lg"
                     key={idx}
                   >
-                    <View
-                      onPress={() => {
-                        navigation.removeListener;
-                        navigation.navigate("DocumentPreview", {
-                          doc,
-                          parent: "ScanScreen",
-                        });
-                      }}
-                      className="flex-1 items-center justify-center rounded-lg pt-1.5"
-                    >
-                      {/*  <TouchableOpacity
-                        className="absolute bottom-2 right-2 m-1 z-10"
-                        onPress={() =>
-                          navigation.navigate("DocumentDetails", { doc })
-                        }
-                      >
-                        <Feather
-                          name="more-horizontal"
-                          size={24}
-                          color="white"
-                        />
-                      </TouchableOpacity> */}
-
-                      <FontAwesome6 name="file-pdf" size={40} color="black" />
-
-                      {/* <Pdf
-                        minScale={1.0}
-                        maxScale={1.0}
-                        scale={1.0}
-                        spacing={0}
-                        fitPolicy={0}
-                        className="w-28 h-32 rounded-lg"
-                        source={{ uri: doc.path, cache: true }}
-                      />  */}
+                    <View className="flex-1 items-center justify-center rounded-lg pt-1.5">
+                      {doc.path.includes(".pdf") ? (
+                        <FontAwesome6 name="file-pdf" size={40} color="black" />
+                      ) : (
+                        <Entypo name="folder" size={45} color="black" />
+                      )}
                     </View>
-                    <TouchableOpacity className="flex-1 items-start gap-1 my-1">
-                      <Text className="text-gray-800">{doc.name}</Text>
+
+                    <View className="flex-1 items-center gap-1 my-1">
+                      <Text className="text-gray-800">
+                        {truncate(removeExtension(doc.name), 30)}
+                      </Text>
 
                       <View>
                         <Text className="text-gray-400">
                           {new Date(doc.created * 1000).toLocaleDateString()}
                         </Text>
                       </View>
-                    </TouchableOpacity>
+                    </View>
 
                     <TouchableOpacity
                       onPress={() =>
                         navigation.navigate("DocumentScanDetails", { doc })
                       }
-                      className="m-4"
+                      className="m-2"
                     >
                       <Feather
                         name="more-horizontal"
@@ -176,7 +218,7 @@ function MainNavigatorScreen({ navigation }) {
                   </TouchableOpacity>
                 ))
               ) : (
-                <View className="flex-1 mt-10 items-center justify-center">
+                <View className="flex-1 pt-8 items-center justify-center">
                   <LottieView
                     autoPlay
                     speed={0.5}
@@ -184,9 +226,13 @@ function MainNavigatorScreen({ navigation }) {
                     style={{ width: 250, height: 130 }}
                     source={require("../../assets/lottie/scan_astronaut.json")}
                   />
-                  {/*  <Text className="text-gray-500">
-                    No Documents {scanList.length > 0 ? "Found" : "Yet"}
-                  </Text>  */}
+                  <Text className="text-gray-500 mt-2">
+                    {scanList.length > 0
+                      ? "Nothing Found"
+                      : docList.length > 0
+                      ? "No Documents Here"
+                      : "No Documents Here, Either"}
+                  </Text>
                 </View>
               )
             ) : (
