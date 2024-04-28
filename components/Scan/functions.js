@@ -88,6 +88,10 @@ export async function openShareOptions(path) {
   });
 }
 
+// export function openFolder(path) {
+//   console.log(path);
+// }
+
 export async function emailDocument(docPath) {
   const canUseMailService = await MailComposer.isAvailableAsync();
 

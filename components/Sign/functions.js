@@ -166,15 +166,6 @@ export async function directoryExists(subfolder) {
     RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${subfolder}/`);
 }
 
-export async function createDirectory(folderType, newFolderName) {
-  if (
-    !(await RNFS.exists(
-      `${RNFS.DocumentDirectoryPath}/${folderType}/${newFolderName}/`
-    ))
-  )
-    RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${folderType}/${newFolderName}/`);
-}
-
 export async function isFolder(path) {
   const result = await RNFS.exists(path);
   console.log("result:", result);

@@ -3,8 +3,11 @@ import * as DocumentPicker from "expo-document-picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import filter from "lodash.filter";
 import RNFS from "react-native-fs";
+import { showMessage } from "react-native-flash-message";
+import { typedArrayFor } from "pdf-lib";
 
 export async function updateDocuments(dir, setList, setFilteredList) {
+  console.log("dir:", dir);
   const updateCompleteList = [];
 
   // Check if directory path exists
@@ -35,9 +38,148 @@ export async function updateDocuments(dir, setList, setFilteredList) {
   setFilteredList([...updateCompleteList]);
 }
 
+export async function updateList(path, setPath, setList, setFilteredList) {
+  if (!path) return;
+
+  const updateCompleteList = [];
+
+  // Check if directory path exists
+  if (!(await RNFS.exists(path))) RNFS.mkdir(path);
+
+  let docs = await FileSystem.readDirectoryAsync(path);
+
+  // Push the new documents to the list
+  for (const doc of docs) {
+    const newPath = `${path}/${doc}`;
+    console.log("newPath:", newPath);
+    const docInfo = await FileSystem.getInfoAsync(newPath);
+
+    setPath(path);
+
+    updateCompleteList.push(
+      new Object({
+        name: doc,
+        path: newPath,
+        created: docInfo.modificationTime,
+        size: docInfo.size,
+      })
+    );
+  }
+
+  // Update UI states
+  setList([...updateCompleteList]);
+  setFilteredList([...updateCompleteList]);
+}
+
 export async function getFileInfo(path) {
   const infoObj = await FileSystem.getInfoAsync(path);
   return infoObj;
+}
+
+export function removeLastFolder(path) {
+  const folders = path.split("/");
+  folders.pop();
+  return folders.join("/");
+}
+
+export function getLastFolder(path) {
+  const folders = path.split("/");
+
+  // Return the last folder in the array.
+  return folders[folders.length - 1];
+}
+
+export function getSecondToLastFolderName(path) {
+  const folders = path.split("/");
+
+  // Return the second to last folder name.
+  return folders[folders.length - 2];
+}
+
+export function getLastAndSecondLastFolder(path) {
+  console.log("path:", path);
+  const folders = path.split("/");
+
+  // Get the last and second to last folders.
+  const lastFolder = folders[folders.length - 1];
+  const secondLastFolder = folders[folders.length - 2];
+
+  // Return the last and second to last folders.
+  return `${secondLastFolder}/${lastFolder}`;
+}
+
+export function getPath(subfolder) {
+  const path = `${RNFS.DocumentDirectoryPath}/${subfolder}/`;
+
+  if (!RNFS.exists(path))
+    RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${subfolder}/`);
+
+  return path;
+}
+
+export function goBack(path, setList, setFilteredList, setPath) {
+  try {
+    if (!path) throw new Error("Could not complete this operation.");
+
+    const secondToLastFolderName = getSecondToLastFolderName(path);
+
+    setPath(removeLastFolder(path));
+
+    updateDocuments(secondToLastFolderName, setList, setFilteredList);
+  } catch (err) {
+    showMessage({
+      message: err.message.toString(),
+      description: err.toString(),
+      type: "danger",
+      duration: 4000,
+    });
+  }
+}
+
+export async function createFolder(
+  path,
+  setPath,
+  newFolderName,
+  setList,
+  setFilteredList
+) {
+  try {
+    if (!path || !newFolderName) throw new Error();
+    console.log("path:", path);
+
+    const newPath = `${path}/${newFolderName}`;
+    RNFS.mkdir(newPath);
+
+    const updateList = [];
+    let docs = await FileSystem.readDirectoryAsync(path);
+
+    // Push the new documents to the list
+    for (const doc of docs) {
+      const docInfo = await FileSystem.getInfoAsync(path);
+
+      updateList.push(
+        new Object({
+          name: doc,
+          path,
+          created: docInfo.modificationTime,
+          size: docInfo.size,
+        })
+      );
+    }
+
+    // TODO: work on displaying the new folder when created
+
+    setPath(newPath);
+    setList(updateList);
+    setFilteredList(updateList);
+  } catch (err) {
+    showMessage({
+      message: "Couldn't create this folder",
+      description: err.toString(),
+      type: "danger",
+      duration: 4000,
+    });
+  }
 }
 
 export async function openDocument(navigation, bottomSheetChooseDocument) {

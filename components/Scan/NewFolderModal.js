@@ -1,11 +1,12 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { View, Text, Modal, TouchableOpacity, TextInput } from "react-native";
 import { actionButton } from "../../constants/UI";
-import { createDirectory } from "../Sign/functions";
-import { updateDocuments } from "../functions/Global";
+import { createFolder, updateList } from "../functions/Global";
 import { Context } from "../contexts/Global";
 
 export default function NewFolderModal({
+  currPath,
+  setCurrPath,
   showNewFolderModal,
   setShowNewFolderModal,
 }) {
@@ -18,11 +19,9 @@ export default function NewFolderModal({
   }, []);
 
   function createNewFolder(name) {
-    console.log(name);
-
     if (name === "") return;
-    createDirectory("Scanned", name);
-    updateDocuments("Scanned", setScanList, setFilteredScanList);
+
+    createFolder(currPath, setCurrPath, name, setScanList, setFilteredScanList);
 
     setShowNewFolderModal(false);
   }
@@ -40,10 +39,7 @@ export default function NewFolderModal({
       />
 
       <View className="flex-1 justify-center items-center">
-        <View
-          className="m-8 bg-white rounded-lg p-5 shadow"
-          //   style={styles.modalView}
-        >
+        <View className="m-8 bg-white rounded-lg p-5 shadow">
           <View className="flex-row items-center justify-between my-2 w-full">
             <TextInput
               ref={folderNameRef}
