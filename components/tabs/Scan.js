@@ -17,9 +17,11 @@ import {
   FontAwesome6,
   Ionicons,
   MaterialCommunityIcons,
+  MaterialIcons,
 } from "@expo/vector-icons";
 import {
   clearSearch,
+  getLastFolder,
   getPath,
   goBack,
   handleSearch,
@@ -83,6 +85,8 @@ function MainNavigatorScreen({ navigation }) {
   // New folder state
   const [showNewFolderModal, setShowNewFolderModal] = useState(false);
   const [currPath, setCurrPath] = useState(getPath("Scanned"));
+
+  console.log(getLastFolder(currPath));
 
   return (
     <SafeAreaView className="flex-1 bg-slate-150">
@@ -173,18 +177,24 @@ function MainNavigatorScreen({ navigation }) {
         />
       )}
 
-      <View className="flex-row items-center justify-start m-3">
-        <TouchableOpacity
-          onPress={() => {
-            const newPath = removeLastFolder(currPath);
-            console.log("removePath:", newPath);
-            updateList(newPath, setCurrPath, setScanList, setFilteredScanList);
-          }}
-          className="mr-3"
-        >
-          <Ionicons name="arrow-back-sharp" size={24} color="black" />
-        </TouchableOpacity>
-        <Text className="text-[17px]">Scanned Documents</Text>
+      <View className="flex-row items-center justify-start m-2">
+        {getLastFolder(currPath).toString() == "Scanned" ? null : (
+          <TouchableOpacity
+            onPress={() => {
+              const newPath = removeLastFolder(currPath);
+              updateList(
+                newPath,
+                setCurrPath,
+                setScanList,
+                setFilteredScanList
+              );
+            }}
+            className="pr-3"
+          >
+            <Ionicons name="arrow-back-sharp" size={24} color="black" />
+          </TouchableOpacity>
+        )}
+        <Text className="text-[17px] m-1">Scanned Documents</Text>
       </View>
 
       <View className="flex-1 m-2">
@@ -207,7 +217,11 @@ function MainNavigatorScreen({ navigation }) {
                       key={idx}
                     >
                       <View className="flex-1 items-center justify-center rounded-lg pt-1.5">
-                        <FontAwesome6 name="file-pdf" size={40} color="black" />
+                        <MaterialIcons
+                          name="picture-as-pdf"
+                          size={40}
+                          color="black"
+                        />
                       </View>
 
                       <View className="flex-1 items-center gap-1 my-1">
@@ -306,7 +320,7 @@ function MainNavigatorScreen({ navigation }) {
           </ScrollView>
         </View>
 
-        <OpenScanner />
+        <OpenScanner path={currPath} setPath={setCurrPath} />
       </View>
     </SafeAreaView>
   );

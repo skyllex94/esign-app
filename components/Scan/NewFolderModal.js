@@ -22,7 +22,6 @@ export default function NewFolderModal({
     if (name === "") return;
 
     createFolder(currPath, setCurrPath, name, setScanList, setFilteredScanList);
-
     setShowNewFolderModal(false);
   }
 

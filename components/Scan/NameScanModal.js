@@ -2,14 +2,14 @@ import { useState, useContext, useRef, useEffect } from "react";
 import { View, Text, Modal, TouchableOpacity, TextInput } from "react-native";
 import { actionButton } from "../../constants/UI";
 import { showMessage } from "react-native-flash-message";
-import { updateDocuments } from "../functions/Global";
+import { updateList } from "../functions/Global";
 import { Context } from "../contexts/Global";
 import { createPdf } from "react-native-images-to-pdf";
-import { directoryExists } from "../Sign/functions";
-import RNFS from "react-native-fs";
 import { deleteResidualFiles } from "./functions";
 
 export default function NameScanModal({
+  path,
+  setPath,
   showNameDocument,
   setShowNameDocument,
   scannedImages,
@@ -30,21 +30,19 @@ export default function NameScanModal({
 
     try {
       // Check directory and create if missing
-      directoryExists("Scanned");
-
-      const scannedDocPath = `${RNFS.DocumentDirectoryPath}/Scanned/`;
-
-      let savedScannedDocument = null;
+      if (!path) return;
 
       try {
-        const fileName = name.replace(/ /g, "_");
+        // Convert names with white spcces correctly
+        const convPath = path.replace(/ /g, "%20");
+        const fileName = name.replace(/ /g, "%20");
+        const outputPath = `${convPath}/${fileName}.pdf`.toString();
 
         // Convert the camera images into pdf files
-        savedScannedDocument = await createPdf({
+        await createPdf({
           pages: scannedImages.map((imagePath) => ({ imagePath })),
-          outputPath: `file://${scannedDocPath}${fileName}.pdf`,
+          outputPath,
         });
-        console.log("savedScannedDocument:", savedScannedDocument);
       } catch (err) {
         showMessage({
           message: "Error while converting document",
@@ -58,7 +56,7 @@ export default function NameScanModal({
       deleteResidualFiles(scannedImages);
 
       // Update list with scanned documents
-      updateDocuments("Scanned", setScanList, setFilteredScanList);
+      updateList(path, setPath, setScanList, setFilteredScanList);
 
       setShowNameDocument(false);
     } catch (err) {

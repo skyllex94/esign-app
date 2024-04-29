@@ -4,7 +4,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import filter from "lodash.filter";
 import RNFS from "react-native-fs";
 import { showMessage } from "react-native-flash-message";
-import { typedArrayFor } from "pdf-lib";
 
 export async function updateDocuments(dir, setList, setFilteredList) {
   console.log("dir:", dir);
@@ -38,7 +37,13 @@ export async function updateDocuments(dir, setList, setFilteredList) {
   setFilteredList([...updateCompleteList]);
 }
 
-export async function updateList(path, setPath, setList, setFilteredList) {
+export async function updateList(
+  path,
+  setPath,
+  setList,
+  setFilteredList,
+  isFolder
+) {
   if (!path) return;
 
   const updateCompleteList = [];
@@ -62,13 +67,44 @@ export async function updateList(path, setPath, setList, setFilteredList) {
         path: newPath,
         created: docInfo.modificationTime,
         size: docInfo.size,
+        isFolder: isFolder ? true : false,
       })
+    );
+
+    // Sort files alphabetically
+    updateCompleteList.sort((a, b) =>
+      a.name > b.name ? 1 : b.name > a.name ? -1 : 0
     );
   }
 
   // Update UI states
   setList([...updateCompleteList]);
   setFilteredList([...updateCompleteList]);
+}
+
+export async function createFolder(
+  path,
+  setPath,
+  newFolderName,
+  setList,
+  setFilteredList
+) {
+  try {
+    if (!path || !newFolderName) throw new Error();
+
+    const newPath = `${path}/${newFolderName}`;
+    console.log("newPath:", newPath);
+    RNFS.mkdir(newPath);
+
+    updateList(path, setPath, setList, setFilteredList, { isFolder: true });
+  } catch (err) {
+    showMessage({
+      message: "Couldn't create this folder",
+      description: err.toString(),
+      type: "danger",
+      duration: 4000,
+    });
+  }
 }
 
 export async function getFileInfo(path) {
@@ -129,52 +165,6 @@ export function goBack(path, setList, setFilteredList, setPath) {
   } catch (err) {
     showMessage({
       message: err.message.toString(),
-      description: err.toString(),
-      type: "danger",
-      duration: 4000,
-    });
-  }
-}
-
-export async function createFolder(
-  path,
-  setPath,
-  newFolderName,
-  setList,
-  setFilteredList
-) {
-  try {
-    if (!path || !newFolderName) throw new Error();
-    console.log("path:", path);
-
-    const newPath = `${path}/${newFolderName}`;
-    RNFS.mkdir(newPath);
-
-    const updateList = [];
-    let docs = await FileSystem.readDirectoryAsync(path);
-
-    // Push the new documents to the list
-    for (const doc of docs) {
-      const docInfo = await FileSystem.getInfoAsync(path);
-
-      updateList.push(
-        new Object({
-          name: doc,
-          path,
-          created: docInfo.modificationTime,
-          size: docInfo.size,
-        })
-      );
-    }
-
-    // TODO: work on displaying the new folder when created
-
-    setPath(newPath);
-    setList(updateList);
-    setFilteredList(updateList);
-  } catch (err) {
-    showMessage({
-      message: "Couldn't create this folder",
       description: err.toString(),
       type: "danger",
       duration: 4000,

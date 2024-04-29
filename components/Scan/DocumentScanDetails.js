@@ -12,6 +12,7 @@ LogBox.ignoreLogs(["Sending..."]);
 
 export default function DocumentScanDetails({ route, navigation }) {
   const { doc } = route.params;
+  console.log("doc:", doc);
   const date = doc.created * 1000;
 
   const [showRenameModal, setShowRenameModal] = useState(false);
@@ -42,7 +43,7 @@ export default function DocumentScanDetails({ route, navigation }) {
           <View className="flex-row bg-white items-center justify-between px-3 h-16 w-full border-b-[0.5px] border-gray-400">
             <Text>Document Type:</Text>
             <Text className="text-gray-500">
-              {getFileType(docName).toUpperCase()}
+              {doc?.isFolder ? "Folder" : getFileType(docName).toUpperCase()}
             </Text>
           </View>
 

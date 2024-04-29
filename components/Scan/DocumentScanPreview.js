@@ -16,7 +16,7 @@ export default function DocumentScanPreview({ route, navigation }) {
       <View className="flex-row items-center justify-between mx-4">
         <Text className="text-lg font-semibold">{getFileName(doc.name)}</Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate("ScanScreen")}
+          onPress={() => navigation.goBack()}
           className={`bg-gray-200 rounded-full p-2`}
         >
           <AntDesign name="close" size={20} color="black" />
