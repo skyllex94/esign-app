@@ -1,7 +1,7 @@
 import * as FileSystem from "expo-file-system";
 import { Alert } from "react-native";
 import RNFS from "react-native-fs";
-import { updateDocuments } from "../functions/Global";
+import { updateDocuments, updateList } from "../functions/Global";
 import { showMessage } from "react-native-flash-message";
 import * as MailComposer from "expo-mail-composer";
 import { shareAsync } from "expo-sharing";
@@ -65,8 +65,9 @@ export const deleteDocument = (
           // Updating signature array list for the UI
           const updatedDocList = scanList.filter((doc) => doc !== fileWtPath);
 
-          setScanList(updatedDocList);
+          // setScanList(updatedDocList);
           updateDocuments("Scanned", setScanList, setFilteredScanList);
+          updateList();
           setTimeout(() => {
             navigation.goBack();
           }, 1000);

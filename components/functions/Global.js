@@ -5,8 +5,7 @@ import filter from "lodash.filter";
 import RNFS from "react-native-fs";
 import { showMessage } from "react-native-flash-message";
 
-export async function updateDocuments(dir, setList, setFilteredList) {
-  console.log("dir:", dir);
+export async function updateDocuments(dir, setList, setFilteredList, isFolder) {
   const updateCompleteList = [];
 
   // Check if directory path exists
@@ -28,6 +27,7 @@ export async function updateDocuments(dir, setList, setFilteredList) {
         path,
         created: docInfo.modificationTime,
         size: docInfo.size,
+        isFolder: isFolder ? true : false,
       })
     );
   }

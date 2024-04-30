@@ -81,7 +81,7 @@ export default function SignScreen() {
       <Stack.Screen
         name="DocumentEditor"
         component={DocumentEditor}
-        options={{ presentation: "card" }}
+        options={{ presentation: "card", gestureEnabled: false }}
       />
       <Stack.Screen
         name="DocumentDetails"

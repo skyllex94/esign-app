@@ -4,17 +4,15 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
-  Image,
   ActivityIndicator,
   LogBox,
 } from "react-native";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { SearchBar } from "react-native-elements";
 import { Context } from "../contexts/Global";
 import {
   Entypo,
   Feather,
-  FontAwesome6,
   Ionicons,
   MaterialCommunityIcons,
   MaterialIcons,
@@ -23,9 +21,7 @@ import {
   clearSearch,
   getLastFolder,
   getPath,
-  goBack,
   handleSearch,
-  openFolder,
   removeExtension,
   removeLastFolder,
   truncate,
@@ -38,6 +34,8 @@ import DocumentScanDetails from "../Scan/DocumentScanDetails";
 import DocumentScanPreview from "../Scan/DocumentScanPreview";
 import { LinearGradient } from "expo-linear-gradient";
 import NewFolderModal from "../Scan/NewFolderModal";
+import FolderScanDetails from "../Scan/FolderScanDetails";
+import { bgColor } from "../../constants/UI";
 
 const Stack = createStackNavigator();
 
@@ -51,6 +49,11 @@ export default function ScanScreen() {
       <Stack.Screen
         name="DocumentScanDetails"
         component={DocumentScanDetails}
+        options={{ presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="FolderScanDetails"
+        component={FolderScanDetails}
         options={{ presentation: "modal" }}
       />
       <Stack.Screen
@@ -85,8 +88,6 @@ function MainNavigatorScreen({ navigation }) {
   // New folder state
   const [showNewFolderModal, setShowNewFolderModal] = useState(false);
   const [currPath, setCurrPath] = useState(getPath("Scanned"));
-
-  console.log(getLastFolder(currPath));
 
   return (
     <SafeAreaView className="flex-1 bg-slate-150">
@@ -126,15 +127,6 @@ function MainNavigatorScreen({ navigation }) {
           }
         />
       </View>
-
-      {/* <View className="mx-3 h-48">
-        <Image
-          className="rounded-lg"
-          source={require("../../assets/img/banner.webp")}
-          resizeMode="cover"
-          style={{ flex: 1, width: undefined, height: undefined }}
-        />
-      </View> */}
 
       <View className="flex-row flex-wrap mx-3 my-1">
         <TouchableOpacity
@@ -177,147 +169,157 @@ function MainNavigatorScreen({ navigation }) {
         />
       )}
 
-      <View className="flex-row items-center justify-start m-2">
-        {getLastFolder(currPath).toString() == "Scanned" ? null : (
-          <TouchableOpacity
-            onPress={() => {
-              const newPath = removeLastFolder(currPath);
-              updateList(
-                newPath,
-                setCurrPath,
-                setScanList,
-                setFilteredScanList
-              );
-            }}
-            className="pr-3"
-          >
-            <Ionicons name="arrow-back-sharp" size={24} color="black" />
-          </TouchableOpacity>
-        )}
-        <Text className="text-[17px] m-1">Scanned Documents</Text>
-      </View>
+      <View className="flex-1 mx-3 my-2">
+        <View
+          className="file-explorer flex-1 bg-white
+         w-[100%] rounded-lg"
+        >
+          <View className="flex-row items-center justify-start m-2">
+            {getLastFolder(currPath).toString() == "Scanned" ? null : (
+              <TouchableOpacity
+                onPress={() => {
+                  const newPath = removeLastFolder(currPath);
+                  updateList(
+                    newPath,
+                    setCurrPath,
+                    setScanList,
+                    setFilteredScanList
+                  );
+                }}
+                className="pr-3"
+              >
+                <Ionicons name="arrow-back-sharp" size={24} color="black" />
+              </TouchableOpacity>
+            )}
 
-      <View className="flex-1 m-2">
-        <View className="flex-1 items-start w-[100%] ml-1">
-          <ScrollView
-            vertical
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ flexDirection: "row", flexWrap: "wrap" }}
-            className="w-[100%] gap-[2%] rounded-lg"
-          >
-            {loadScannedDocs ? (
-              filteredScanList.length > 0 ? (
-                filteredScanList.map((doc, idx) =>
-                  doc.path.includes(".pdf") ? (
-                    <TouchableOpacity
-                      onPress={() =>
-                        navigation.navigate("DocumentScanPreview", { doc })
-                      }
-                      className="items-center justify-center h-44 w-[31.3%] bg-white rounded-lg"
-                      key={idx}
-                    >
-                      <View className="flex-1 items-center justify-center rounded-lg pt-1.5">
-                        <MaterialIcons
-                          name="picture-as-pdf"
-                          size={40}
-                          color="black"
-                        />
-                      </View>
+            <Text className="text-[17px] m-1">Scanned Documents</Text>
+          </View>
 
-                      <View className="flex-1 items-center gap-1 my-1">
-                        <Text className="text-gray-800">
-                          {truncate(removeExtension(doc.name), 30)}
-                        </Text>
-
-                        <View>
-                          <Text className="text-gray-400">
-                            {new Date(doc.created * 1000).toLocaleDateString()}
-                          </Text>
-                        </View>
-                      </View>
-
+          <View className="flex-1 items-center justify-center">
+            <ScrollView
+              vertical
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ flexDirection: "row", flexWrap: "wrap" }}
+              className="w-[100%] gap-2 rounded-lg ml-2"
+            >
+              {loadScannedDocs ? (
+                filteredScanList.length > 0 ? (
+                  filteredScanList.map((doc, idx) =>
+                    doc.path.includes(".pdf") ? (
                       <TouchableOpacity
                         onPress={() =>
-                          navigation.navigate("DocumentScanDetails", { doc })
+                          navigation.navigate("DocumentScanPreview", { doc })
                         }
-                        className="m-2"
+                        className={`items-center justify-center h-44 w-[30%] bg-white shadow rounded-lg`}
+                        key={idx}
                       >
-                        <Feather
-                          name="more-horizontal"
-                          size={24}
-                          color="#b7b7b7"
-                        />
-                      </TouchableOpacity>
-                    </TouchableOpacity>
-                  ) : (
-                    <TouchableOpacity
-                      onPress={() => {
-                        setCurrPath(doc.path);
-                        updateList(
-                          doc.path,
-                          setCurrPath,
-                          setScanList,
-                          setFilteredScanList
-                        );
-                      }}
-                      className="items-center justify-center h-44 w-[31.3%] bg-white rounded-lg"
-                      key={idx}
-                    >
-                      <View className="flex-1 items-center justify-center rounded-lg pt-1.5">
-                        <Entypo name="folder" size={45} color="black" />
-                      </View>
-
-                      <View className="flex-1 items-center gap-1 my-1">
-                        <Text className="text-gray-800">
-                          {truncate(removeExtension(doc.name), 30)}
-                        </Text>
-
-                        <View>
-                          <Text className="text-gray-400">
-                            {new Date(doc.created * 1000).toLocaleDateString()}
-                          </Text>
+                        <View className="flex-1 items-center justify-center rounded-lg pt-1.5">
+                          <MaterialIcons
+                            name="picture-as-pdf"
+                            size={40}
+                            color="black"
+                          />
                         </View>
-                      </View>
 
-                      <TouchableOpacity
-                        onPress={() =>
-                          navigation.navigate("DocumentScanDetails", { doc })
-                        }
-                        className="m-2"
-                      >
-                        <Feather
-                          name="more-horizontal"
-                          size={24}
-                          color="#b7b7b7"
-                        />
+                        <View className="flex-1 items-center gap-1 my-1">
+                          <Text className="text-gray-800">
+                            {truncate(removeExtension(doc.name), 30)}
+                          </Text>
+
+                          <View>
+                            <Text className="text-gray-400">
+                              {new Date(
+                                doc.created * 1000
+                              ).toLocaleDateString()}
+                            </Text>
+                          </View>
+                        </View>
+
+                        <TouchableOpacity
+                          onPress={() =>
+                            navigation.navigate("DocumentScanDetails", { doc })
+                          }
+                          className="m-2"
+                        >
+                          <Feather
+                            name="more-horizontal"
+                            size={24}
+                            color="#b7b7b7"
+                          />
+                        </TouchableOpacity>
                       </TouchableOpacity>
-                    </TouchableOpacity>
+                    ) : (
+                      <TouchableOpacity
+                        onPress={() => {
+                          setCurrPath(doc.path);
+                          updateList(
+                            doc.path,
+                            setCurrPath,
+                            setScanList,
+                            setFilteredScanList
+                          );
+                        }}
+                        className={`items-center justify-center h-44 w-[30%] bg-white shadow rounded-lg`}
+                        key={idx}
+                      >
+                        <View className="flex-1 items-center justify-center rounded-lg pt-1.5">
+                          <Entypo name="folder" size={45} color="black" />
+                        </View>
+
+                        <View className="flex-1 items-center gap-1 my-1">
+                          <Text className="text-gray-800">
+                            {truncate(removeExtension(doc.name), 30)}
+                          </Text>
+
+                          <View>
+                            <Text className="text-gray-400">
+                              {new Date(
+                                doc.created * 1000
+                              ).toLocaleDateString()}
+                            </Text>
+                          </View>
+                        </View>
+
+                        <TouchableOpacity
+                          onPress={() =>
+                            navigation.navigate("FolderScanDetails", { doc })
+                          }
+                          className="m-2"
+                        >
+                          <Feather
+                            name="more-horizontal"
+                            size={24}
+                            color="#b7b7b7"
+                          />
+                        </TouchableOpacity>
+                      </TouchableOpacity>
+                    )
                   )
+                ) : (
+                  <View className="flex-1 pt-8 items-center justify-center">
+                    <LottieView
+                      autoPlay
+                      speed={0.5}
+                      ref={astronautRef}
+                      style={{ width: 250, height: 130 }}
+                      source={require("../../assets/lottie/scan_astronaut.json")}
+                    />
+                    <Text className="text-gray-500 mt-2">
+                      {scanList.length > 0
+                        ? "Nothing Found"
+                        : docList.length > 0
+                        ? "No Documents Here"
+                        : "No Documents Here, Either"}
+                    </Text>
+                  </View>
                 )
               ) : (
-                <View className="flex-1 pt-8 items-center justify-center">
-                  <LottieView
-                    autoPlay
-                    speed={0.5}
-                    ref={astronautRef}
-                    style={{ width: 250, height: 130 }}
-                    source={require("../../assets/lottie/scan_astronaut.json")}
-                  />
-                  <Text className="text-gray-500 mt-2">
-                    {scanList.length > 0
-                      ? "Nothing Found"
-                      : docList.length > 0
-                      ? "No Documents Here"
-                      : "No Documents Here, Either"}
-                  </Text>
+                <View className="flex-1 mt-6 items-center justify-center">
+                  <ActivityIndicator size={"small"} />
                 </View>
-              )
-            ) : (
-              <View className="flex-1 mt-6 items-center justify-center">
-                <ActivityIndicator size={"small"} />
-              </View>
-            )}
-          </ScrollView>
+              )}
+            </ScrollView>
+          </View>
         </View>
 
         <OpenScanner path={currPath} setPath={setCurrPath} />
