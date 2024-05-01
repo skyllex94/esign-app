@@ -16,10 +16,10 @@ export default function FolderScanDetails({ route, navigation }) {
 
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [docName, setDocName] = useState(doc.name);
-  console.log("docName:", docName);
   const [docPath, setDocPath] = useState(doc.path);
 
-  const { scanList, setScanList, setFilteredScanList } = useContext(Context);
+  const { scanPath, setScanPath, scanList, setScanList, setFilteredScanList } =
+    useContext(Context);
 
   return (
     <View className="mx-3 my-8">
@@ -66,7 +66,8 @@ export default function FolderScanDetails({ route, navigation }) {
             onPress={() =>
               deleteDocument(
                 docPath,
-                scanList,
+                scanPath,
+                setScanPath,
                 setScanList,
                 setFilteredScanList,
                 navigation

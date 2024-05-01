@@ -40,8 +40,9 @@ export function deleteResidualFiles(arrayOfPaths) {
 }
 
 export const deleteDocument = (
-  fileWtPath,
-  scanList,
+  path,
+  scanPath,
+  setScanPath,
   setScanList,
   setFilteredScanList,
   navigation
@@ -53,7 +54,6 @@ export const deleteDocument = (
       {
         text: "Yes",
         onPress: () => {
-          const path = fileWtPath.split("//")[1];
           console.log("path:", path);
 
           RNFS.unlink(path)
@@ -62,12 +62,8 @@ export const deleteDocument = (
             })
             .catch((err) => console.log(err));
 
-          // Updating signature array list for the UI
-          const updatedDocList = scanList.filter((doc) => doc !== fileWtPath);
+          updateList(scanPath, setScanPath, setScanList, setFilteredScanList);
 
-          // setScanList(updatedDocList);
-          updateDocuments("Scanned", setScanList, setFilteredScanList);
-          updateList();
           setTimeout(() => {
             navigation.goBack();
           }, 1000);

@@ -15,7 +15,11 @@ import TemplatesScreen from "./components/tabs/Templates";
 import SignScreen from "./components/tabs/Sign";
 import { createStackNavigator } from "@react-navigation/stack";
 import { actionButton } from "./constants/UI";
-import { updateDocuments } from "./components/functions/Global";
+import {
+  getPath,
+  updateDocuments,
+  updateList,
+} from "./components/functions/Global";
 import FlashMessage from "react-native-flash-message";
 
 // Stack Nav Wrapper, Tab Nav Secondary
@@ -45,6 +49,7 @@ function Main() {
   // Scan states
   const [scanList, setScanList] = useState([]);
   const [filteredScanList, setFilteredScanList] = useState([]);
+  const [scanPath, setScanPath] = useState(getPath("Scanned"));
 
   // UI States
   const [loadDocuments, setLoadDocuments] = useState(false);
@@ -57,7 +62,7 @@ function Main() {
 
   async function loadStoredDocuments() {
     await updateDocuments("Completed", setDocList, setFilteredDocList);
-    await updateDocuments("Scanned", setScanList, setFilteredScanList);
+    await updateList(scanPath, setScanPath, setScanList, setFilteredScanList);
 
     setLoadDocuments(true);
     setLoadScannedDocs(true);
@@ -84,6 +89,8 @@ function Main() {
         setFilteredScanList,
         loadScannedDocs,
         setLoadScannedDocs,
+        scanPath,
+        setScanPath,
       }}
     >
       <GestureHandlerRootView className="flex-1">

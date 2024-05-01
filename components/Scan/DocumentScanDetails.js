@@ -14,11 +14,13 @@ export default function DocumentScanDetails({ route, navigation }) {
   const { doc } = route.params;
   const date = doc.created * 1000;
 
+  const { scanPath, setScanPath, scanList, setScanList, setFilteredScanList } =
+    useContext(Context);
+
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [docName, setDocName] = useState(doc.name);
   const [docPath, setDocPath] = useState(doc.path);
-
-  const { scanList, setScanList, setFilteredScanList } = useContext(Context);
+  console.log("docPath:", docPath);
 
   return (
     <View className="mx-3 my-8">
@@ -99,7 +101,8 @@ export default function DocumentScanDetails({ route, navigation }) {
             onPress={() =>
               deleteDocument(
                 docPath,
-                scanList,
+                scanPath,
+                setScanPath,
                 setScanList,
                 setFilteredScanList,
                 navigation

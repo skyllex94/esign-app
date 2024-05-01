@@ -6,7 +6,11 @@ import { Context } from "../contexts/Global";
 import { updateDocuments } from "../functions/Global";
 import { actionButton } from "../../constants/UI";
 import { PDFDocument, StandardFonts } from "pdf-lib";
-import { directoryExists, uint8ToBase64Conversion } from "./functions";
+import {
+  base64ToArrayBuffer,
+  directoryExists,
+  uint8ToBase64Conversion,
+} from "./functions";
 import RNFS from "react-native-fs";
 import LottieView from "lottie-react-native";
 import { showMessage } from "react-native-flash-message";
@@ -15,6 +19,7 @@ export const SaveDocument = ({
   isNamingModal,
   setIsNamingModal,
   showSignaturePanResponder,
+  pickedDocument,
   currPage,
   coordinateX,
   coordinateY,
@@ -27,7 +32,6 @@ export const SaveDocument = ({
   setEditedPdfPath,
   setPdfBase64,
   signatureArrayBuffer,
-  pdfArrayBuffer,
   navigation,
   editingPalette,
   // Date props
@@ -69,9 +73,30 @@ export const SaveDocument = ({
     useContext(Context);
   const [savingInProgress, setSavingInProgress] = useState(false);
 
+  const [pdfArrayBuffer, setPdfArrayBuffer] = useState();
+
   useEffect(() => {
     // Auto focus on the rename field
     renameRef.current.focus();
+  }, []);
+
+  useEffect(() => {
+    // Reads the raw data from the chosen PDF
+    async function readPdf() {
+      try {
+        const readDocument = await RNFS.readFile(pickedDocument, "base64");
+        setPdfArrayBuffer(base64ToArrayBuffer(readDocument));
+      } catch (err) {
+        showMessage({
+          message: "Couldn't load the document properly",
+          description: err.toString(),
+          duration: 3000,
+          type: "danger",
+        });
+      }
+    }
+
+    readPdf();
   }, []);
 
   async function saveSignedDocument() {

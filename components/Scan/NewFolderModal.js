@@ -1,12 +1,12 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { View, Text, Modal, TouchableOpacity, TextInput } from "react-native";
 import { actionButton } from "../../constants/UI";
-import { createFolder, updateList } from "../functions/Global";
+import { createFolder } from "../functions/Global";
 import { Context } from "../contexts/Global";
 
 export default function NewFolderModal({
-  currPath,
-  setCurrPath,
+  scanPath,
+  setScanPath,
   showNewFolderModal,
   setShowNewFolderModal,
 }) {
@@ -21,7 +21,7 @@ export default function NewFolderModal({
   function createNewFolder(name) {
     if (name === "") return;
 
-    createFolder(currPath, setCurrPath, name, setScanList, setFilteredScanList);
+    createFolder(scanPath, setScanPath, name, setScanList, setFilteredScanList);
     setShowNewFolderModal(false);
   }
 

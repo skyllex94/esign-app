@@ -7,7 +7,7 @@ import { actionButton } from "../../constants/UI";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import NameScanModal from "./NameScanModal";
 
-export default function OpenScanner({ path, setPath }) {
+export default function OpenScanner() {
   const [scannedImages, setScannedImages] = useState();
   const [showNameDocument, setShowNameDocument] = useState(false);
 
@@ -15,7 +15,6 @@ export default function OpenScanner({ path, setPath }) {
     try {
       // Open document scanner
       const { scannedImages } = await DocumentScanner.scanDocument();
-
       if (!scannedImages?.length) return;
 
       setScannedImages(scannedImages);
@@ -43,8 +42,6 @@ export default function OpenScanner({ path, setPath }) {
 
       {showNameDocument && (
         <NameScanModal
-          path={path}
-          setPath={setPath}
           showNameDocument={showNameDocument}
           setShowNameDocument={setShowNameDocument}
           scannedImages={scannedImages}

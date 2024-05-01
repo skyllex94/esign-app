@@ -100,24 +100,10 @@ export function MainNavigatorScreen({ navigation }) {
                         navigation.removeListener;
                         navigation.navigate("DocumentPreview", {
                           doc,
-                          parent: "ScanScreen",
                         });
                       }}
                       className="flex-1 items-center justify-center rounded-lg pt-1.5"
                     >
-                      {/*  <TouchableOpacity
-                              className="absolute bottom-2 right-2 m-1 z-10"
-                              onPress={() =>
-                                navigation.navigate("DocumentDetails", { doc })
-                              }
-                            >
-                              <Feather
-                                name="more-horizontal"
-                                size={24}
-                                color="white"
-                              />
-                            </TouchableOpacity> */}
-
                       <FontAwesome6 name="file-pdf" size={40} color="black" />
 
                       {/* <Pdf

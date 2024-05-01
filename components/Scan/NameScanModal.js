@@ -8,14 +8,15 @@ import { createPdf } from "react-native-images-to-pdf";
 import { deleteResidualFiles } from "./functions";
 
 export default function NameScanModal({
-  path,
-  setPath,
   showNameDocument,
   setShowNameDocument,
   scannedImages,
 }) {
   const [name, setName] = useState("");
-  const { setScanList, setFilteredScanList } = useContext(Context);
+  const { scanPath, setScanPath, setScanList, setFilteredScanList } =
+    useContext(Context);
+
+  console.log("scanPath:", scanPath);
 
   // UI text focusing ref
   const nameRef = useRef();
@@ -30,13 +31,14 @@ export default function NameScanModal({
 
     try {
       // Check directory and create if missing
-      if (!path) return;
+      if (!scanPath) return;
 
+      // Convert names with white spcces correctly
       try {
-        // Convert names with white spcces correctly
-        const convPath = path.replace(/ /g, "%20");
+        const convPath = scanPath.replace(/ /g, "%20");
         const fileName = name.replace(/ /g, "%20");
-        const outputPath = `${convPath}/${fileName}.pdf`.toString();
+
+        const outputPath = `file://${convPath}/${fileName}.pdf`;
 
         // Convert the camera images into pdf files
         await createPdf({
@@ -56,7 +58,7 @@ export default function NameScanModal({
       deleteResidualFiles(scannedImages);
 
       // Update list with scanned documents
-      updateList(path, setPath, setScanList, setFilteredScanList);
+      updateList(scanPath, setScanPath, setScanList, setFilteredScanList);
 
       setShowNameDocument(false);
     } catch (err) {

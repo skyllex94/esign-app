@@ -97,25 +97,6 @@ export default function DocumentEditor({ navigation, route }) {
     editingPalette.current.present();
   }, [editingPalette, navigation]);
 
-  useEffect(() => {
-    // Reads the raw data from the chosen PDF
-    async function readPdf() {
-      try {
-        const readDocument = await RNFS.readFile(pickedDocument, "base64");
-        setPdfArrayBuffer(base64ToArrayBuffer(readDocument));
-      } catch (err) {
-        showMessage({
-          message: "Couldn't load the document properly",
-          description: err.toString(),
-          duration: 3000,
-          type: "danger",
-        });
-      }
-    }
-
-    readPdf();
-  }, []);
-
   // Passed path name for the picked document
   const { pickedDocument } = route.params;
   const source = { uri: pickedDocument, cache: true };
@@ -355,6 +336,7 @@ export default function DocumentEditor({ navigation, route }) {
           isNamingModal={isNamingModal}
           setIsNamingModal={setIsNamingModal}
           showSignaturePanResponder={showSignaturePanResponder}
+          pickedDocument={pickedDocument}
           currPage={currPage}
           coordinateX={coordinateX}
           coordinateY={coordinateY}

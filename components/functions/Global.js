@@ -46,6 +46,8 @@ export async function updateList(
 ) {
   if (!path) return;
 
+  console.log("isFolder", isFolder);
+
   const updateCompleteList = [];
 
   // Check if directory path exists
@@ -56,7 +58,6 @@ export async function updateList(
   // Push the new documents to the list
   for (const doc of docs) {
     const newPath = `${path}/${doc}`;
-    console.log("newPath:", newPath);
     const docInfo = await FileSystem.getInfoAsync(newPath);
 
     setPath(path);
@@ -70,12 +71,21 @@ export async function updateList(
         isFolder: isFolder ? true : false,
       })
     );
-
-    // Sort files alphabetically
-    updateCompleteList.sort((a, b) =>
-      a.name > b.name ? 1 : b.name > a.name ? -1 : 0
-    );
   }
+
+  // Sort files alphabetically
+  updateCompleteList.sort((a, b) =>
+    a.name > b.name ? 1 : b.name > a.name ? -1 : 0
+  );
+
+  // Sort folders first - unefficient solution
+  updateCompleteList.sort(function (a, b) {
+    return a.path.includes(".pdf") === true && b.path.includes(".pdf") === false
+      ? 1
+      : a.path.includes(".pdf") === false && b.path.includes(".pdf") === true
+      ? -1
+      : 0;
+  });
 
   // Update UI states
   setList([...updateCompleteList]);
@@ -93,7 +103,6 @@ export async function createFolder(
     if (!path || !newFolderName) throw new Error();
 
     const newPath = `${path}/${newFolderName}`;
-    console.log("newPath:", newPath);
     RNFS.mkdir(newPath);
 
     updateList(path, setPath, setList, setFilteredList, { isFolder: true });
@@ -145,31 +154,12 @@ export function getLastAndSecondLastFolder(path) {
 }
 
 export function getPath(subfolder) {
-  const path = `${RNFS.DocumentDirectoryPath}/${subfolder}/`;
+  const path = `${RNFS.DocumentDirectoryPath}/${subfolder}`;
 
   if (!RNFS.exists(path))
-    RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${subfolder}/`);
+    RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${subfolder}`);
 
   return path;
-}
-
-export function goBack(path, setList, setFilteredList, setPath) {
-  try {
-    if (!path) throw new Error("Could not complete this operation.");
-
-    const secondToLastFolderName = getSecondToLastFolderName(path);
-
-    setPath(removeLastFolder(path));
-
-    updateDocuments(secondToLastFolderName, setList, setFilteredList);
-  } catch (err) {
-    showMessage({
-      message: err.message.toString(),
-      description: err.toString(),
-      type: "danger",
-      duration: 4000,
-    });
-  }
 }
 
 export async function openDocument(navigation, bottomSheetChooseDocument) {
