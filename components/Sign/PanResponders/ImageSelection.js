@@ -5,7 +5,7 @@ import {
   Animated,
   TouchableOpacity,
 } from "react-native";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef } from "react";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 
 export default function ImageSelection({

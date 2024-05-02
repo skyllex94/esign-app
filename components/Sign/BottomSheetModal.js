@@ -70,7 +70,12 @@ export default function BottomSheetModalComponent({
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => openDocument(navigation, bottomSheetChooseDocument)}
+          onPress={() => {
+            bottomSheetChooseDocument.current.close();
+            navigation.navigate("ChooseScanFile", {
+              bottomSheetChooseDocument,
+            });
+          }}
           className="flex-row h-12 w-full justify-start bg-gray-200 rounded-lg px-10"
         >
           <View className="flex-row items-center gap-x-2">

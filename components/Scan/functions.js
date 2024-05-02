@@ -85,9 +85,43 @@ export async function openShareOptions(path) {
   });
 }
 
-// export function openFolder(path) {
-//   console.log(path);
-// }
+export async function emailRequest({
+  recipientEmail,
+  recipientName,
+  documentName,
+}) {
+  const canUseMailService = await MailComposer.isAvailableAsync();
+
+  if (canUseMailService === false) {
+    showMessage({
+      message: "Email Service cannot be used",
+      description: "The email cannot be used on this device unfortunately.",
+      duration: 3000,
+      type: "danger",
+    });
+    return;
+  }
+
+  try {
+    await MailComposer.composeAsync({
+      recipients: [recipientEmail],
+      subject: `Requesting ${documentName}`,
+      body:
+        `Hello, ${recipientName},` +
+        "\n" +
+        `Can I please request ${documentName} for signature and further editing.` +
+        "\n" +
+        "Thank you, very much!",
+    });
+  } catch (err) {
+    showMessage({
+      message: "Error Occured",
+      description: err.toString(),
+      duration: 3000,
+      type: "danger",
+    });
+  }
+}
 
 export async function emailDocument(docPath) {
   const canUseMailService = await MailComposer.isAvailableAsync();

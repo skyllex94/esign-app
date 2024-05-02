@@ -76,7 +76,7 @@ export default function DocumentSuccess({ route, navigation }) {
               size={24}
               color="black"
             />
-            <Text className="mx-2">Email to Recipient(s)</Text>
+            <Text className="mx-2">Email to recipient(s)</Text>
           </TouchableOpacity>
 
           <TouchableOpacity

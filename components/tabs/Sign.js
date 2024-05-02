@@ -57,12 +57,15 @@ import { GDrive } from "@robinbobin/react-native-google-drive-api-wrapper";
 
 import ImageSelection from "../Sign/PanResponders/ImageSelection";
 import BottomSheetModal from "../Sign/BottomSheetModal";
+import RequestSheet from "../Sign/RequestSheet";
 
 // Image(s) to pdf converter
 import * as ImagePicker from "expo-image-picker";
 import { createPdf } from "react-native-images-to-pdf";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import LoadingModal from "../Sign/LoadingModal";
+import ChooseScanFile from "../Sign/ChooseScanFile";
+import { deleteResidualFiles } from "../Scan/functions";
 
 const Stack = createStackNavigator();
 
@@ -108,6 +111,11 @@ export default function SignScreen() {
         component={ImageSelection}
         options={{ presentation: "modal" }}
       />
+      <Stack.Screen
+        name="ChooseScanFile"
+        component={ChooseScanFile}
+        options={{ presentation: "modal" }}
+      />
     </Stack.Navigator>
   );
 }
@@ -120,11 +128,14 @@ function Main({ navigation }) {
     filteredDocList,
     setFilteredDocList,
     bottomSheetChooseDocument,
+    requestSheet,
     loadDocuments,
   } = useContext(Context);
 
   const [search, setSearch] = useState(null);
   const [googleUserInfo, setGoogleUserInfo] = useState();
+
+  const [showLoadingModal, setShowLoadingModal] = useState(false);
 
   const lottieAstronautRef = useRef();
 
@@ -136,8 +147,12 @@ function Main({ navigation }) {
   }, []);
 
   // Callbacks
-  const handlePresentModalPress = useCallback(() => {
+  const showOpenDocumentSheet = useCallback(() => {
     bottomSheetChooseDocument.current?.present();
+  }, []);
+
+  const showRequestSheet = useCallback(() => {
+    requestSheet.current?.present();
   }, []);
 
   function previewDocument(doc) {
@@ -199,8 +214,6 @@ function Main({ navigation }) {
     navigation.navigate("GoogleDrive", { token: fetchedStoredData });
   }
 
-  const [showLoadingModal, setShowLoadingModal] = useState(false);
-
   const pickImageAsync = async () => {
     try {
       let pickedDocument = await ImagePicker.launchImageLibraryAsync({
@@ -230,14 +243,20 @@ function Main({ navigation }) {
         const imageToPdf = await createPdf(options);
         console.log("imageToPdf:", imageToPdf);
 
+        deleteResidualFiles([uri]);
+
         navigation.navigate("DocumentEditor", {
           pickedDocument: imageToPdf,
         });
       } catch (err) {
-        console.log(err);
+        showMessage({
+          message: "Error while opening image.",
+          description: err.toString(),
+          duration: 4000,
+          type: "danger",
+        });
       }
     } catch (err) {
-      console.log("err:", err);
       if (err.canceled)
         showMessage({
           duration: 4000,
@@ -418,7 +437,7 @@ function Main({ navigation }) {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={handlePresentModalPress}
+            onPress={showOpenDocumentSheet}
             className={`flex-row items-center justify-center bg-[${actionButton}]
             z-20 w-[50%] h-[75px] rounded-full`}
           >
@@ -432,7 +451,7 @@ function Main({ navigation }) {
           />
 
           <TouchableOpacity
-            onPress={handlePresentModalPress}
+            onPress={showRequestSheet}
             className={`absolute right-0 items-center justify-center z-4 bg-white p-3 
             rounded-full w-[33%] h-[55px]`}
           >
@@ -449,6 +468,17 @@ function Main({ navigation }) {
           navigation={navigation}
           openDocument={openDocument}
           bottomSheetChooseDocument={bottomSheetChooseDocument}
+          preopeningGoogleDriveCheckups={preopeningGoogleDriveCheckups}
+          signOut={signOut}
+          pickImageAsync={pickImageAsync}
+        />
+      }
+
+      {
+        <RequestSheet
+          navigation={navigation}
+          openDocument={openDocument}
+          requestSheet={requestSheet}
           preopeningGoogleDriveCheckups={preopeningGoogleDriveCheckups}
           signOut={signOut}
           pickImageAsync={pickImageAsync}

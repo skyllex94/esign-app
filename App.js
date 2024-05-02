@@ -38,8 +38,11 @@ export default function App() {
 }
 
 function Main() {
-  // Ref used in Sign & DrawSign
+  // Ref used to open documents
   const bottomSheetChooseDocument = useRef();
+  // Ref for requesting documents
+  const requestSheet = useRef();
+
   // Shared state for DrawSign & DocumentEditor
   const [signatureList, setSignatureList] = useState([]);
   const [initialsList, setInitialsList] = useState([]);
@@ -81,6 +84,7 @@ function Main() {
         filteredDocList,
         setFilteredDocList,
         bottomSheetChooseDocument,
+        requestSheet,
         loadDocuments,
         // Scan states
         scanList,
