@@ -134,8 +134,21 @@ export const SaveDocument = ({
             (Dimensions.get("window").width * pageRatio).toFixed(2);
 
         const pages = pdfDoc.getPages();
-        console.log("pages:", pages);
+
         const firstPage = pages[currPage - 1];
+        // TODO: Figure out issue with text-signatare's height problem.
+
+        console.log("elementSizeWidth", elementSizeWidth);
+        console.log("elementSizeHeight", elementSizeHeight);
+
+        console.log(
+          "elementSizeWidth * diffInDisplays:",
+          elementSizeWidth * diffInDisplays
+        );
+        console.log(
+          "elementSizeHeight * diffInDisplays:",
+          elementSizeHeight * diffInDisplays
+        );
 
         // Inputting the signature inside the PDF document
         if (signatureArrayBuffer) {
@@ -152,7 +165,7 @@ export const SaveDocument = ({
         showMessage({
           message: "Error While Saving Document",
           description: err.toString(),
-          duration: 3000,
+          duration: 4000,
           type: "danger",
         });
       }

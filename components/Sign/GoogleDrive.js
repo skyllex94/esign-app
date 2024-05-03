@@ -19,12 +19,17 @@ export default function GoogleDrive({ navigation, route }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  const { setDocList, setFilteredDocList, bottomSheetChooseDocument } =
-    useContext(Context);
+  const {
+    setDocList,
+    setFilteredDocList,
+    bottomSheetChooseDocument,
+    requestSheet,
+  } = useContext(Context);
 
   useEffect(() => {
     loadGoogleDriveFiles();
-    bottomSheetChooseDocument.current.close();
+    bottomSheetChooseDocument?.current.close();
+    requestSheet?.current.close();
   }, []);
 
   async function loadGoogleDriveFiles() {

@@ -42,6 +42,8 @@ function Main() {
   const bottomSheetChooseDocument = useRef();
   // Ref for requesting documents
   const requestSheet = useRef();
+  // Ref for showing libraries with signature and initials files
+  const librarySheet = useRef();
 
   // Shared state for DrawSign & DocumentEditor
   const [signatureList, setSignatureList] = useState([]);
@@ -85,6 +87,7 @@ function Main() {
         setFilteredDocList,
         bottomSheetChooseDocument,
         requestSheet,
+        librarySheet,
         loadDocuments,
         // Scan states
         scanList,

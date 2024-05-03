@@ -66,6 +66,8 @@ import ReactNativeBlobUtil from "react-native-blob-util";
 import LoadingModal from "../Sign/LoadingModal";
 import ChooseScanFile from "../Sign/ChooseScanFile";
 import { deleteResidualFiles } from "../Scan/functions";
+import LibrarySheet from "../Sign/LibrarySheet";
+import InitialsLibrary from "../Sign/Initials/InitialsLibrary";
 
 const Stack = createStackNavigator();
 
@@ -79,6 +81,11 @@ export default function SignScreen() {
       <Stack.Screen
         name="DrawSign"
         component={DrawSignCapture}
+        options={{ presentation: "card" }}
+      />
+      <Stack.Screen
+        name="Initials"
+        component={InitialsLibrary}
         options={{ presentation: "card" }}
       />
       <Stack.Screen
@@ -99,7 +106,7 @@ export default function SignScreen() {
       <Stack.Screen
         name="DocumentSuccess"
         component={DocumentSuccess}
-        options={{ presentation: "card", gestureEnabled: false }}
+        options={{ presentation: "card" }} //  gestureEnabled: false
       />
       <Stack.Screen
         name="GoogleDrive"
@@ -129,6 +136,7 @@ function Main({ navigation }) {
     setFilteredDocList,
     bottomSheetChooseDocument,
     requestSheet,
+    librarySheet,
     loadDocuments,
   } = useContext(Context);
 
@@ -154,6 +162,10 @@ function Main({ navigation }) {
   const showRequestSheet = useCallback(() => {
     requestSheet.current?.present();
   }, []);
+
+  const showLibrarySheet = useCallback(() => {
+    librarySheet.current?.present();
+  });
 
   function previewDocument(doc) {
     navigation.navigate("DocumentPreview", { doc });
@@ -288,9 +300,8 @@ function Main({ navigation }) {
     await GoogleSignin.hasPlayServices();
 
     const userInfo = await GoogleSignin.signIn();
-    console.log("userInfo:", userInfo);
+    // console.log("userInfo:", userInfo);
     const token = await GoogleSignin.getTokens();
-    console.log("token:", token);
 
     setGoogleUserInfo(userInfo);
     await storeData(token);
@@ -426,7 +437,7 @@ function Main({ navigation }) {
 
         <View className="flex-row items-center justify-center gap-y-1 mb-2 rounded-lg ">
           <TouchableOpacity
-            onPress={() => navigation.navigate("DrawSign")}
+            onPress={showLibrarySheet}
             className={`absolute left-0 items-center justify-center z-2 bg-white p-3
             rounded-full w-[33%] h-[55px]`}
           >
@@ -476,14 +487,13 @@ function Main({ navigation }) {
 
       {
         <RequestSheet
-          navigation={navigation}
-          openDocument={openDocument}
           requestSheet={requestSheet}
           preopeningGoogleDriveCheckups={preopeningGoogleDriveCheckups}
           signOut={signOut}
-          pickImageAsync={pickImageAsync}
         />
       }
+
+      {<LibrarySheet navigation={navigation} />}
     </SafeAreaView>
   );
 }

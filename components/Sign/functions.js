@@ -81,11 +81,12 @@ export const base64ToArrayBuffer = (base64) => {
 export const deleteSignature = (
   fileWtPath,
   signatureList,
-  setSignatureList
+  setSignatureList,
+  type
 ) => {
   return Alert.alert(
-    "Signature Deletion",
-    "Are you sure you want to delete this signature?",
+    `${type ? "Initials" : "Signature"} Deletion`,
+    `Are you sure you want to delete this ${type ? "initial" : "signature"}?`,
     [
       {
         text: "Yes",

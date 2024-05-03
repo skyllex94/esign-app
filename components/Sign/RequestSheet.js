@@ -1,22 +1,21 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React, { useMemo, useState } from "react";
 import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
-import { emailRequest } from "../Scan/functions";
+import {
+  AntDesign,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
+
 import EmailRequestModal from "./EmailRequestModal";
 
 export default function RequestSheet({
-  navigation,
-  openDocument,
   requestSheet,
-  pickImageAsync,
+  preopeningGoogleDriveCheckups,
+  signOut,
 }) {
   const snapPoints = useMemo(() => ["33%"], []);
   const [showEmailRequestModal, setShowEmailRequestModal] = useState(false);
-
-  async function openEmailRequest() {
-    console.log("Here");
-  }
 
   return (
     <BottomSheetModal
@@ -54,25 +53,39 @@ export default function RequestSheet({
           className="flex-row h-12 w-full justify-start bg-gray-200 rounded-lg px-10"
         >
           <View className="flex-row items-center gap-x-2">
-            <MaterialCommunityIcons name="folder" size={28} color="black" />
+            <MaterialCommunityIcons
+              name="folder-account"
+              size={28}
+              color="black"
+            />
             <Text className="font-semibold">Email</Text>
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={pickImageAsync}
-          className="flex-row h-12 w-full justify-start bg-gray-200 rounded-lg px-10"
-        >
-          <View className="flex-row items-center gap-x-2">
-            <MaterialCommunityIcons
-              name="folder-image"
-              size={28}
-              color="black"
-            />
+        <View className="flex-row gap-x-2">
+          <TouchableOpacity
+            onPress={preopeningGoogleDriveCheckups}
+            className="flex-row h-12 w-[70%] justify-start bg-gray-200 rounded-lg px-10"
+          >
+            <View className="flex-row items-center gap-x-2">
+              <MaterialCommunityIcons
+                name="folder-google-drive"
+                size={28}
+                color="black"
+              />
+              <Text className="font-semibold">Google Drive</Text>
+            </View>
+          </TouchableOpacity>
 
-            <Text className="font-semibold">Share</Text>
-          </View>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={signOut}
+            className="flex-1 items-center justify-center bg-gray-200 rounded-lg p-2"
+          >
+            <View className="flex-row items-center gap-x-2">
+              <Text className="font-semibold">Sign out</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
 
         {showEmailRequestModal && (
           <EmailRequestModal

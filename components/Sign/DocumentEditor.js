@@ -123,15 +123,6 @@ export default function DocumentEditor({ navigation, route }) {
     setSelectedPrinter(printer);
   };
 
-  const base64ToArrayBuffer = (base64) => {
-    const binary_string = decode(base64);
-    const len = binary_string.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) bytes[i] = binary_string.charCodeAt(i);
-
-    return bytes;
-  };
-
   // Initials states
   const [showInitials, setShowInitials] = useState(false);
   const [showInitialsList, setShowInitialsList] = useState(false);
@@ -258,7 +249,7 @@ export default function DocumentEditor({ navigation, route }) {
             console.log(`Link pressed: ${uri}`);
           }}
         >
-          {showSignaturePanResponder ? (
+          {showSignaturePanResponder && (
             <Signature
               setShowSignaturePanResponder={setShowSignaturePanResponder}
               selectedSignaturePath={selectedSignaturePath}
@@ -269,7 +260,7 @@ export default function DocumentEditor({ navigation, route }) {
               elementSizeHeight={elementSizeHeight}
               setElementSizeHeight={setElementSizeHeight}
             />
-          ) : null}
+          )}
 
           {showDatePanResponder ? (
             <DateTime

@@ -31,14 +31,15 @@ export default function EmailRequestModal({
       transparent={true}
       visible={showEmailRequestModal}
       onRequestClose={() => setShowEmailRequestModal((curr) => !curr)}
+      className="flex-1"
     >
       <TouchableOpacity
         className="flex-1"
         onPress={() => setShowEmailRequestModal(false)}
       />
 
-      <View className="m-8 bg-white rounded-lg p-5 shadow">
-        <View className="flex-row flex-wrap gap-3 items-center justify-between my-2 w-full">
+      <View className="flex-2 m-8 bg-white rounded-lg p-5 shadow">
+        <View className="flex-row gap-[2%] flex-wrap items-center justify-between my-[2%] w-full">
           <TextInput
             ref={recipientRef}
             placeholder="Recipient's Email"
@@ -46,17 +47,19 @@ export default function EmailRequestModal({
             className="h-12 px-2 w-full rounded-lg border-2 border-gray-600"
           />
 
-          <TextInput
-            placeholder="Recipient's Name"
-            onChangeText={(text) => setRecipientName(text)}
-            className="h-12 px-2 w-full rounded-lg border-2 border-gray-600"
-          />
+          <View className="flex-row">
+            <TextInput
+              placeholder="Recipient's Name"
+              onChangeText={(text) => setRecipientName(text)}
+              className="h-12 px-2 w-[50%] rounded-lg border-2 border-gray-600 mr-[2%]"
+            />
 
-          <TextInput
-            placeholder="Document's Name"
-            onChangeText={(text) => setDocumentName(text)}
-            className="h-12 px-2 w-full rounded-lg border-2 border-gray-600"
-          />
+            <TextInput
+              placeholder="Document's Name"
+              onChangeText={(text) => setDocumentName(text)}
+              className="h-12 px-2 w-[49%] rounded-lg border-2 border-gray-600"
+            />
+          </View>
         </View>
 
         <View className="flex-row items-center justify-between my-2 w-full">

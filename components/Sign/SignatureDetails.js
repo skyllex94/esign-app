@@ -1,18 +1,12 @@
 import { AntDesign } from "@expo/vector-icons";
 import React from "react";
-import {
-  Alert,
-  Modal,
-  StyleSheet,
-  Text,
-  View,
-  TouchableOpacity,
-} from "react-native";
+import { Modal, StyleSheet, Text, View, TouchableOpacity } from "react-native";
 
 export const SignatureDetails = ({
   detailsInfo,
   signatureDetailsModal,
   setSignatureDetailsModal,
+  type,
 }) => {
   const dateCreated = new Date(Math.round(detailsInfo.modificationTime) * 1000);
 
@@ -22,7 +16,6 @@ export const SignatureDetails = ({
       transparent={true}
       visible={signatureDetailsModal}
       onRequestClose={() => {
-        Alert.alert("Modal has been closed.");
         setSignatureDetailsModal(!signatureDetailsModal);
       }}
     >
@@ -39,7 +32,12 @@ export const SignatureDetails = ({
           style={styles.modalView}
         >
           <View className="flex-row items-center justify-between mb-3 w-full">
-            <Text className="text-[15px] mr-6">Signature Details</Text>
+            {type && type === "initials" ? (
+              <Text className="text-[15px] mr-6">Initials Details</Text>
+            ) : (
+              <Text className="text-[15px] mr-6">Signature Details</Text>
+            )}
+
             <TouchableOpacity
               className={`bg-[#e6867a] rounded-full p-2`}
               onPress={() => setSignatureDetailsModal((curr) => !curr)}

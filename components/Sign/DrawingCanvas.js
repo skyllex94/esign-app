@@ -17,6 +17,7 @@ export default function DrawingCanvas({
   setShowSignatureModal,
   type,
 }) {
+  console.log("type:", type);
   // Drawn signature states
   const signature = useRef();
   const [updateSignatureCapture, setUpdateSignatureCapture] = useState(true);
@@ -45,7 +46,7 @@ export default function DrawingCanvas({
       filePath =
         dirs.DocumentDir +
         "/Initials" +
-        "/initials-" +
+        "/initials" +
         new Date().getMilliseconds() +
         ".png";
     } else {
@@ -240,7 +241,12 @@ export default function DrawingCanvas({
             isModal ? "justify-end my-4" : "justify-between m-4"
           } `}
         >
-          {!isModal && <Text className="text-[18px]">My Signatures</Text>}
+          {!isModal &&
+            (type === "initials" ? (
+              <Text className="text-[18px]">My Initials</Text>
+            ) : (
+              <Text className="text-[18px]">My Signatures</Text>
+            ))}
 
           <View className="flex-row ">
             <Button onPress={saveSignature} title="Save" />

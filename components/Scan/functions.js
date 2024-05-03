@@ -107,11 +107,16 @@ export async function emailRequest({
       recipients: [recipientEmail],
       subject: `Requesting ${documentName}`,
       body:
-        `Hello, ${recipientName},` +
+        `Hello ${recipientName},` +
         "\n" +
-        `Can I please request ${documentName} for signature and further editing.` +
         "\n" +
-        "Thank you, very much!",
+        `I hope this email finds you well. I am writing to kindly request a document from you.` +
+        "\n" +
+        `Would it be possible for you to send the ${documentName} at your earliest convenience? ` +
+        `Your assistance in this matter would be greatly appreciated.I would like to obtain it for signature and further editing.` +
+        "\n" +
+        "\n" +
+        "Thank you very much for your attention to this request. I look forward to receiving the document from you soon.",
     });
   } catch (err) {
     showMessage({

@@ -16,6 +16,9 @@ export default function Signature({
   const pan = useRef(new Animated.ValueXY()).current;
   const elementLocation = useRef();
 
+  console.log("elementSizeWidth", elementSizeWidth);
+  console.log("elementSizeHeight", elementSizeHeight);
+
   const panResponderResize = useMemo(
     () =>
       PanResponder.create({
