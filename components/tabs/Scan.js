@@ -145,7 +145,7 @@ function MainNavigatorScreen({ navigation }) {
             end={[1, 1]}
             location={[0.25, 0.4, 1]}
           >
-            <Entypo name="folder" size={34} color="white" />
+            <MaterialCommunityIcons name="folder" size={40} color="white" />
             <Text className="text-white">Create folder</Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -289,7 +289,11 @@ function MainNavigatorScreen({ navigation }) {
                         key={idx}
                       >
                         <View className="flex-1 items-center justify-center rounded-lg pt-5">
-                          <Entypo name="folder" size={45} color="black" />
+                          <MaterialCommunityIcons
+                            name="folder"
+                            size={50}
+                            color="black"
+                          />
                         </View>
 
                         <View className="flex-2 items-center gap-1 my-1">

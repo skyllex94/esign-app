@@ -46,8 +46,6 @@ export async function updateList(
 ) {
   if (!path) return;
 
-  console.log("isFolder", isFolder);
-
   const updateCompleteList = [];
 
   // Check if directory path exists

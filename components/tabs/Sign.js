@@ -311,7 +311,7 @@ function Main({ navigation }) {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-150">
+    <SafeAreaView className="flex-1">
       <StatusBar style="auto" />
       <Text className="text-center font-bold text-2xl my-2">SimpleSign</Text>
 
