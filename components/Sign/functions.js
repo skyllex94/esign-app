@@ -8,6 +8,7 @@ import { showMessage } from "react-native-flash-message";
 import * as MailComposer from "expo-mail-composer";
 import { decode, encode } from "base-64";
 import * as DocumentPicker from "expo-document-picker";
+import * as Print from "expo-print";
 
 export const selectSignature = async (
   signatureFilePath,
@@ -332,5 +333,43 @@ export async function emailToThirdParty(docPath, fileName) {
       duration: 3000,
       type: "danger",
     });
+  }
+}
+
+export async function printDocument(docPath, selectedPrinter) {
+  return Alert.alert(
+    `Print Document`,
+    `This will print unedited version of the document. Are you sure you want to print?`,
+    [
+      {
+        text: "Yes",
+        onPress: async () => {
+          try {
+            // Print the document
+            const { uri } = await Print.printAsync({
+              uri: docPath,
+              printerUrl: selectedPrinter?.url,
+            });
+            console.log("File has been saved to:", uri);
+          } catch (err) {
+            // Leaving it empty since cancel triggers a warning
+          }
+        },
+      },
+
+      {
+        text: "No",
+        onPress: () => {},
+      },
+    ]
+  );
+}
+
+export async function selectPrinter(setSelectedPrinter) {
+  try {
+    const printer = await Print.selectPrinterAsync();
+    setSelectedPrinter(printer);
+  } catch (err) {
+    // Leaving reporting empty since cancel triggers a warning
   }
 }

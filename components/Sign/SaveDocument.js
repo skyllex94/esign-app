@@ -84,6 +84,27 @@ export const SaveDocument = ({
     // Reads the raw data from the chosen PDF
     async function readPdf() {
       try {
+        if (pickedDocument.includes("http")) {
+          if (!(await RNFS.exists(`${RNFS.DocumentDirectoryPath}/Imported`)))
+            await RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/Imported`);
+
+          let localFilePath = `file://${
+            RNFS.DocumentDirectoryPath
+          }/Imported/imported_${new Date().getMilliseconds()}`;
+          console.log("localFilePath:", localFilePath);
+
+          await RNFS.downloadFile({
+            fromUrl: pickedDocument,
+            toFile: localFilePath,
+          }).promise.then((r) => {
+            console.log("localFile:", r);
+          });
+
+          const readDocument = await RNFS.readFile(localFilePath, "base64");
+          setPdfArrayBuffer(base64ToArrayBuffer(readDocument));
+          return;
+        }
+
         const readDocument = await RNFS.readFile(pickedDocument, "base64");
         setPdfArrayBuffer(base64ToArrayBuffer(readDocument));
       } catch (err) {

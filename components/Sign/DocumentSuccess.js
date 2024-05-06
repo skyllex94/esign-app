@@ -1,12 +1,12 @@
-import { View, Text, StatusBar, Share } from "react-native";
+import { View, Text, StatusBar } from "react-native";
 import React, { useContext, useEffect, useRef } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import LottieView from "lottie-react-native";
 import { Context } from "../contexts/Global";
-import * as MailComposer from "expo-mail-composer";
 import {
   AntDesign,
   Feather,
+  Fontisto,
   Ionicons,
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
@@ -18,6 +18,7 @@ import {
   emailToThirdParty,
   openShareOptions,
 } from "./functions";
+import * as Print from "expo-print";
 
 export default function DocumentSuccess({ route, navigation }) {
   const animation = useRef(null);
@@ -33,8 +34,18 @@ export default function DocumentSuccess({ route, navigation }) {
     bottomSheetChooseDocument.current.dismiss();
   }, []);
 
+  async function printEditedDocument() {
+    try {
+      // Print the document
+      const { uri } = await Print.printAsync({ uri: editedDocPath });
+      console.log("File has been saved to:", uri);
+    } catch (err) {
+      // Leaving it empty since cancel triggers a warning
+    }
+  }
+
   return (
-    <SafeAreaView className="mx-4 gap-y-8">
+    <SafeAreaView className="mx-4 gap-y-5">
       <StatusBar barStyle="dark-content" />
 
       <View className="flex-row pt-2 justify-end">
@@ -56,24 +67,24 @@ export default function DocumentSuccess({ route, navigation }) {
         <Text className="text-lg font-bold">Document Saved!</Text>
       </View>
 
+      <Text className="text-[16px] mx-2">What's Next?</Text>
       <ScrollView className="h-full" showsVerticalScrollIndicator={false}>
-        <Text className="text-[16px] m-3">What's Next?</Text>
         <View className="bg-white rounded-lg">
           <TouchableOpacity
             onPress={previewDocument}
-            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
+            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-300"
           >
-            <Ionicons name="document-text-outline" size={24} color="black" />
+            <Fontisto name="preview" size={20} color="black" />
             <Text className="mx-2">View Document</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => emailDocument(editedDocPath)}
-            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
+            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-300"
           >
             <MaterialCommunityIcons
-              name="email-fast-outline"
-              size={24}
+              name="email-plus-outline"
+              size={22}
               color="black"
             />
             <Text className="mx-2">Email to recipient(s)</Text>
@@ -81,51 +92,32 @@ export default function DocumentSuccess({ route, navigation }) {
 
           <TouchableOpacity
             onPress={() => emailToThirdParty(editedDocPath, name)}
-            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
+            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-300"
           >
             <MaterialCommunityIcons
-              name="email-fast-outline"
-              size={24}
+              name="email-plus-outline"
+              size={22}
               color="black"
             />
             <Text className="mx-2">Email to Third Party</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => openShareOptions(editedDocPath)}
-            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
+            onPress={() => printEditedDocument()}
+            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-300"
           >
-            <Feather name="share" size={24} color="black" />
-            <Text className="mx-2">Share</Text>
+            <Ionicons name="print-outline" size={24} color="black" />
+            <Text className="mx-2">Print Document</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => openShareOptions(editedDocPath)}
+            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-300"
+          >
+            <Feather name="share" size={22} color="black" />
+            <Text className="mx-2">Share / Save to Files</Text>
           </TouchableOpacity>
         </View>
-
-        {/* 
-          <View className="mt-4">
-              <Text className="text-[16px] m-3">Go To:</Text>
-              <View className="bg-white rounded-lg">
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("Main")}
-                  className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
-                >
-                  <Ionicons name="document-text-outline" size={24} color="black" />
-                  <Text className="mx-2">All Documents</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  onPress={() => navigation.navigate("Main")}
-                  className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-400"
-                >
-                <MaterialCommunityIcons
-                  name="signature"
-                  size={24}
-                  color="black"
-                />
-                <Text className="mx-2">Signature List</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        */}
       </ScrollView>
     </SafeAreaView>
   );

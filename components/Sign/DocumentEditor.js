@@ -1,9 +1,15 @@
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { SafeAreaView, Text, View, Image, Dimensions } from "react-native";
+import {
+  SafeAreaView,
+  Text,
+  View,
+  Image,
+  Dimensions,
+  Alert,
+} from "react-native";
 import { Context } from "../contexts/Global";
 // PDF Imports
 import Pdf from "react-native-pdf";
-import * as Print from "expo-print";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import RNFS from "react-native-fs";
 import { decode } from "base-64";
@@ -19,8 +25,10 @@ import {
 import {
   deleteInitials,
   deleteSignature,
+  printDocument,
   selectImage,
   selectInitials,
+  selectPrinter,
   selectSignature,
 } from "./functions";
 
@@ -40,7 +48,6 @@ import TextField from "./PanResponders/TextField";
 import Checkbox from "./PanResponders/Checkbox";
 
 export default function DocumentEditor({ navigation, route }) {
-  const [selectedPrinter, setSelectedPrinter] = useState();
   // Show current signatures
   const [showSignatures, setShowSignatures] = useState(false);
   // Input chosen signature into the pdf
@@ -110,18 +117,7 @@ export default function DocumentEditor({ navigation, route }) {
   const editingPalette = useRef();
   const snapPoints = useMemo(() => ["16%"], []);
 
-  const printDocument = async () => {
-    // On iOS/Android prints the given html. On web prints the HTML from the current page.
-    await Print.printAsync({
-      html,
-      printerUrl: selectedPrinter?.url, // iOS only
-    });
-  };
-
-  const selectPrinter = async () => {
-    const printer = await Print.selectPrinterAsync(); // iOS only
-    setSelectedPrinter(printer);
-  };
+  const [selectedPrinter, setSelectedPrinter] = useState();
 
   // Initials states
   const [showInitials, setShowInitials] = useState(false);
@@ -166,10 +162,10 @@ export default function DocumentEditor({ navigation, route }) {
       <StatusBar style="dark" />
       <View className="flex-row items-center justify-between m-2">
         <TouchableOpacity
-          className="flex-row items-center mx-1"
+          className="flex-row items-center p-1 mx-1 rounded-lg"
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <Ionicons name="arrow-back" size={20} color="black" />
           <Text className="text-lg mx-1">Back</Text>
         </TouchableOpacity>
 
@@ -182,7 +178,10 @@ export default function DocumentEditor({ navigation, route }) {
             <Text className="mx-2 text-lg text-white">Save</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="mx-1" onPress={() => selectPrinter()}>
+          <TouchableOpacity
+            className="flex-row items-center p-1 mx-1 border-[1px] border-gray-500 rounded-lg"
+            onPress={() => selectPrinter(setSelectedPrinter)}
+          >
             <MaterialCommunityIcons
               name="printer-eye"
               size={24}
@@ -190,13 +189,16 @@ export default function DocumentEditor({ navigation, route }) {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity className="mx-1" onPress={() => printDocument()}>
+          <TouchableOpacity
+            className="flex-row items-center p-1 mx-1 border-[1px] border-gray-500 rounded-lg"
+            onPress={() => printDocument(pickedDocument, selectedPrinter)}
+          >
             <FontAwesome name="print" size={24} color="black" />
           </TouchableOpacity>
         </View>
       </View>
 
-      <View className="mt-10">
+      <View className="flex-1 mt-10">
         <Pdf
           source={source}
           minScale={1.0}

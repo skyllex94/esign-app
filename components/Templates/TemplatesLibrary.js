@@ -43,7 +43,22 @@ export default function TemplatesLibrary({ navigation }) {
     {
       title: "Real Estate Templates",
       isOpen: false,
-      templates: [],
+      templates: [
+        {
+          name: "Rental Agreement",
+          file: require("../../assets/templates/real_estate/Basic-Rental-Agreement.pdf"),
+          path: resolveAssetSource(
+            require("../../assets/templates/real_estate/Basic-Rental-Agreement.pdf")
+          ).uri,
+        },
+        {
+          name: "Home Repair Contract",
+          file: require("../../assets/templates/real_estate/Home-Repair-Contract.pdf"),
+          path: resolveAssetSource(
+            require("../../assets/templates/real_estate/Home-Repair-Contract.pdf")
+          ).uri,
+        },
+      ],
     },
     {
       title: "Legal Templates",
@@ -54,6 +69,13 @@ export default function TemplatesLibrary({ navigation }) {
           file: require("../../assets/templates/legal/Licensing-Agreement.pdf"),
           path: resolveAssetSource(
             require("../../assets/templates/legal/Licensing-Agreement.pdf")
+          ).uri,
+        },
+        {
+          name: "Last Will Testament",
+          file: require("../../assets/templates/legal/Last-Will-Testament.pdf"),
+          path: resolveAssetSource(
+            require("../../assets/templates/legal/Last-Will-Testament.pdf")
           ).uri,
         },
       ],
@@ -70,6 +92,13 @@ export default function TemplatesLibrary({ navigation }) {
           ).uri,
         },
         {
+          name: "Founders' Agreement",
+          file: require("../../assets/templates/business/Founders-Agreement.pdf"),
+          path: resolveAssetSource(
+            require("../../assets/templates/business/Founders-Agreement.pdf")
+          ).uri,
+        },
+        {
           name: "Profit-Sharing Agreement",
           file: require("../../assets/templates/business/Profit-Sharing-Agreement.pdf"),
           path: resolveAssetSource(
@@ -83,17 +112,54 @@ export default function TemplatesLibrary({ navigation }) {
             require("../../assets/templates/business/Equipment-Rental-Agreement.pdf")
           ).uri,
         },
+        {
+          name: "Termination Letter",
+          file: require("../../assets/templates/business/Termination-Letter.pdf"),
+          path: resolveAssetSource(
+            require("../../assets/templates/business/Termination-Letter.pdf")
+          ).uri,
+        },
+        {
+          name: "Business Partnership Agreement",
+          file: require("../../assets/templates/business/Business-Partnership-Agreement.pdf"),
+          path: resolveAssetSource(
+            require("../../assets/templates/business/Business-Partnership-Agreement.pdf")
+          ).uri,
+        },
       ],
     },
     {
       title: "Insurance Templates",
       isOpen: false,
-      templates: [],
+      templates: [
+        {
+          name: "Non-Disclosure Agreement",
+          file: require("../../assets/templates/insurance/Non-Disclosure-Agreement.pdf"),
+          path: resolveAssetSource(
+            require("../../assets/templates/insurance/Non-Disclosure-Agreement.pdf")
+          ).uri,
+        },
+      ],
     },
     {
       title: "Personal Document Templates",
       isOpen: false,
-      templates: [],
+      templates: [
+        {
+          name: "Divorce Settlement",
+          file: require("../../assets/templates/personal/Divorce-Settlement-Agreement.pdf"),
+          path: resolveAssetSource(
+            require("../../assets/templates/personal/Divorce-Settlement-Agreement.pdf")
+          ).uri,
+        },
+        {
+          name: "Vehicle Purchase Agreement",
+          file: require("../../assets/templates/personal/Vehicle-Purchase-Agreement.pdf"),
+          path: resolveAssetSource(
+            require("../../assets/templates/personal/Vehicle-Purchase-Agreement.pdf")
+          ).uri,
+        },
+      ],
     },
     {
       title: "Non-Profit Templates",
@@ -127,7 +193,7 @@ export default function TemplatesLibrary({ navigation }) {
             onPress={() => toggleSection(idx)}
             className="flex-row items-center justify-between bg-white rounded-lg p-5 my-2"
           >
-            <Text className="">{section.title}</Text>
+            <Text className="font-semibold">{section.title}</Text>
 
             <Entypo
               name={section.isOpen ? "chevron-up" : "chevron-down"}

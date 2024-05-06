@@ -1,7 +1,7 @@
 import * as FileSystem from "expo-file-system";
 import { Alert } from "react-native";
 import RNFS from "react-native-fs";
-import { updateDocuments, updateList } from "../functions/Global";
+import { updateList } from "../functions/Global";
 import { showMessage } from "react-native-flash-message";
 import * as MailComposer from "expo-mail-composer";
 import { shareAsync } from "expo-sharing";

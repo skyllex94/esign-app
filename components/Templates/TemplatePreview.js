@@ -22,11 +22,12 @@ export default function TemplatePreview({ route, navigation }) {
 
       <View className="flex-row items-center justify-between bg-white w-full mt-4 px-2 py-1">
         <TouchableOpacity
-          onPress={() =>
+          onPress={() => {
+            navigation.goBack();
             navigation.navigate("DocumentEditor", {
               pickedDocument: template.path,
-            })
-          }
+            });
+          }}
           className={`flex-row items-center bg-[${actionButton}] p-2 rounded-lg`}
         >
           <Feather name="edit" size={20} color="white" />
