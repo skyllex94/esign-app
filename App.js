@@ -7,7 +7,7 @@ import SettingsScreen from "./components/tabs/Settings";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 // Context
 import { Context } from "./components/contexts/Global";
 import ScanScreen from "./components/tabs/Scan";
@@ -133,8 +133,8 @@ function Main() {
               options={{
                 headerShown: false,
                 tabBarIcon: ({ color }) => (
-                  <MaterialCommunityIcons
-                    name="credit-card-scan"
+                  <MaterialIcons
+                    name="document-scanner"
                     size={24}
                     color={color}
                   />

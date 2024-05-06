@@ -90,7 +90,7 @@ export const SaveDocument = ({
         showMessage({
           message: "Couldn't load the document properly",
           description: err.toString(),
-          duration: 3000,
+          duration: 5000,
           type: "danger",
         });
       }

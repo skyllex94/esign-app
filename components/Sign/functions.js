@@ -172,9 +172,7 @@ export async function isFolder(path) {
   console.log("result:", result);
   if (result) {
     const readFile = await RNFS.readDir();
-    console.log("readFile:", readFile);
     const isFolder = readFile.isDirectory();
-    console.log("isFolder:", isFolder);
     if (isFolder === true) return true;
 
     return false;
