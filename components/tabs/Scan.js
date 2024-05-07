@@ -215,8 +215,7 @@ function MainNavigatorScreen({ navigation }) {
             <ScrollView
               vertical
               showsVerticalScrollIndicator={false}
-              contentContainerStyle={{ flexDirection: "row", flexWrap: "wrap" }}
-              className="w-[100%] gap-2 rounded-lg ml-2 my-3"
+              className="gap-2 rounded-lg my-3 w-full ml-1"
             >
               {loadScannedDocs ? (
                 filteredScanList.length > 0 ? (
@@ -236,18 +235,18 @@ function MainNavigatorScreen({ navigation }) {
                                   doc,
                                 })
                         }
-                        className={`h-40 w-[30%] bg-white border-[0.5px] border-gray-300 rounded-lg`}
+                        className={`flex-row items-center h-20 w-[95%] bg-white border-[0.5px] border-gray-300 rounded-lg`}
                         key={idx}
                       >
-                        <View className="flex-1 items-center justify-center rounded-lg pt-5">
+                        <View className="rounded-lg p-3">
                           <MaterialIcons
                             name="picture-as-pdf"
-                            size={44}
+                            size={30}
                             color="black"
                           />
                         </View>
 
-                        <View className="flex-2 items-center gap-1 my-1">
+                        <View className="items-start gap-1 my-1">
                           <Text className="text-gray-800">
                             {truncate(removeExtension(doc.name), 30)}
                           </Text>
@@ -285,18 +284,18 @@ function MainNavigatorScreen({ navigation }) {
                             setFilteredScanList
                           );
                         }}
-                        className={`h-40 w-[30%] bg-white border-[0.5px] border-gray-300 rounded-lg`}
+                        className={`flex-row items-center h-20 w-[95%] bg-white border-[0.5px] border-gray-300 rounded-lg`}
                         key={idx}
                       >
-                        <View className="flex-1 items-center justify-center rounded-lg pt-5">
+                        <View className="rounded-lg p-3">
                           <MaterialCommunityIcons
                             name="folder"
-                            size={50}
+                            size={32}
                             color="black"
                           />
                         </View>
 
-                        <View className="flex-2 items-center gap-1 my-1">
+                        <View className="items-start gap-1 my-1">
                           <Text className="text-gray-800">
                             {truncate(removeExtension(doc.name), 30)}
                           </Text>

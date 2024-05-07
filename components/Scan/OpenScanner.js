@@ -4,7 +4,7 @@ import { showMessage } from "react-native-flash-message";
 
 import { Text, TouchableOpacity, View } from "react-native";
 import { actionButton } from "../../constants/UI";
-import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import NameScanModal from "./NameScanModal";
 
 export default function OpenScanner() {

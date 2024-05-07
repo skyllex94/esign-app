@@ -38,6 +38,13 @@ export default function TemplatesLibrary({ navigation }) {
             require("../../assets/templates/contracts/Interior-Design-Contract.pdf")
           ).uri,
         },
+        {
+          name: "Contract Addendum",
+          file: require("../../assets/templates/contracts/Contract-Addendum.pdf"),
+          path: resolveAssetSource(
+            require("../../assets/templates/contracts/Contract-Addendum.pdf")
+          ).uri,
+        },
       ],
     },
     {
@@ -126,21 +133,30 @@ export default function TemplatesLibrary({ navigation }) {
             require("../../assets/templates/business/Business-Partnership-Agreement.pdf")
           ).uri,
         },
-      ],
-    },
-    {
-      title: "Insurance Templates",
-      isOpen: false,
-      templates: [
         {
           name: "Non-Disclosure Agreement",
-          file: require("../../assets/templates/insurance/Non-Disclosure-Agreement.pdf"),
+          file: require("../../assets/templates/business/Non-Disclosure-Agreement.pdf"),
           path: resolveAssetSource(
-            require("../../assets/templates/insurance/Non-Disclosure-Agreement.pdf")
+            require("../../assets/templates/business/Non-Disclosure-Agreement.pdf")
+          ).uri,
+        },
+        {
+          name: "Service Proposal",
+          file: require("../../assets/templates/business/Service-Proposal.pdf"),
+          path: resolveAssetSource(
+            require("../../assets/templates/business/Service-Proposal.pdf")
+          ).uri,
+        },
+        {
+          name: "Marketing Agreement",
+          file: require("../../assets/templates/business/Marketing-Agreement.pdf"),
+          path: resolveAssetSource(
+            require("../../assets/templates/business/Marketing-Agreement.pdf")
           ).uri,
         },
       ],
     },
+
     {
       title: "Personal Document Templates",
       isOpen: false,
@@ -164,7 +180,22 @@ export default function TemplatesLibrary({ navigation }) {
     {
       title: "Non-Profit Templates",
       isOpen: false,
-      templates: [],
+      templates: [
+        {
+          name: "Donation Letter",
+          file: require("../../assets/templates/non-profit/Donation-Letter.pdf"),
+          path: resolveAssetSource(
+            require("../../assets/templates/non-profit/Donation-Letter.pdf")
+          ).uri,
+        },
+        {
+          name: "Volunteer Agreement",
+          file: require("../../assets/templates/non-profit/Volunteer-Agreement.pdf"),
+          path: resolveAssetSource(
+            require("../../assets/templates/non-profit/Volunteer-Agreement.pdf")
+          ).uri,
+        },
+      ],
     },
   ]);
 

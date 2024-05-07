@@ -2,7 +2,7 @@ import "react-native-gesture-handler";
 import { useEffect, useRef, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import SettingsScreen from "./components/tabs/Settings";
+
 // Icons and other UI
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
@@ -21,6 +21,7 @@ import {
   updateList,
 } from "./components/functions/Global";
 import FlashMessage from "react-native-flash-message";
+import Settings from "./components/tabs/Settings";
 
 // Stack Nav Wrapper, Tab Nav Secondary
 const Stack = createStackNavigator();
@@ -162,7 +163,7 @@ function Main() {
                   <Ionicons name="settings" color={color} size={24} />
                 ),
               }}
-              component={SettingsScreen}
+              component={Settings}
             />
           </Tab.Navigator>
         </BottomSheetModalProvider>

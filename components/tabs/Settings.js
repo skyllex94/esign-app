@@ -1,9 +1,30 @@
 import { SafeAreaView, Text } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+import BuySection from "../Settings/BuySection";
+import { createStackNavigator } from "@react-navigation/stack";
 
-export default function SettingsScreen() {
+const Stack = createStackNavigator();
+
+export default function Settings() {
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <Text>Settings!</Text>
+    <Stack.Navigator
+      initialRouteName="Settings"
+      screenOptions={{ headerShown: false }}
+      s
+    >
+      <Stack.Screen name="Settings" component={SettingsTab} />
+    </Stack.Navigator>
+  );
+}
+
+function SettingsTab() {
+  return (
+    <SafeAreaView className="flex-1">
+      <Text className="text-center font-bold text-2xl my-2">Settings</Text>
+
+      <ScrollView showsVerticalScrollIndicator="false">
+        <BuySection />
+      </ScrollView>
     </SafeAreaView>
   );
 }
