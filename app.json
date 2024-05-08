@@ -3,7 +3,6 @@
     "name": "SimpleSign",
     "slug": "esign-app",
     "version": "1.0.0",
-    "scheme": ["com.kkanchev94.esignapp://oauth"],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
