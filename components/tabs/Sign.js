@@ -68,6 +68,8 @@ import ChooseScanFile from "../Sign/ChooseScanFile";
 import { deleteResidualFiles } from "../Scan/functions";
 import LibrarySheet from "../Sign/LibrarySheet";
 import InitialsLibrary from "../Sign/Initials/InitialsLibrary";
+import useRevenueCat from "../../hooks/useRevenueCat";
+import Paywall from "../Paywall/Paywall";
 
 const Stack = createStackNavigator();
 
@@ -123,6 +125,11 @@ export default function SignScreen() {
         component={ChooseScanFile}
         options={{ presentation: "modal" }}
       />
+      <Stack.Screen
+        name="Paywall"
+        component={Paywall}
+        options={{ presentation: "card" }}
+      />
     </Stack.Navigator>
   );
 }
@@ -142,6 +149,11 @@ function Main({ navigation }) {
 
   const [search, setSearch] = useState(null);
   const [googleUserInfo, setGoogleUserInfo] = useState();
+
+  const { currentOffering, customerInfo, isProMember } = useRevenueCat();
+
+  console.log("customerInfo:", customerInfo);
+  console.log("isProMember:", isProMember);
 
   const [showLoadingModal, setShowLoadingModal] = useState(false);
 

@@ -1,4 +1,11 @@
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   SafeAreaView,
   Text,
@@ -8,13 +15,13 @@ import {
   Alert,
 } from "react-native";
 import { Context } from "../contexts/Global";
-// PDF Imports
+// PDF imports
 import Pdf from "react-native-pdf";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import RNFS from "react-native-fs";
-import { decode } from "base-64";
+
 // BottomSheet
 import { BottomSheetBackdrop, BottomSheetModal } from "@gorhom/bottom-sheet";
+// UI and functions
 import {
   FontAwesome,
   FontAwesome6,
@@ -46,6 +53,8 @@ import ImageSelection from "./PanResponders/ImageSelection";
 import AddTextModal from "./AddTextModal";
 import TextField from "./PanResponders/TextField";
 import Checkbox from "./PanResponders/Checkbox";
+// Custom hook import
+import useRevenueCat from "../../hooks/useRevenueCat";
 
 export default function DocumentEditor({ navigation, route }) {
   // Show current signatures
@@ -58,6 +67,9 @@ export default function DocumentEditor({ navigation, route }) {
   // Signature list context
   const { signatureList, setSignatureList, initialsList, setInitialsList } =
     useContext(Context);
+
+  // RevenueCat paywall import
+  const { currentOffering, customerInfo, isProMember } = useRevenueCat();
 
   // Relative width and height of inputed element
   const [coordinateX, setCoordinateX] = useState(0);
@@ -101,8 +113,13 @@ export default function DocumentEditor({ navigation, route }) {
   const [date] = useState(new Date().toLocaleDateString());
 
   useEffect(() => {
-    editingPalette.current.present();
+    editingPalette.current?.present();
   }, [editingPalette, navigation]);
+
+  // Callbacks
+  const showEditingPalette = useCallback(() => {
+    editingPalette.current?.present();
+  }, []);
 
   // Passed path name for the picked document
   const { pickedDocument } = route.params;
@@ -156,6 +173,11 @@ export default function DocumentEditor({ navigation, route }) {
   const [checkboxPositionX, setCheckboxPositionX] = useState(0);
   const [checkboxPositionY, setCheckboxPositionY] = useState(0);
   const [checkboxSize, setCheckboxSize] = useState(25);
+
+  function showPaywall() {
+    editingPalette?.current.close();
+    navigation.navigate("Paywall", { editingPalette });
+  }
 
   return (
     <SafeAreaView className="flex-1">
@@ -536,7 +558,11 @@ export default function DocumentEditor({ navigation, route }) {
               <View className="flex-row items-center justify-center">
                 <TouchableOpacity
                   className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
-                  onPress={() => setShowDatePanResponder((curr) => !curr)}
+                  onPress={() =>
+                    isProMember
+                      ? setShowDatePanResponder((curr) => !curr)
+                      : showPaywall()
+                  }
                 >
                   <MaterialIcons name="date-range" size={24} color="black" />
                   <Text>Date</Text>

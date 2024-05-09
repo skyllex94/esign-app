@@ -2,17 +2,18 @@ import { useEffect, useState } from "react";
 import { Platform } from "react-native";
 import Purchases from "react-native-purchases";
 
-// const APIKeys = {
-//   apple: "appl_WgUeZxmxNnBTlKDYpucGQIyrNAC",
-//   google: "revenue_API_key_for_google",
-// };
+const APIKeys = {
+  apple: process.env.EXPO_PUBLIC_REVENUECAT_API_KEY,
+  google: "",
+};
 
-// const typesOfMembership = {
-//   weekly: "weekly_subscription",
-//   monthly: "monthly_subscription",
-// };
+const typesOfMembership = {
+  weekly: "esign_pro_weekly",
+  monthly: "esign_pro_monthly",
+  yearly: "esign_pro_yearly",
+};
 
-function useRevenueCat() {
+export default function useRevenueCat() {
   const [currentOffering, setCurrentOffering] = useState(null);
   const [customerInfo, setCustomerInfo] = useState(null);
 
@@ -20,11 +21,9 @@ function useRevenueCat() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (Platform.OS === "ios") {
-        await Purchases.configure({ apiKey: APIKeys.apple });
-      } else if (Platform.OS === "android") {
-        await Purchases.configure({ apiKey: APIKeys.google });
-      }
+      await Purchases.configure({
+        apiKey: process.env.EXPO_PUBLIC_REVENUECAT_API_KEY,
+      });
 
       const offerings = await Purchases.getOfferings();
       const customerInfo = await Purchases.getCustomerInfo();
@@ -46,5 +45,3 @@ function useRevenueCat() {
 
   return { currentOffering, customerInfo, isProMember };
 }
-
-export default useRevenueCat;
