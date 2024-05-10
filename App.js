@@ -22,6 +22,9 @@ import {
 } from "./components/functions/Global";
 import FlashMessage from "react-native-flash-message";
 import Settings from "./components/tabs/Settings";
+import Paywall from "./components/Paywall/Paywall";
+import DocumentPreview from "./components/Sign/DocumentPreview";
+import DocumentDetails from "./components/Sign/DocumentDetails";
 
 // Stack Nav Wrapper, Tab Nav Secondary
 const Stack = createStackNavigator();
@@ -32,6 +35,18 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Main" component={Main} />
+
+        <Stack.Screen
+          name="Paywall"
+          component={Paywall}
+          options={{ presentation: "modal" }}
+        />
+
+        <Stack.Screen
+          name="DocumentPreview"
+          component={DocumentPreview}
+          options={{ presentation: "modal" }}
+        />
       </Stack.Navigator>
       <FlashMessage position="top" />
     </NavigationContainer>
@@ -105,6 +120,7 @@ function Main() {
         <BottomSheetModalProvider>
           <Tab.Navigator
             screenOptions={() => ({
+              lazy: true,
               tabBarActiveTintColor: actionButton,
               tabBarInactiveTintColor: "black",
               tabBarStyle: {

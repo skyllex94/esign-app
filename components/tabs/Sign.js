@@ -69,17 +69,16 @@ import { deleteResidualFiles } from "../Scan/functions";
 import LibrarySheet from "../Sign/LibrarySheet";
 import InitialsLibrary from "../Sign/Initials/InitialsLibrary";
 import useRevenueCat from "../../hooks/useRevenueCat";
-import Paywall from "../Paywall/Paywall";
 
 const Stack = createStackNavigator();
 
 export default function SignScreen() {
   return (
     <Stack.Navigator
-      initialRouteName="Main"
+      initialRouteName="MainSignScreen"
       screenOptions={{ headerShown: false }}
     >
-      <Stack.Screen name="Main" component={Main} />
+      <Stack.Screen name="MainSignScreen" component={Main} />
       <Stack.Screen
         name="DrawSign"
         component={DrawSignCapture}
@@ -100,11 +99,7 @@ export default function SignScreen() {
         component={DocumentDetails}
         options={{ presentation: "modal" }}
       />
-      <Stack.Screen
-        name="DocumentPreview"
-        component={DocumentPreview}
-        options={{ presentation: "modal" }}
-      />
+
       <Stack.Screen
         name="DocumentSuccess"
         component={DocumentSuccess}
@@ -124,11 +119,6 @@ export default function SignScreen() {
         name="ChooseScanFile"
         component={ChooseScanFile}
         options={{ presentation: "modal" }}
-      />
-      <Stack.Screen
-        name="Paywall"
-        component={Paywall}
-        options={{ presentation: "card" }}
       />
     </Stack.Navigator>
   );
@@ -151,9 +141,6 @@ function Main({ navigation }) {
   const [googleUserInfo, setGoogleUserInfo] = useState();
 
   const { currentOffering, customerInfo, isProMember } = useRevenueCat();
-
-  console.log("customerInfo:", customerInfo);
-  console.log("isProMember:", isProMember);
 
   const [showLoadingModal, setShowLoadingModal] = useState(false);
 
@@ -326,6 +313,9 @@ function Main({ navigation }) {
     <SafeAreaView className="flex-1">
       <StatusBar style="auto" />
       <Text className="text-center font-bold text-2xl my-2">SimpleSign</Text>
+      <TouchableOpacity onPress={() => navigation.navigate("Paywall")}>
+        <Text>Paywall</Text>
+      </TouchableOpacity>
 
       <View className="search-bar mx-1">
         <SearchBar

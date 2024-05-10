@@ -69,7 +69,7 @@ export default function DocumentEditor({ navigation, route }) {
     useContext(Context);
 
   // RevenueCat paywall import
-  const { currentOffering, customerInfo, isProMember } = useRevenueCat();
+  const { isProMember } = useRevenueCat();
 
   // Relative width and height of inputed element
   const [coordinateX, setCoordinateX] = useState(0);
@@ -175,7 +175,7 @@ export default function DocumentEditor({ navigation, route }) {
   const [checkboxSize, setCheckboxSize] = useState(25);
 
   function showPaywall() {
-    editingPalette?.current.close();
+    // editingPalette?.current.close();
     navigation.navigate("Paywall", { editingPalette });
   }
 

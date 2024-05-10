@@ -17,7 +17,8 @@ export default function useRevenueCat() {
   const [currentOffering, setCurrentOffering] = useState(null);
   const [customerInfo, setCustomerInfo] = useState(null);
 
-  const isProMember = customerInfo?.entitlements.active.pro;
+  const isProMember =
+    customerInfo?.entitlements?.active?.esign_pro_subscription;
 
   useEffect(() => {
     const fetchData = async () => {
