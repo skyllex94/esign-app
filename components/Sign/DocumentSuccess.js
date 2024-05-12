@@ -51,7 +51,7 @@ export default function DocumentSuccess({ route, navigation }) {
       <View className="flex-row pt-2 justify-end">
         <TouchableOpacity
           className={`bg-slate-300 rounded-full p-2`}
-          onPress={() => navigation.navigate("Main")}
+          onPress={() => navigation.navigate("MainSignScreen")}
         >
           <AntDesign name="close" size={20} color="black" />
         </TouchableOpacity>

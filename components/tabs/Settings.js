@@ -5,6 +5,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 import GeneralSection from "../Settings/GeneralSection";
 import OurAppsSection from "../Settings/OurAppsSection";
 import AboutSection from "../Settings/AboutSection";
+import PrivacyPolicy from "../Settings/PrivacyPolicy";
+import Terms from "../Settings/Terms";
 
 const Stack = createStackNavigator();
 
@@ -13,9 +15,10 @@ export default function Settings() {
     <Stack.Navigator
       initialRouteName="SettingsTab"
       screenOptions={{ headerShown: false }}
-      s
     >
       <Stack.Screen name="SettingsTab" component={SettingsTab} />
+      <Stack.Screen name="Terms" component={Terms} />
+      <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
     </Stack.Navigator>
   );
 }

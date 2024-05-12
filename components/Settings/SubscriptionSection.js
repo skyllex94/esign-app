@@ -1,21 +1,32 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import React from "react";
 import { AntDesign } from "@expo/vector-icons";
-// import useRevenueCat from "../../hooks/useRevenueCat";
-// import { openPurchaseModal } from "../Utils/Funcs";
 import { LinearGradient } from "expo-linear-gradient";
+import useRevenueCat from "../../hooks/useRevenueCat";
+import Purchases from "react-native-purchases";
+import { showMessage } from "react-native-flash-message";
 
 export default function SubscriptionSection({ navigation }) {
-  // const { isProMember } = useRevenueCat();
+  const { isProMember } = useRevenueCat();
+
+  async function handleRestorePurchase() {
+    showMessage({
+      message: "Looking to restore a purchase",
+      duration: 2000,
+      type: "info",
+    });
+    const purchaserInfo = await Purchases.restorePurchases();
+
+    if (purchaserInfo?.activeSubscriptions.length > 0) {
+      Alert.alert("Success", "Your purchase has been restored");
+    } else Alert.alert("Failure", "There are no purchases to restore");
+  }
+
+  async function openRateApp() {}
 
   return (
     <View className="items-center mx-3 gap-y-2">
-      <TouchableOpacity
-      // onPress={!isProMember && (() => openPurchaseModal(navigation))}
-      // className={`${
-      //   isProMember && "hidden"
-      // }  bg-[#101C43]  justify-center my-5 h-12 w-[95%] rounded-lg`}
-      >
+      {!isProMember && (
         <LinearGradient
           className="flex-row bg-white items-center justify-between py-3 w-full rounded-lg"
           colors={["#2485a6", "#2c67f2"]}
@@ -30,18 +41,27 @@ export default function SubscriptionSection({ navigation }) {
             <Text className="text-slate-200">Unlock 10+ Premium Features</Text>
           </View>
 
-          <TouchableOpacity className="bg-white rounded-full mr-4">
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Paywall")}
+            className="bg-white rounded-full mr-4"
+          >
             <Text className="p-3 font-semibold">Upgrade</Text>
           </TouchableOpacity>
         </LinearGradient>
-      </TouchableOpacity>
+      )}
 
-      <TouchableOpacity className="flex-row items-center justify-between bg-white w-full rounded-lg p-3">
+      <TouchableOpacity
+        onPress={handleRestorePurchase}
+        className="flex-row items-center justify-between bg-white w-full rounded-lg p-3"
+      >
         <Text className="text-slate-800">Restore Purchase</Text>
         <AntDesign name="right" size={14} color="black" />
       </TouchableOpacity>
 
-      <TouchableOpacity className="flex-row items-center justify-between bg-white w-full rounded-lg p-3">
+      <TouchableOpacity
+        onPress={openRateApp}
+        className="flex-row items-center justify-between bg-white w-full rounded-lg p-3"
+      >
         <Text className="text-slate-800">Rate the App</Text>
         <AntDesign name="right" size={14} color="black" />
       </TouchableOpacity>
