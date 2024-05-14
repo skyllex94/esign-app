@@ -12,6 +12,7 @@ import { SearchBar } from "react-native-elements";
 import { Context } from "../contexts/Global";
 import {
   Feather,
+  FontAwesome6,
   Ionicons,
   MaterialCommunityIcons,
   MaterialIcons,
@@ -130,7 +131,8 @@ function MainNavigatorScreen({ navigation }) {
         />
       </View>
 
-      <View className="flex-row flex-wrap mx-3 my-1">
+      {/* 
+<View className="flex-row flex-wrap mx-3 my-1">
         <TouchableOpacity
           onPress={() => setShowNewFolderModal(true)}
           className="w-[49%] h-full mr-[2%]"
@@ -173,6 +175,8 @@ function MainNavigatorScreen({ navigation }) {
           </LinearGradient>
         </TouchableOpacity>
       </View>
+
+*/}
 
       {showNewFolderModal && (
         <NewFolderModal
@@ -233,20 +237,20 @@ function MainNavigatorScreen({ navigation }) {
                                   doc,
                                 })
                         }
-                        className={`flex-row items-center h-20 w-[95%] bg-white border-[0.5px] border-gray-300 rounded-lg`}
+                        className={`flex-row items-center w-[95%] bg-white border-[0.5px] border-gray-300 rounded-lg`}
                         key={idx}
                       >
-                        <View className="rounded-lg p-3">
-                          <MaterialIcons
-                            name="picture-as-pdf"
-                            size={30}
+                        <View className="rounded-lg p-3 ml-2">
+                          <FontAwesome6
+                            name="file-contract"
+                            size={24}
                             color="black"
                           />
                         </View>
 
                         <View className="items-start gap-1 my-1">
                           <Text className="text-gray-800">
-                            {truncate(removeExtension(doc.name), 30)}
+                            {truncate(removeExtension(doc.name), 40)}
                           </Text>
 
                           <View>
@@ -262,7 +266,7 @@ function MainNavigatorScreen({ navigation }) {
                           onPress={() =>
                             navigation.navigate("DocumentScanDetails", { doc })
                           }
-                          className="absolute right-0 m-2"
+                          className="absolute right-0 m-2 mr-4"
                         >
                           <Feather
                             name="more-horizontal"
@@ -349,7 +353,11 @@ function MainNavigatorScreen({ navigation }) {
           </View>
         </View>
 
-        <OpenScanner navigation={navigation} />
+        <OpenScanner
+          navigation={navigation}
+          setShowNewFolderModal={setShowNewFolderModal}
+          setIsEditDocument={setIsEditDocument}
+        />
       </View>
     </SafeAreaView>
   );

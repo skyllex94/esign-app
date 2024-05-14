@@ -4,11 +4,9 @@ import {
   Entypo,
   FontAwesome,
   FontAwesome5,
-  FontAwesome6,
   Fontisto,
   Ionicons,
   MaterialCommunityIcons,
-  MaterialIcons,
 } from "@expo/vector-icons";
 import resolveAssetSource from "react-native/Libraries/Image/resolveAssetSource";
 import { ScrollView } from "react-native-gesture-handler";
@@ -18,7 +16,7 @@ export default function TemplatesLibrary({ navigation }) {
     {
       title: "Contracts",
       isOpen: false,
-      icon: <FontAwesome5 name="file-signature" size={24} color="black" />,
+      icon: <FontAwesome5 name="file-signature" size={18} color="#1e293b" />,
       templates: [
         {
           name: "Employment Contract",
@@ -60,7 +58,7 @@ export default function TemplatesLibrary({ navigation }) {
     {
       title: "Real Estate Templates",
       isOpen: false,
-      icon: <FontAwesome5 name="house-damage" size={24} color="black" />,
+      icon: <FontAwesome5 name="house-damage" size={18} color="#1e293b" />,
       templates: [
         {
           name: "Rental Agreement",
@@ -81,7 +79,7 @@ export default function TemplatesLibrary({ navigation }) {
     {
       title: "Legal Templates",
       isOpen: false,
-      icon: <FontAwesome name="legal" size={24} color="black" />,
+      icon: <FontAwesome name="legal" size={18} color="#1e293b" />,
       templates: [
         {
           name: "Licensing Agreement",
@@ -102,7 +100,7 @@ export default function TemplatesLibrary({ navigation }) {
     {
       title: "Business Templates",
       isOpen: false,
-      icon: <Ionicons name="business" size={24} color="black" />,
+      icon: <Ionicons name="business" size={18} color="#1e293b" />,
       templates: [
         {
           name: "Operating Agreement",
@@ -173,7 +171,7 @@ export default function TemplatesLibrary({ navigation }) {
     {
       title: "Personal Document Templates",
       isOpen: false,
-      icon: <Fontisto name="persons" size={24} color="black" />,
+      icon: <Fontisto name="persons" size={18} color="#1e293b" />,
       templates: [
         {
           name: "Divorce Settlement",
@@ -194,7 +192,7 @@ export default function TemplatesLibrary({ navigation }) {
     {
       title: "Non-Profit Templates",
       isOpen: false,
-      icon: <MaterialCommunityIcons name="charity" size={24} color="black" />,
+      icon: <MaterialCommunityIcons name="charity" size={18} color="#1e293b" />,
       templates: [
         {
           name: "Donation Letter",
@@ -235,18 +233,16 @@ export default function TemplatesLibrary({ navigation }) {
         <React.Fragment key={idx}>
           <TouchableOpacity
             onPress={() => toggleSection(idx)}
-            className="flex-row items-center justify-between bg-white rounded-lg p-5 my-1"
+            className="flex-row items-center justify-between bg-white rounded-lg p-3 my-1"
           >
             <View className="flex-row items-center gap-x-3">
               <Text>{section.icon}</Text>
-              <Text className="font-semibold">{section.title}</Text>
+              <Text className=" text-slate-800">{section.title}</Text>
             </View>
 
-            <Entypo
-              name={section.isOpen ? "chevron-up" : "chevron-down"}
-              size={20}
-              color="gray"
-            />
+            <View className="px-2">
+              <Entypo name="chevron-thin-down" size={13} color="#1e293b" />
+            </View>
           </TouchableOpacity>
 
           <View>
@@ -257,16 +253,16 @@ export default function TemplatesLibrary({ navigation }) {
                     <TouchableOpacity
                       key={`template-${index}`}
                       onPress={() => openTemplate(template)}
-                      className={`flex-row py-2 w-full ${
-                        section.templates.length - 1 !== idx &&
+                      className={`flex-row py-1 w-full ${
+                        section.templates.length - 1 !== index &&
                         "border-b-[0.5px] border-slate-200"
                       }`}
                     >
-                      <View className="flex-row items-center gap-2 px-8 py-4">
-                        <MaterialCommunityIcons
-                          name="file-document-outline"
-                          size={24}
-                          color="black"
+                      <View className="flex-row items-center gap-2 px-8 py-2">
+                        <Ionicons
+                          name="document-text-outline"
+                          size={20}
+                          color="#1e293b"
                         />
                         <Text>{template.name}</Text>
                       </View>

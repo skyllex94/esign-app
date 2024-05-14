@@ -34,7 +34,6 @@ import { actionButton } from "../../constants/UI";
 import { ScrollView } from "react-native-gesture-handler";
 import DocumentDetails from "../Sign/DocumentDetails";
 import { SearchBar } from "react-native-elements";
-import DocumentPreview from "../Sign/DocumentPreview";
 import DocumentSuccess from "../Sign/DocumentSuccess";
 import {
   clearSearch,
