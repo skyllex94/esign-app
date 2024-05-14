@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React from "react";
 import { AntDesign } from "@expo/vector-icons";
+import { reportBug, sendFeedback } from "../functions/Global";
 
 export default function GeneralSection({ navigation }) {
   return (
@@ -23,12 +24,18 @@ export default function GeneralSection({ navigation }) {
         <AntDesign name="right" size={14} color="black" />
       </TouchableOpacity>
 
-      <TouchableOpacity className="flex-row items-center justify-between bg-white w-full rounded-lg p-3">
+      <TouchableOpacity
+        onPress={sendFeedback}
+        className="flex-row items-center justify-between bg-white w-full rounded-lg p-3"
+      >
         <Text className="text-slate-800">Share Feedback</Text>
         <AntDesign name="right" size={14} color="black" />
       </TouchableOpacity>
 
-      <TouchableOpacity className="flex-row items-center justify-between bg-white w-full rounded-lg p-3">
+      <TouchableOpacity
+        onPress={reportBug}
+        className="flex-row items-center justify-between bg-white w-full rounded-lg p-3"
+      >
         <Text className="text-slate-800">Report a Bug</Text>
         <AntDesign name="right" size={14} color="black" />
       </TouchableOpacity>

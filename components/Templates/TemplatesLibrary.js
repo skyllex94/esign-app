@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { Text, View, TouchableOpacity } from "react-native";
-import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  Entypo,
+  FontAwesome,
+  FontAwesome5,
+  FontAwesome6,
+  Fontisto,
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 import resolveAssetSource from "react-native/Libraries/Image/resolveAssetSource";
 import { ScrollView } from "react-native-gesture-handler";
 
@@ -9,6 +18,7 @@ export default function TemplatesLibrary({ navigation }) {
     {
       title: "Contracts",
       isOpen: false,
+      icon: <FontAwesome5 name="file-signature" size={24} color="black" />,
       templates: [
         {
           name: "Employment Contract",
@@ -50,6 +60,7 @@ export default function TemplatesLibrary({ navigation }) {
     {
       title: "Real Estate Templates",
       isOpen: false,
+      icon: <FontAwesome5 name="house-damage" size={24} color="black" />,
       templates: [
         {
           name: "Rental Agreement",
@@ -70,6 +81,7 @@ export default function TemplatesLibrary({ navigation }) {
     {
       title: "Legal Templates",
       isOpen: false,
+      icon: <FontAwesome name="legal" size={24} color="black" />,
       templates: [
         {
           name: "Licensing Agreement",
@@ -90,6 +102,7 @@ export default function TemplatesLibrary({ navigation }) {
     {
       title: "Business Templates",
       isOpen: false,
+      icon: <Ionicons name="business" size={24} color="black" />,
       templates: [
         {
           name: "Operating Agreement",
@@ -160,6 +173,7 @@ export default function TemplatesLibrary({ navigation }) {
     {
       title: "Personal Document Templates",
       isOpen: false,
+      icon: <Fontisto name="persons" size={24} color="black" />,
       templates: [
         {
           name: "Divorce Settlement",
@@ -180,6 +194,7 @@ export default function TemplatesLibrary({ navigation }) {
     {
       title: "Non-Profit Templates",
       isOpen: false,
+      icon: <MaterialCommunityIcons name="charity" size={24} color="black" />,
       templates: [
         {
           name: "Donation Letter",
@@ -211,8 +226,6 @@ export default function TemplatesLibrary({ navigation }) {
   };
 
   function openTemplate(template) {
-    console.log("template:", template);
-
     navigation.navigate("TemplatePreview", { template });
   }
 
@@ -222,14 +235,17 @@ export default function TemplatesLibrary({ navigation }) {
         <React.Fragment key={idx}>
           <TouchableOpacity
             onPress={() => toggleSection(idx)}
-            className="flex-row items-center justify-between bg-white rounded-lg p-5 my-2"
+            className="flex-row items-center justify-between bg-white rounded-lg p-5 my-1"
           >
-            <Text className="font-semibold">{section.title}</Text>
+            <View className="flex-row items-center gap-x-3">
+              <Text>{section.icon}</Text>
+              <Text className="font-semibold">{section.title}</Text>
+            </View>
 
             <Entypo
               name={section.isOpen ? "chevron-up" : "chevron-down"}
-              size={24}
-              color="black"
+              size={20}
+              color="gray"
             />
           </TouchableOpacity>
 

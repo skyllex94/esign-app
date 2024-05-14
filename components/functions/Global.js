@@ -4,6 +4,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import filter from "lodash.filter";
 import RNFS from "react-native-fs";
 import { showMessage } from "react-native-flash-message";
+import * as MailComposer from "expo-mail-composer";
+import { Alert, Share } from "react-native";
+import * as StoreReview from "expo-store-review";
 
 export async function updateDocuments(dir, setList, setFilteredList, isFolder) {
   const updateCompleteList = [];
@@ -267,5 +270,94 @@ export function truncate(str, maxLength) {
     return str;
   } else {
     return str.substring(0, maxLength) + "...";
+  }
+}
+
+async function checkMainService() {
+  const canUseMailService = await MailComposer.isAvailableAsync();
+
+  if (canUseMailService === false) {
+    showMessage({
+      message: "Email Service cannot be used",
+      description: "The email cannot be used on this device unfortunately.",
+      duration: 3000,
+      type: "danger",
+    });
+    return false;
+  }
+  return true;
+}
+
+export async function sendFeedback() {
+  if (!checkMainService) return;
+
+  try {
+    await MailComposer.composeAsync({
+      subject: "Feedback for SimpleSign",
+      recipients: ["zionstudiosapps@gmail.com"],
+      body: "Write your feedback or questions here...",
+    });
+  } catch (err) {
+    showMessage({
+      message: "Error occurred",
+      description: err.toString(),
+      duration: 3000,
+      type: "danger",
+    });
+  }
+}
+
+export async function reportBug() {
+  if (!checkMainService) return;
+
+  try {
+    await MailComposer.composeAsync({
+      subject: "Report a Bug for SimpleSign",
+      recipients: ["zionstudiosapps@gmail.com"],
+      body: "Please write a review of the issue/crash that occurred",
+    });
+  } catch (err) {
+    showMessage({
+      message: "Error occurred",
+      description: err.toString(),
+      duration: 3000,
+      type: "danger",
+    });
+  }
+}
+
+export const tellFriends = async () => {
+  try {
+    const result = await Share.share({
+      message:
+        "Hey check out this e-signature and document scanning app called SimpleSign on the App Store.",
+    });
+    if (result.action === Share.sharedAction) {
+      if (result.activityType) {
+        // shared with activity type of result.activityType
+      } else {
+        // shared
+      }
+    } else if (result.action === Share.dismissedAction) {
+      // dismissed
+    }
+  } catch (error) {
+    Alert.alert(error.message);
+  }
+};
+
+export async function openRequestReviewModal() {
+  try {
+    if (await StoreReview.isAvailableAsync()) {
+      StoreReview.requestReview();
+    }
+  } catch (err) {
+    showMessage({
+      message: "Error occurred",
+      description:
+        "There was an error which occurred white loading the review modal.",
+      duration: 4000,
+      type: "danger",
+    });
   }
 }

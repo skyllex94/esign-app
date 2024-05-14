@@ -132,7 +132,7 @@ export const SaveDocument = ({
 
       if (err.toString().includes("encrypted"))
         showMessage({
-          message: "Error Occured",
+          message: "Error occurred",
           description:
             "The document you are trying to load is encrypted. Unfortunately, we cannot save this.",
           duration: 6000,
@@ -386,7 +386,7 @@ export const SaveDocument = ({
         updateDocuments("Completed", setDocList, setFilteredDocList);
       } catch (err) {
         showMessage({
-          message: "Error Occured",
+          message: "Error occurred",
           description: err.toString(),
           duration: 3000,
           type: "danger",

@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
-import { Platform } from "react-native";
 import Purchases from "react-native-purchases";
 
-const APIKeys = {
-  apple: process.env.EXPO_PUBLIC_REVENUECAT_API_KEY,
-  google: "",
-};
-
+// Subscription product names
 const typesOfMembership = {
   weekly: "esign_pro_weekly",
   monthly: "esign_pro_monthly",

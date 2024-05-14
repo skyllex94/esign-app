@@ -25,6 +25,8 @@ import Settings from "./components/tabs/Settings";
 import Paywall from "./components/Paywall/Paywall";
 import DocumentPreview from "./components/Sign/DocumentPreview";
 import DocumentDetails from "./components/Sign/DocumentDetails";
+import Terms from "./components/Settings/Terms";
+import PrivacyPolicy from "./components/Settings/PrivacyPolicy";
 
 // Stack Nav Wrapper, Tab Nav Secondary
 const Stack = createStackNavigator();
@@ -45,6 +47,18 @@ export default function App() {
         <Stack.Screen
           name="DocumentPreview"
           component={DocumentPreview}
+          options={{ presentation: "modal" }}
+        />
+
+        <Stack.Screen
+          name="Terms"
+          component={Terms}
+          options={{ presentation: "modal" }}
+        />
+
+        <Stack.Screen
+          name="PrivacyPolicy"
+          component={PrivacyPolicy}
           options={{ presentation: "modal" }}
         />
       </Stack.Navigator>

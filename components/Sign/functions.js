@@ -299,7 +299,7 @@ export async function emailDocument(docPath) {
     });
   } catch (err) {
     showMessage({
-      message: "Error Occured",
+      message: "Error occurred",
       description: err.toString(),
       duration: 3000,
       type: "danger",
@@ -328,7 +328,7 @@ export async function emailToThirdParty(docPath, fileName) {
     });
   } catch (err) {
     showMessage({
-      message: "Error Occured",
+      message: "Error occurred",
       description: err.toString(),
       duration: 3000,
       type: "danger",

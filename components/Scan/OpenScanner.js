@@ -6,10 +6,13 @@ import { Text, TouchableOpacity, View } from "react-native";
 import { actionButton } from "../../constants/UI";
 import { MaterialIcons } from "@expo/vector-icons";
 import NameScanModal from "./NameScanModal";
+import useRevenueCat from "../../hooks/useRevenueCat";
 
-export default function OpenScanner() {
+export default function OpenScanner({ navigation }) {
   const [scannedImages, setScannedImages] = useState();
   const [showNameDocument, setShowNameDocument] = useState(false);
+
+  const { isProMember } = useRevenueCat();
 
   const openCameraScanner = async () => {
     try {
@@ -21,7 +24,7 @@ export default function OpenScanner() {
       setShowNameDocument(true);
     } catch (err) {
       showMessage({
-        message: "Error occured while saving document",
+        message: "Error occurred while saving document",
         description: err.toString(),
         duration: 5000,
         type: "danger",
@@ -32,7 +35,9 @@ export default function OpenScanner() {
   return (
     <View className="flex-row items-center justify-center rounded-lg">
       <TouchableOpacity
-        onPress={openCameraScanner}
+        onPress={
+          isProMember ? openCameraScanner : () => navigation.navigate("Paywall")
+        }
         className={`flex-row items-center justify-center bg-[${actionButton}]
             z-20 w-[98%] h-[55px] rounded-full mt-3`}
       >

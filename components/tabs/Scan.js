@@ -11,7 +11,6 @@ import React, { useContext, useRef, useState } from "react";
 import { SearchBar } from "react-native-elements";
 import { Context } from "../contexts/Global";
 import {
-  Entypo,
   Feather,
   Ionicons,
   MaterialCommunityIcons,
@@ -66,7 +65,7 @@ export default function ScanScreen() {
 }
 
 function MainNavigatorScreen({ navigation }) {
-  // Context
+  // Context imports
   const {
     scanList,
     setScanList,
@@ -89,8 +88,7 @@ function MainNavigatorScreen({ navigation }) {
 
   // New folder state
   const [showNewFolderModal, setShowNewFolderModal] = useState(false);
-
-  // Edit Document state
+  // Edit document state
   const [isEditDocument, setIsEditDocument] = useState(false);
 
   return (
@@ -351,7 +349,7 @@ function MainNavigatorScreen({ navigation }) {
           </View>
         </View>
 
-        <OpenScanner />
+        <OpenScanner navigation={navigation} />
       </View>
     </SafeAreaView>
   );

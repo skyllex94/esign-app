@@ -5,6 +5,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import useRevenueCat from "../../hooks/useRevenueCat";
 import Purchases from "react-native-purchases";
 import { showMessage } from "react-native-flash-message";
+import { openRequestReviewModal } from "../functions/Global";
 
 export default function SubscriptionSection({ navigation }) {
   const { isProMember } = useRevenueCat();
@@ -21,8 +22,6 @@ export default function SubscriptionSection({ navigation }) {
       Alert.alert("Success", "Your purchase has been restored");
     } else Alert.alert("Failure", "There are no purchases to restore");
   }
-
-  async function openRateApp() {}
 
   return (
     <View className="items-center mx-3 gap-y-2">
@@ -59,7 +58,7 @@ export default function SubscriptionSection({ navigation }) {
       </TouchableOpacity>
 
       <TouchableOpacity
-        onPress={openRateApp}
+        onPress={openRequestReviewModal}
         className="flex-row items-center justify-between bg-white w-full rounded-lg p-3"
       >
         <Text className="text-slate-800">Rate the App</Text>

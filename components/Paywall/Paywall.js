@@ -17,10 +17,9 @@ import { ScrollView } from "react-native-gesture-handler";
 import useRevenueCat from "../../hooks/useRevenueCat";
 import Purchases from "react-native-purchases";
 
-import { showMessage } from "react-native-flash-message";
 import Spinner from "react-native-loading-spinner-overlay/lib";
 
-export default function Paywall({ route, navigation }) {
+export default function Paywall({ navigation }) {
   const { currentOffering } = useRevenueCat();
 
   const [loadedPaywall, setLoadedPaywall] = useState(false);
@@ -232,7 +231,9 @@ export default function Paywall({ route, navigation }) {
 
             <View className="items-center mt-3">
               <View className="flex-row">
-                <TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate("PrivacyPolicy")}
+                >
                   <Text className="text-white">Privacy Policy</Text>
                 </TouchableOpacity>
                 <Text className="text-white mx-2">|</Text>
@@ -242,7 +243,7 @@ export default function Paywall({ route, navigation }) {
                 </TouchableOpacity>
                 <Text className="text-white mx-2">|</Text>
 
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate("Terms")}>
                   <Text className="text-white">Terms of Use</Text>
                 </TouchableOpacity>
               </View>

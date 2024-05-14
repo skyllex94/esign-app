@@ -37,9 +37,9 @@ export default function OurAppsSection() {
             className="justify-center items-start"
           >
             <View className="items-center">
-              <View className="flex-row">
+              <View className="flex-row border-[0.5px] border-[#cbbcbc] rounded-xl">
                 <Image
-                  className="h-16 w-16 rounded-xl border-[0.5px] border-slate-300"
+                  className="h-16 w-16"
                   source={require("../../assets/img/waterdrop_icon.png")}
                 />
               </View>

@@ -4,10 +4,11 @@ import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
 import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
 
 import { Context } from "../contexts/Global";
+import useRevenueCat from "../../hooks/useRevenueCat";
 
 export default function LibrarySheet({ navigation }) {
   const snapPoints = useMemo(() => ["33%"], []);
-  const [showEmailRequestModal, setShowEmailRequestModal] = useState(false);
+  const { isProMember } = useRevenueCat();
 
   const { librarySheet } = useContext(Context);
 
@@ -57,7 +58,11 @@ export default function LibrarySheet({ navigation }) {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={() => navigation.navigate("Initials")}
+          onPress={
+            isProMember
+              ? () => navigation.navigate("Initials")
+              : () => navigation.navigate("Paywall")
+          }
           className="flex-row h-12 w-full justify-start bg-gray-200 rounded-lg px-10"
         >
           <View className="flex-row items-center gap-x-2">

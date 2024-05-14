@@ -38,7 +38,7 @@ export default function GoogleDrive({ navigation, route }) {
         duration: 3000,
         title: "Error Ocurred",
         message:
-          "There was an error that occured authorizing user credentials.",
+          "There was an error that occurred authorizing user credentials.",
         type: "danger",
       });
 
@@ -62,7 +62,7 @@ export default function GoogleDrive({ navigation, route }) {
         duration: 3000,
         title: "Error Ocurred",
         message:
-          "There was an error that occured while loading the Google Drive files. Please logout and try again.",
+          "There was an error that occurred while loading the Google Drive files. Please logout and try again.",
         type: "danger",
       });
     }

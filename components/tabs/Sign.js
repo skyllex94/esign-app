@@ -99,7 +99,6 @@ export default function SignScreen() {
         component={DocumentDetails}
         options={{ presentation: "modal" }}
       />
-
       <Stack.Screen
         name="DocumentSuccess"
         component={DocumentSuccess}
@@ -313,9 +312,6 @@ function Main({ navigation }) {
     <SafeAreaView className="flex-1">
       <StatusBar style="auto" />
       <Text className="text-center font-bold text-2xl my-2">SimpleSign</Text>
-      <TouchableOpacity onPress={() => navigation.navigate("Paywall")}>
-        <Text>Paywall</Text>
-      </TouchableOpacity>
 
       <View className="search-bar mx-1">
         <SearchBar
