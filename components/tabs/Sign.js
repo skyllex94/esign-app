@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Dimensions,
+  Image,
 } from "react-native";
 import {
   AntDesign,
@@ -310,9 +311,9 @@ function Main({ navigation }) {
   return (
     <SafeAreaView className="flex-1">
       <StatusBar style="auto" />
-      <Text className="text-center font-bold text-2xl my-2">SimpleSign</Text>
+      <Text className="text-center font-bold text-2xl my-1">SimpleSign</Text>
 
-      <View className="search-bar mx-1">
+      <View className="search-bar mx-1 mb-[-4]">
         <SearchBar
           value={search}
           onChangeText={(text) =>
@@ -349,7 +350,8 @@ function Main({ navigation }) {
         />
       </View>
 
-      <View className="flex-1 gap-y-2 mx-3">
+      <View className="flex-1 mx-3">
+        {/*  gap-y-2  */}
         <View className="flex-1 items-start">
           <ScrollView
             showsVerticalScrollIndicator={false}
@@ -360,15 +362,19 @@ function Main({ navigation }) {
                 filteredDocList.map((doc, idx) => (
                   <View
                     key={idx}
-                    className="flex-row items-center py-2 border-b-[0.5px] border-slate-300"
+                    className="flex-row items-center py-2 border-b-[0.5px] border-slate-200"
                   >
                     <View className="m-3">
                       <AntDesign name="checkcircle" size={24} color="#99cc33" />
+                      {/* <Image
+                        className="h-8 w-8"
+                        source={require("../../assets/img/edited-doc.png")}
+                      /> */}
                     </View>
 
                     <TouchableOpacity
                       onPress={() => previewDocument(doc)}
-                      className="flex-1 items-start gap-1 my-1"
+                      className="flex-1 items-start my-1"
                     >
                       <Text className="text-gray-800">{doc.name}</Text>
 
@@ -432,7 +438,7 @@ function Main({ navigation }) {
           />
         )}
 
-        <View className="flex-row items-center justify-center gap-y-1 mb-2 rounded-lg ">
+        <View className="flex-row items-center justify-center mb-2 rounded-lg ">
           <TouchableOpacity
             onPress={showLibrarySheet}
             className={`absolute left-0 items-center justify-center z-2 bg-white p-3
@@ -455,7 +461,7 @@ function Main({ navigation }) {
 
           <View
             className={`absolute items-center justify-center top-[-8] z-10 bg-[#f2f2f2] 
-              rounded-full w-[55%] h-[91px]`}
+              rounded-full w-[54%] h-[91px]`}
           />
 
           <TouchableOpacity

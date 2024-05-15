@@ -6,6 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
   LogBox,
+  Image,
 } from "react-native";
 import React, { useContext, useRef, useState } from "react";
 import { SearchBar } from "react-native-elements";
@@ -31,11 +32,9 @@ import LottieView from "lottie-react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import DocumentScanDetails from "../Scan/DocumentScanDetails";
 import DocumentScanPreview from "../Scan/DocumentScanPreview";
-import { LinearGradient } from "expo-linear-gradient";
 import NewFolderModal from "../Scan/NewFolderModal";
 import FolderScanDetails from "../Scan/FolderScanDetails";
-import { showMessage } from "react-native-flash-message";
-import { actionButton } from "../../constants/UI";
+import ScanBanner from "../Scan/ScanBanner";
 
 const Stack = createStackNavigator();
 
@@ -93,8 +92,8 @@ function MainNavigatorScreen({ navigation }) {
   const [isEditDocument, setIsEditDocument] = useState(false);
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-150">
-      <View className="search-bar mx-1">
+    <SafeAreaView className="flex-1 gap-y-2">
+      <View className="search-bar mx-1 my-[-4]">
         <SearchBar
           value={search}
           onChangeText={(text) =>
@@ -131,63 +130,9 @@ function MainNavigatorScreen({ navigation }) {
         />
       </View>
 
-      {/* 
-<View className="flex-row flex-wrap mx-3 my-1">
-        <TouchableOpacity
-          onPress={() => setShowNewFolderModal(true)}
-          className="w-[49%] h-full mr-[2%]"
-        >
-          <LinearGradient
-            // Button Linear Gradient
-            className="h-24 items-center justify-center rounded-lg gap-y-1"
-            colors={["#662D8C", "#ED1E79"]}
-            start={[0, 0]}
-            end={[1, 1]}
-            location={[0.25, 0.4, 1]}
-          >
-            <MaterialCommunityIcons name="folder" size={40} color="white" />
-            <Text className="text-white">Create folder</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+      <ScanBanner />
 
-        <TouchableOpacity
-          onPress={() => {
-            setIsEditDocument(true);
-
-            showMessage({
-              message: "Choose a document to edit.",
-              color: "white",
-              backgroundColor: actionButton,
-              duration: 1000,
-            });
-          }}
-          className="w-[49%] h-full"
-        >
-          <LinearGradient
-            className="h-24 items-center justify-center  rounded-lg gap-y-1"
-            colors={["#FF512F", "#DD2476"]}
-            start={[0, 0]}
-            end={[1, 1]}
-            location={[0.75, 0.2, 0.2]}
-          >
-            <MaterialCommunityIcons name="file-edit" size={34} color="white" />
-            <Text className="text-white">Edit Document</Text>
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
-
-*/}
-
-      {showNewFolderModal && (
-        <NewFolderModal
-          scanPath={scanPath}
-          setScanPath={setScanPath}
-          showNewFolderModal={showNewFolderModal}
-          setShowNewFolderModal={setShowNewFolderModal}
-        />
-      )}
-
-      <View className="flex-1 mx-3 my-2">
+      <View className="flex-1 mx-3">
         <View
           className="file-explorer flex-1 bg-white
          w-[100%] rounded-lg"
@@ -210,14 +155,14 @@ function MainNavigatorScreen({ navigation }) {
               </TouchableOpacity>
             )}
 
-            <Text className="text-[17px] m-1">Scanned Documents</Text>
+            <Text className="text-[15px] m-1">Scanned Documents</Text>
           </View>
 
           <View className="flex-1 items-center justify-center">
             <ScrollView
               vertical
               showsVerticalScrollIndicator={false}
-              className="gap-2 rounded-lg my-3 w-full ml-1"
+              className={`gap-y-2 rounded-lg my-1 w-full`}
             >
               {loadScannedDocs ? (
                 filteredScanList.length > 0 ? (
@@ -237,14 +182,13 @@ function MainNavigatorScreen({ navigation }) {
                                   doc,
                                 })
                         }
-                        className={`flex-row items-center w-[95%] bg-white border-[0.5px] border-gray-300 rounded-lg`}
+                        className={`flex-row items-center pb-2 bg-white border-b-[0.5px] border-slate-200`}
                         key={idx}
                       >
-                        <View className="rounded-lg p-3 ml-2">
-                          <FontAwesome6
-                            name="file-contract"
-                            size={24}
-                            color="black"
+                        <View className="rounded-lg p-3">
+                          <Image
+                            className="h-8 w-8"
+                            source={require("../../assets/img/doc.png")}
                           />
                         </View>
 
@@ -254,10 +198,17 @@ function MainNavigatorScreen({ navigation }) {
                           </Text>
 
                           <View>
+                            {/* <Text className="text-gray-400">PDF Document</Text> */}
                             <Text className="text-gray-400">
-                              {new Date(
-                                doc.created * 1000
-                              ).toLocaleDateString()}
+                              {new Date(doc.created * 1000).toLocaleDateString(
+                                "en-us",
+                                {
+                                  weekday: "long",
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              )}
                             </Text>
                           </View>
                         </View>
@@ -266,7 +217,7 @@ function MainNavigatorScreen({ navigation }) {
                           onPress={() =>
                             navigation.navigate("DocumentScanDetails", { doc })
                           }
-                          className="absolute right-0 m-2 mr-4"
+                          className="absolute right-0 m-2 mr-3"
                         >
                           <Feather
                             name="more-horizontal"
@@ -286,14 +237,13 @@ function MainNavigatorScreen({ navigation }) {
                             setFilteredScanList
                           );
                         }}
-                        className={`flex-row items-center h-20 w-[95%] bg-white border-[0.5px] border-gray-300 rounded-lg`}
+                        className={`flex-row items-center pb-2 bg-white border-b-[0.5px] border-slate-200`}
                         key={idx}
                       >
                         <View className="rounded-lg p-3">
-                          <MaterialCommunityIcons
-                            name="folder"
-                            size={32}
-                            color="black"
+                          <Image
+                            className="h-6 w-8"
+                            source={require("../../assets/img/folder.png")}
                           />
                         </View>
 
@@ -303,10 +253,17 @@ function MainNavigatorScreen({ navigation }) {
                           </Text>
 
                           <View>
+                            {/* <Text className="text-gray-400">Folder</Text> */}
                             <Text className="text-gray-400">
-                              {new Date(
-                                doc.created * 1000
-                              ).toLocaleDateString()}
+                              {new Date(doc.created * 1000).toLocaleDateString(
+                                "en-us",
+                                {
+                                  weekday: "long",
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              )}
                             </Text>
                           </View>
                         </View>
@@ -315,7 +272,7 @@ function MainNavigatorScreen({ navigation }) {
                           onPress={() =>
                             navigation.navigate("FolderScanDetails", { doc })
                           }
-                          className="absolute right-0 m-2"
+                          className="absolute right-0 m-2 mr-3"
                         >
                           <Feather
                             name="more-horizontal"
@@ -352,13 +309,22 @@ function MainNavigatorScreen({ navigation }) {
             </ScrollView>
           </View>
         </View>
-
-        <OpenScanner
-          navigation={navigation}
-          setShowNewFolderModal={setShowNewFolderModal}
-          setIsEditDocument={setIsEditDocument}
-        />
       </View>
+
+      <OpenScanner
+        navigation={navigation}
+        setShowNewFolderModal={setShowNewFolderModal}
+        setIsEditDocument={setIsEditDocument}
+      />
+
+      {showNewFolderModal && (
+        <NewFolderModal
+          scanPath={scanPath}
+          setScanPath={setScanPath}
+          showNewFolderModal={showNewFolderModal}
+          setShowNewFolderModal={setShowNewFolderModal}
+        />
+      )}
     </SafeAreaView>
   );
 }

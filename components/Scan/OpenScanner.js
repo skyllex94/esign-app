@@ -8,8 +8,6 @@ import { MaterialIcons } from "@expo/vector-icons";
 import NameScanModal from "./NameScanModal";
 import useRevenueCat from "../../hooks/useRevenueCat";
 
-import { FontAwesome, FontAwesome6 } from "@expo/vector-icons";
-
 export default function OpenScanner({
   navigation,
   setShowNewFolderModal,
@@ -39,11 +37,11 @@ export default function OpenScanner({
   };
 
   return (
-    <View className="flex-row items-center justify-center rounded-lg">
-      <View className="flex-row items-center justify-center gap-y-1 mb-2 rounded-lg w-full">
+    <View className="flex-row mx-3 items-center justify-center rounded-lg">
+      <View className="flex-row items-center justify-center mb-2 rounded-lg w-full">
         <TouchableOpacity
           onPress={() => setShowNewFolderModal(true)}
-          className={`absolute left-0 items-center justify-center z-2 bg-white p-3
+          className={`absolute left-0 items-center justify-center z-2 bg-white
           rounded-full w-[33%] h-[55px]`}
         >
           <View className="pr-4 items-center justify-center">
@@ -67,7 +65,7 @@ export default function OpenScanner({
 
         <View
           className={`absolute items-center justify-center top-[-8] z-10 bg-[#f2f2f2] 
-              rounded-full w-[55%] h-[91px]`}
+              rounded-full w-[54%] h-[91px]`}
         />
 
         <TouchableOpacity
