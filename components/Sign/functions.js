@@ -15,10 +15,12 @@ export const selectSignature = async (
   setShowSignaturePanResponder,
   selectedSignaturePath,
   setSelectedSignaturePath,
-  setSignatureArrayBuffer
+  setSignatureArrayBuffer,
+  focused
 ) => {
   const signatureBase64 = await RNFS.readFile(signatureFilePath, "base64");
   setSignatureArrayBuffer(base64ToArrayBuffer(signatureBase64));
+  setFocusedElement();
 
   if (selectedSignaturePath == signatureFilePath)
     setShowSignaturePanResponder((curr) => !curr);
@@ -258,7 +260,7 @@ export const deleteDocument = (
           setDocList(updatedDocList);
           updateDocuments("Completed", setDocList, setFilteredDocList);
           setTimeout(() => {
-            navigation.navigate("Main");
+            navigation.goBack();
           }, 1000);
         },
       },

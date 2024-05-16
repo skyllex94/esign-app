@@ -4,15 +4,47 @@ import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
 
 export default function TextField({
-  text,
-  setShowText,
-  textSize,
-  setTextSize,
-  setTextPositionX,
-  setTextPositionY,
+  textInstance,
+
+  index,
+  textList,
+  setTextList,
 }) {
   const pan = useRef(new Animated.ValueXY()).current;
   const elementLocation = React.useRef();
+
+  console.log("textInstance", textInstance);
+
+  function resizeText(size) {
+    setTextList((prevTextList) => {
+      const updatedTextList = [...prevTextList];
+      updatedTextList[index] = {
+        ...updatedTextList[index],
+        size: updatedTextList[index].size + size,
+      };
+      return updatedTextList;
+    });
+  }
+
+  function updatePosition(x, y) {
+    setTextList((prevList) => {
+      const updatedTextList = [...prevList];
+      updatedTextList[index] = {
+        ...updatedTextList[index],
+        x: x,
+        y: y,
+      };
+      return updatedTextList;
+    });
+  }
+
+  function removeText() {
+    setTextList((prevList) => {
+      const updatedTextList = [...prevList];
+      updatedTextList[index] = { ...updatedTextList[index], visible: false };
+      return updatedTextList;
+    });
+  }
 
   const panResponderResize = useMemo(
     () =>
@@ -21,14 +53,13 @@ export default function TextField({
         onPanResponderGrant: () => {},
         onMoveShouldSetPanResponder: () => true,
         onPanResponderMove: (_, gesture) => {
-          // If value is below -10 (5px text), ignore it since it will flip the date
-          if (gesture.dy > -10) setTextSize(textSize + gesture.dy);
+          resizeText(gesture.dy);
         },
         onPanResponderEnd: (_, gesture) => {
-          if (gesture.dy > -10) setTextSize(textSize + gesture.dy);
+          resizeText(gesture.dy);
         },
       }),
-    [setTextSize]
+    [textList]
   );
 
   const panResponderMovement = useRef(
@@ -43,8 +74,7 @@ export default function TextField({
         elementLocation.current.measure((h, w, px, py, x, y) => {
           console.log("rel_x", h, "rel_y", w, px, py, x, y);
 
-          setTextPositionX(h);
-          setTextPositionY(w);
+          updatePosition(h, w);
         });
 
         pan.extractOffset();
@@ -54,43 +84,45 @@ export default function TextField({
 
   return (
     <View className="items-center justify-center relative">
-      <Animated.View
-        ref={elementLocation}
-        style={{
-          transform: [{ translateX: pan.x }, { translateY: pan.y }],
-        }}
-        className="items-start absolute mx-auto top-10"
-      >
-        <View className="flex-row border-dashed border items-end">
-          <TouchableOpacity
-            className="absolute left-[-15] top-[-15] h-[30px] w-[30px]"
-            onPress={() => setShowText(false)}
-            {...panResponderResize.panHandlers}
-          >
-            <AntDesign name="closecircle" size={24} color="red" />
-          </TouchableOpacity>
+      {textList[index].visible && (
+        <Animated.View
+          ref={elementLocation}
+          style={{
+            transform: [{ translateX: pan.x }, { translateY: pan.y }],
+          }}
+          className="items-start absolute mx-auto top-10"
+        >
+          <View className="flex-row border-dashed border items-end">
+            <TouchableOpacity
+              className="absolute left-[-20] top-[-20] h-[30px] w-[30px]"
+              onPress={removeText}
+              {...panResponderResize.panHandlers}
+            >
+              <AntDesign name="closecircle" size={24} color="red" />
+            </TouchableOpacity>
 
-          <Text
-            style={{ fontSize: textSize }}
-            {...panResponderMovement.panHandlers}
-          >
-            {text}
-          </Text>
+            <Text
+              style={{ fontSize: textInstance.size }}
+              {...panResponderMovement.panHandlers}
+            >
+              {textInstance.text}
+            </Text>
 
-          <View
-            className="absolute items-center justify-center
-            right-[-15] bottom-[-15] h-[25px] w-[25px] bg-purple-500 rounded-full"
-            {...panResponderResize.panHandlers}
-          >
-            <FontAwesome
-              name="expand"
-              style={{ transform: [{ rotateY: "180deg" }] }}
-              size={15}
-              color="white"
-            />
+            <View
+              className="absolute items-center justify-center
+          right-[-20] bottom-[-20] h-[25px] w-[25px] bg-purple-500 rounded-full"
+              {...panResponderResize.panHandlers}
+            >
+              <FontAwesome
+                name="expand"
+                style={{ transform: [{ rotateY: "180deg" }] }}
+                size={15}
+                color="white"
+              />
+            </View>
           </View>
-        </View>
-      </Animated.View>
+        </Animated.View>
+      )}
     </View>
   );
 }

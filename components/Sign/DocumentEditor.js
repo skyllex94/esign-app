@@ -95,6 +95,7 @@ export default function DocumentEditor({ navigation, route }) {
   // Size of the element/signature
   const [elementSizeWidth, setElementSizeWidth] = useState(80 * signatureRatio);
   const [elementSizeHeight, setElementSizeHeight] = useState(80);
+  const [signaturePage, setSignaturePage] = useState();
 
   // Naming Modal
   const [isNamingModal, setIsNamingModal] = useState(false);
@@ -160,13 +161,10 @@ export default function DocumentEditor({ navigation, route }) {
   const [imageHeight, setImageHeight] = useState(0);
 
   // Text import states
-  const [showText, setShowText] = useState(false);
-  const [showTextModal, setShowTextModal] = useState(false);
+  const [textList, setTextList] = useState([]);
 
-  const [text, setText] = useState("");
-  const [textSize, setTextSize] = useState(15);
-  const [textPositionX, setTextPositionX] = useState(0);
-  const [textPositionY, setTextPositionY] = useState(0);
+  const [showTextModal, setShowTextModal] = useState(false);
+  const [showTextList, setShowTextList] = useState(false);
 
   // Checkbox import states
   const [showCheckbox, setShowCheckbox] = useState(false);
@@ -178,6 +176,18 @@ export default function DocumentEditor({ navigation, route }) {
     // editingPalette?.current.close();
     navigation.navigate("Paywall", { editingPalette });
   }
+
+  function toggleText(idx) {
+    const updatedTextList = [...textList];
+    updatedTextList[idx] = {
+      ...updatedTextList[idx],
+      visible: !updatedTextList[idx].visible,
+    };
+
+    setTextList(updatedTextList);
+  }
+
+  const [focusedElement, setFocusedElement] = useState(null);
 
   return (
     <SafeAreaView className="flex-1">
@@ -263,8 +273,7 @@ export default function DocumentEditor({ navigation, route }) {
             setCurrPage(page);
           }}
           onPageSingleTap={(page, x, y) => {
-            console.log("x", x);
-            console.log("y", y);
+            setFocusedElement(null);
           }}
           onError={(error) => {
             console.log(error);
@@ -283,6 +292,8 @@ export default function DocumentEditor({ navigation, route }) {
               setElementSizeWidth={setElementSizeWidth}
               elementSizeHeight={elementSizeHeight}
               setElementSizeHeight={setElementSizeHeight}
+              currPage={currPage}
+              setSignaturePage={setSignaturePage}
             />
           )}
 
@@ -323,16 +334,16 @@ export default function DocumentEditor({ navigation, route }) {
             />
           )}
 
-          {showText && (
-            <TextField
-              text={text}
-              setShowText={setShowText}
-              textSize={textSize}
-              setTextSize={setTextSize}
-              setTextPositionX={setTextPositionX}
-              setTextPositionY={setTextPositionY}
-            />
-          )}
+          {textList &&
+            textList.map((item, idx) => (
+              <TextField
+                key={idx}
+                index={idx}
+                textInstance={item}
+                textList={textList}
+                setTextList={setTextList}
+              />
+            ))}
 
           {showCheckbox && (
             <Checkbox
@@ -388,11 +399,7 @@ export default function DocumentEditor({ navigation, route }) {
           imageHeight={imageHeight}
           imageArrayBuffer={imageArrayBuffer}
           // Text props
-          text={text}
-          showText={showText}
-          textPositionX={textPositionX}
-          textPositionY={textPositionY}
-          textSize={textSize}
+          textList={textList}
           // Checkbox props
           showCheckbox={showCheckbox}
           checkboxPositionX={checkboxPositionX}
@@ -421,8 +428,8 @@ export default function DocumentEditor({ navigation, route }) {
         <AddTextModal
           showTextModal={showTextModal}
           setShowTextModal={setShowTextModal}
-          setText={setText}
-          setShowText={setShowText}
+          textList={textList}
+          setTextList={setTextList}
         />
       )}
 
@@ -470,7 +477,8 @@ export default function DocumentEditor({ navigation, route }) {
                             setShowSignaturePanResponder,
                             selectedSignaturePath,
                             setSelectedSignaturePath,
-                            setSignatureArrayBuffer
+                            setSignatureArrayBuffer,
+                            focusedElement
                           )
                         }
                         className="flex-row p-1"
@@ -539,6 +547,41 @@ export default function DocumentEditor({ navigation, route }) {
                 </View>
               </ScrollView>
             </View>
+          ) : showTextList ? (
+            <View className="flex-row mt-2">
+              <View className="flex-row items-start mt-2">
+                <TouchableOpacity
+                  onPress={() => setShowTextList((curr) => !curr)}
+                  className="bg-slate-50 border-slate-400 border-solid border-2 rounded-lg p-4 mx-1"
+                >
+                  <Ionicons name="arrow-back" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <TouchableOpacity
+                  onPress={() => setShowTextModal(true)}
+                  className="bg-slate-50 mt-2 border-slate-400 border-solid border-2 rounded-lg p-4 mx-1"
+                >
+                  <FontAwesome6 name="add" size={24} color="black" />
+                </TouchableOpacity>
+
+                <View className="flex-row mt-2">
+                  {textList.map((item, idx) => (
+                    <View
+                      key={idx}
+                      className="mx-1 bg-slate-50 border-slate-300 border-dashed border-2 rounded-lg"
+                    >
+                      <TouchableOpacity
+                        onPress={() => toggleText(idx)}
+                        className="justify-center p-2 h-14"
+                      >
+                        <Text>{item.text}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
           ) : (
             <ScrollView
               horizontal
@@ -582,7 +625,7 @@ export default function DocumentEditor({ navigation, route }) {
               <View className="flex-row items-center justify-center">
                 <TouchableOpacity
                   className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
-                  onPress={() => setShowTextModal(true)}
+                  onPress={() => setShowTextList(true)}
                 >
                   <Ionicons name="text-sharp" size={24} color="black" />
                   <Text>Text</Text>

@@ -12,12 +12,11 @@ export default function Signature({
   setElementSizeWidth,
   elementSizeHeight,
   setElementSizeHeight,
+  currPage,
+  setSignaturePage,
 }) {
   const pan = useRef(new Animated.ValueXY()).current;
   const elementLocation = useRef();
-
-  console.log("elementSizeWidth", elementSizeWidth);
-  console.log("elementSizeHeight", elementSizeHeight);
 
   const panResponderResize = useMemo(
     () =>
@@ -26,7 +25,6 @@ export default function Signature({
         onPanResponderGrant: () => {},
         onMoveShouldSetPanResponder: () => true,
         onPanResponderMove: (event, gesture) => {
-          //panning
           setElementSizeHeight(elementSizeHeight + gesture.dy);
           setElementSizeWidth(elementSizeWidth + gesture.dy);
         },

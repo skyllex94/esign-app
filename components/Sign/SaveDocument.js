@@ -55,11 +55,7 @@ export const SaveDocument = ({
   imageHeight,
   imageArrayBuffer,
   // Text props
-  text,
-  showText,
-  textPositionX,
-  textPositionY,
-  textSize,
+  textList,
   // Checkbox props
   showCheckbox,
   checkboxPositionX,
@@ -298,32 +294,36 @@ export const SaveDocument = ({
       }
     }
 
-    if (showText === true) {
-      try {
-        const x = (pdfWidth * textPositionX) / Dimensions.get("window").width;
+    if (textList) {
+      textList.map(async (text, idx) => {
+        if (text.visible) {
+          try {
+            const x = (pdfWidth * text.x) / Dimensions.get("window").width;
 
-        const y =
-          pdfHeight -
-          (pdfHeight * (textPositionY + textSize)) /
-            (Dimensions.get("window").width * pageRatio).toFixed(2);
+            const y =
+              pdfHeight -
+              (pdfHeight * (text.y + text.size)) /
+                (Dimensions.get("window").width * pageRatio).toFixed(2);
 
-        const size = textSize * diffInDisplays;
+            const size = text.size * diffInDisplays;
 
-        const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+            const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
-        const pages = pdfDoc.getPages();
-        const selectedPage = pages[currPage - 1];
+            const pages = pdfDoc.getPages();
+            const selectedPage = pages[currPage - 1];
 
-        // Input the date in the designated place
-        selectedPage.drawText(text, { x, y, font, size });
-      } catch (err) {
-        showMessage({
-          message: "Error while saving custom text",
-          description: err.toString(),
-          duration: 3000,
-          type: "danger",
-        });
-      }
+            // Input the date in the designated place
+            selectedPage.drawText(text.text, { x, y, font, size });
+          } catch (err) {
+            showMessage({
+              message: "Error while saving custom text",
+              description: err.toString(),
+              duration: 3000,
+              type: "danger",
+            });
+          }
+        }
+      });
     }
 
     if (showCheckbox === true) {

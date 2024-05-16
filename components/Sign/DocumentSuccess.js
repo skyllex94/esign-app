@@ -72,50 +72,50 @@ export default function DocumentSuccess({ route, navigation }) {
         <View className="bg-white rounded-lg">
           <TouchableOpacity
             onPress={previewDocument}
-            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-300"
+            className="flex-row items-center p-4 border-b-[0.5px] border-gray-300"
           >
             <Fontisto name="preview" size={20} color="black" />
-            <Text className="mx-2">View Document</Text>
+            <Text className="mx-3">View Document</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => emailDocument(editedDocPath)}
-            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-300"
+            className="flex-row items-center p-4 border-b-[0.5px] border-gray-300"
           >
             <MaterialCommunityIcons
               name="email-plus-outline"
               size={22}
               color="black"
             />
-            <Text className="mx-2">Email to recipient(s)</Text>
+            <Text className="mx-3">Email to recipient(s)</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => emailToThirdParty(editedDocPath, name)}
-            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-300"
+            className="flex-row items-center p-4 border-b-[0.5px] border-gray-300"
           >
             <MaterialCommunityIcons
               name="email-plus-outline"
               size={22}
               color="black"
             />
-            <Text className="mx-2">Email to Third Party</Text>
+            <Text className="mx-3">Email to Third Party</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => printEditedDocument()}
-            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-300"
+            className="flex-row items-center p-4 border-b-[0.5px] border-gray-300"
           >
             <Ionicons name="print-outline" size={24} color="black" />
-            <Text className="mx-2">Print Document</Text>
+            <Text className="mx-3">Print Document</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => openShareOptions(editedDocPath)}
-            className="flex-row items-center m-3 p-3 border-b-[0.5px] border-gray-300"
+            className="flex-row items-center p-4"
           >
             <Feather name="share" size={22} color="black" />
-            <Text className="mx-2">Share / Save to Files</Text>
+            <Text className="mx-3">Share / Save to Files</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

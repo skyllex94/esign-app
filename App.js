@@ -24,7 +24,6 @@ import FlashMessage from "react-native-flash-message";
 import Settings from "./components/tabs/Settings";
 import Paywall from "./components/Paywall/Paywall";
 import DocumentPreview from "./components/Sign/DocumentPreview";
-import DocumentDetails from "./components/Sign/DocumentDetails";
 import Terms from "./components/Settings/Terms";
 import PrivacyPolicy from "./components/Settings/PrivacyPolicy";
 

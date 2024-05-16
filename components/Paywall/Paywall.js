@@ -31,8 +31,7 @@ export default function Paywall({ navigation }) {
   useEffect(() => {
     if (
       currentOffering?.weekly?.product.priceString &&
-      currentOffering?.monthly?.product.priceString &&
-      require("../../assets/img/paywall_image.webp")
+      currentOffering?.monthly?.product.priceString
     )
       setLoadedPaywall(true);
   }, [currentOffering]);
@@ -89,13 +88,13 @@ export default function Paywall({ navigation }) {
               onPress={() => navigation.goBack()}
               className={`z-10 absolute top-4 right-4 rounded-full p-3`}
             >
-              <AntDesign name="close" size={20} color="lightgray" />
+              <AntDesign name="close" size={20} color="white" />
             </TouchableOpacity>
 
             <Image
               className="h-52 w-full rounded-bl-full rounded-b-[180px]"
-              resizeMode="center"
-              source={require("../../assets/img/paywall_image.webp")}
+              resizeMode="stretch"
+              source={require("../../assets/img/paywall_banner.png")}
             />
 
             <View className="w-[80px] absolute shadow top-40 bg-white rounded-full p-4">

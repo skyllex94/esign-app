@@ -1,17 +1,32 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { View, Text, Modal, TouchableOpacity, TextInput } from "react-native";
 import { actionButton } from "../../constants/UI";
+import uuid from "react-native-uuid";
 
 export default function AddTextModal({
   showTextModal,
   setShowTextModal,
-  setText,
-  setShowText,
+  textList,
+  setTextList,
 }) {
   const textRef = useRef();
+  const [currText, setCurrText] = useState("");
+  console.log("currText:", currText);
 
-  function loadTextPanResponder() {
-    setShowText(true);
+  console.log("textList:", textList);
+
+  function createText() {
+    const textInstance = {
+      id: uuid.v4(),
+      text: currText,
+      x: 0,
+      y: 0,
+      visible: true,
+      size: 15,
+    };
+
+    setTextList([...textList, textInstance]);
+
     setShowTextModal(false);
   }
 
@@ -37,14 +52,14 @@ export default function AddTextModal({
             <TextInput
               ref={textRef}
               placeholder="Text to be added..."
-              onChangeText={(text) => setText(text)}
+              onChangeText={(text) => setCurrText(text)}
               className="h-12 px-2 w-full rounded-lg border-2 border-gray-600"
             />
           </View>
 
           <View className="flex-row items-center justify-between my-3 w-full">
             <TouchableOpacity
-              onPress={loadTextPanResponder}
+              onPress={createText}
               className={`rounded-lg bg-[${actionButton}] py-3 px-10`}
             >
               <Text className="text-[16px] text-white">Save</Text>

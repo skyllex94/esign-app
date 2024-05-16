@@ -187,7 +187,7 @@ function MainNavigatorScreen({ navigation }) {
                       >
                         <View className="rounded-lg p-3">
                           <Image
-                            className="h-8 w-8"
+                            className="h-6 w-6"
                             source={require("../../assets/img/doc.png")}
                           />
                         </View>
@@ -242,7 +242,7 @@ function MainNavigatorScreen({ navigation }) {
                       >
                         <View className="rounded-lg p-3">
                           <Image
-                            className="h-6 w-8"
+                            className="h-5 w-6"
                             source={require("../../assets/img/folder.png")}
                           />
                         </View>
