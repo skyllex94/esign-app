@@ -12,8 +12,6 @@ export default function Signature({
   setElementSizeWidth,
   elementSizeHeight,
   setElementSizeHeight,
-  currPage,
-  setSignaturePage,
 }) {
   const pan = useRef(new Animated.ValueXY()).current;
   const elementLocation = useRef();

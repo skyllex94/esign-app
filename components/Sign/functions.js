@@ -15,12 +15,10 @@ export const selectSignature = async (
   setShowSignaturePanResponder,
   selectedSignaturePath,
   setSelectedSignaturePath,
-  setSignatureArrayBuffer,
-  focused
+  setSignatureArrayBuffer
 ) => {
   const signatureBase64 = await RNFS.readFile(signatureFilePath, "base64");
   setSignatureArrayBuffer(base64ToArrayBuffer(signatureBase64));
-  setFocusedElement();
 
   if (selectedSignaturePath == signatureFilePath)
     setShowSignaturePanResponder((curr) => !curr);

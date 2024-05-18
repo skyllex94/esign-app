@@ -187,7 +187,8 @@ export default function DocumentEditor({ navigation, route }) {
     setTextList(updatedTextList);
   }
 
-  const [focusedElement, setFocusedElement] = useState(null);
+  // TODO: Create a system where you can input obeject
+  // of different pages and save appropriately
 
   return (
     <SafeAreaView className="flex-1">
@@ -292,8 +293,6 @@ export default function DocumentEditor({ navigation, route }) {
               setElementSizeWidth={setElementSizeWidth}
               elementSizeHeight={elementSizeHeight}
               setElementSizeHeight={setElementSizeHeight}
-              currPage={currPage}
-              setSignaturePage={setSignaturePage}
             />
           )}
 
@@ -477,8 +476,7 @@ export default function DocumentEditor({ navigation, route }) {
                             setShowSignaturePanResponder,
                             selectedSignaturePath,
                             setSelectedSignaturePath,
-                            setSignatureArrayBuffer,
-                            focusedElement
+                            setSignatureArrayBuffer
                           )
                         }
                         className="flex-row p-1"

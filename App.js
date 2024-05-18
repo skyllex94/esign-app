@@ -1,7 +1,7 @@
-import "react-native-gesture-handler";
 import { useEffect, useRef, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // Icons and other UI
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -27,14 +27,42 @@ import DocumentPreview from "./components/Sign/DocumentPreview";
 import Terms from "./components/Settings/Terms";
 import PrivacyPolicy from "./components/Settings/PrivacyPolicy";
 
+import OnBoarding from "./components/OnBoarding/OnBoarding";
+
 // Stack Nav Wrapper, Tab Nav Secondary
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  const [appIsReady, setAppIsReady] = useState(false);
+  const [isAppFirstOpened, setIsAppFirstOpened] = useState(true);
+
+  // Check if App is started for the first time
+  useEffect(() => {
+    async function loadApp() {
+      try {
+        const value = await AsyncStorage.getItem("@isAppFirstOpened");
+        if (value === null) setIsAppFirstOpened(true);
+        else setIsAppFirstOpened(false);
+
+        // TODO: Load Resources
+      } catch (err) {
+        console.log("Error @checkIfAppWasLaunched", err);
+      } finally {
+        setAppIsReady(true);
+      }
+    }
+
+    loadApp();
+  }, []);
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {isAppFirstOpened && (
+          <Stack.Screen name="OnBoarding" component={OnBoarding} />
+        )}
+
         <Stack.Screen name="Main" component={Main} />
 
         <Stack.Screen
