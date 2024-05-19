@@ -7,6 +7,7 @@ import { actionButton } from "../../constants/UI";
 import { MaterialIcons } from "@expo/vector-icons";
 import NameScanModal from "./NameScanModal";
 import useRevenueCat from "../../hooks/useRevenueCat";
+import { bgColor } from "../../constants/UI";
 
 export default function OpenScanner({
   navigation,
@@ -64,7 +65,7 @@ export default function OpenScanner({
         </TouchableOpacity>
 
         <View
-          className={`absolute items-center justify-center top-[-8] z-10 bg-[#f2f2f2] 
+          className={`absolute items-center justify-center top-[-8] z-10 bg-[${bgColor}] 
               rounded-full w-[54%] h-[91px]`}
         />
 

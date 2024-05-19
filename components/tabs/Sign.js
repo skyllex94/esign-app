@@ -58,6 +58,7 @@ import { GDrive } from "@robinbobin/react-native-google-drive-api-wrapper";
 import ImageSelection from "../Sign/PanResponders/ImageSelection";
 import BottomSheetModal from "../Sign/BottomSheetModal";
 import RequestSheet from "../Sign/RequestSheet";
+import { bgColor } from "../../constants/UI";
 
 // Image(s) to pdf converter
 import * as ImagePicker from "expo-image-picker";
@@ -309,7 +310,7 @@ function Main({ navigation }) {
   }
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className={`flex-1 bg-[${bgColor}]`}>
       <StatusBar style="auto" />
       <Text className="text-center font-bold text-2xl my-1">SimpleSign</Text>
 
@@ -460,7 +461,7 @@ function Main({ navigation }) {
           </TouchableOpacity>
 
           <View
-            className={`absolute items-center justify-center top-[-8] z-10 bg-[#f2f2f2] 
+            className={`absolute items-center justify-center top-[-8] z-10 bg-[${bgColor}] 
               rounded-full w-[54%] h-[91px]`}
           />
 

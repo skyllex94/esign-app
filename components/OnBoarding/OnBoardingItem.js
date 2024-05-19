@@ -7,101 +7,90 @@ import {
   SafeAreaView,
 } from "react-native";
 import React from "react";
-import {
-  AntDesign,
-  Entypo,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from "@expo/vector-icons";
+
 import { TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as StoreReview from "expo-store-review";
+import {
+  AntDesign,
+  FontAwesome6,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from "@expo/vector-icons";
 
 export default function OnBoardingItem({ item, navigation }) {
   const { width } = useWindowDimensions();
 
   return (
-    <SafeAreaView style={[styles.container, { width }]}>
-      {/*
- {item.id === 6 ? (
-        <View className="flex-1 m-5 space-y-0">
+    <SafeAreaView style={[{ width }]}>
+      {item.id === 6 ? (
+        <View>
           <TouchableOpacity
-            className="flex-row justify-end"
-            onPress={async () => {
-              // await AsyncStorage.setItem("@isAppFirstLaunched", "false");
-              navigation.replace("Main");
-              StoreReview.requestReview();
-            }}
+            onPress={() => navigation.navigate("Main")}
+            className={`close-button z-10 absolute top-4 right-4 rounded-full p-3`}
           >
-            <AntDesign name="close" size={24} color="#05103A" />
+            <AntDesign name="close" size={20} color="#94a3b8" />
           </TouchableOpacity>
 
-          <View className="flex-1 justify-center">
-            <View className="">
-              <Text className="text-2xl text-center uppercase text-white font-bold mb-5">
-                Start Your Trial
-              </Text>
+          <View className="items-center justify-center">
+            <Image
+              source={item.image}
+              className="items-center justify-center"
+              style={[{ width: width, height: 450 }]}
+            />
+          </View>
 
-              <Text className="text-center text-white mb-5">
-                Upgrade to Pro membership to access all features.
-              </Text>
+          <View className="mt-2">
+            <Text
+              className={`font-bold text-center text-[28px] px-6 mb-4 text-slate-600`}
+            >
+              {item.title}
+            </Text>
 
-              <View className="items-center">
-                <MaterialCommunityIcons
-                  name="trophy-award"
-                  size={96}
-                  color="#E5962D"
-                />
-              </View>
-            </View>
-
-            <View className="space-y-5 py-2">
-              <View className="flex-row space-x-8 items-center">
-                <MaterialCommunityIcons
-                  name="speaker-wireless"
-                  size={32}
-                  color="#E5962D"
-                />
-                <View className="flex-1">
-                  <Text className="text-white font-bold text-lg">
-                    Fix Phone and Earbuds Speakers
+            <View className="premium-features">
+              <View className="flex-row items-center gap-x-5 m-1">
+                <FontAwesome6 name="toolbox" size={24} color="#334155" />
+                <View className="flex-1 gap-y-1">
+                  <Text className="text-slate-600 text-[15px] font-semibold">
+                    All Editing Tools
                   </Text>
-                  <Text className="text-white text-sm font-extralight">
-                    Access to our frequency programs and ongoing frequency
-                    development for ejecting the water out of your iPhone and
-                    AirPods.
+                  <Text className="text-slate-500 font-light">
+                    Unlock all editing tools: Dates, Initials, Images, Custom
+                    Text, Checks and more to come.
                   </Text>
                 </View>
               </View>
-            </View>
 
-            <View className="space-y-5 py-2">
-              <View className="flex-row space-x-8 items-center">
-                <Entypo name="sound" size={32} color="#E5962D" />
-                <View className="flex-1">
-                  <Text className="text-white font-bold text-lg">
-                    Get All of Our Test Sounds
+              <View className="flex-row items-center gap-x-5 m-1">
+                <MaterialCommunityIcons
+                  name="file-document-edit"
+                  size={24}
+                  color="#334155"
+                />
+                <View className="flex-1 gap-y-1">
+                  <Text className="text-slate-600 text-[15px] font-semibold">
+                    15+ Document Templates
                   </Text>
-                  <Text className="text-white text-sm font-extralight">
-                    Included 15+ Sound Tests: Bass Accuracy Test, Polarity
-                    Tests, Speaker Isolation, Stereo Imaging Test and more to
-                    come.
+                  <Text className="text-slate-500 font-light">
+                    Try different templates for direct editing with more being
+                    added on a regular basis.
                   </Text>
                 </View>
               </View>
-            </View>
 
-            <View className="space-y-5 py-2">
-              <View className="flex-row space-x-8 items-center">
-                <MaterialIcons name="update" size={32} color="#E5962D" />
-                <View className="flex-1">
-                  <Text className="text-white font-bold text-lg">
-                    Get the Latest Updates
+              <View className="flex-row items-center gap-x-5 m-1">
+                <MaterialIcons
+                  name="camera-enhance"
+                  size={24}
+                  color="#334155"
+                />
+                <View className="flex-1 gap-y-1">
+                  <Text className="text-slate-600 text-[15px] font-semibold">
+                    Camera Scanning
                   </Text>
-                  <Text className="text-white text-sm font-extralight">
-                    Continuously refining our frequency programs and adding
-                    additional ones on a regular basis to give better, faster
-                    and diverse results.
+                  <Text className="text-slate-500 font-light">
+                    Get included camera scanning and organizing your documents
+                    in a safe environment.
                   </Text>
                 </View>
               </View>
@@ -109,38 +98,27 @@ export default function OnBoardingItem({ item, navigation }) {
           </View>
         </View>
       ) : (
-*/}
-      <View>
-        <View className="items-center justify-center">
-          <Image
-            source={item.image}
-            style={[styles.image, { width: width, height: 450 }]}
-          />
-        </View>
+        <View>
+          <View className="items-center justify-center">
+            <Image
+              source={item.image}
+              className="items-center justify-center"
+              style={[{ width: width, height: 450 }]}
+            />
+          </View>
 
-        <View className="mt-10">
-          <Text
-            className={`font-bold text-center text-[28px] px-6 mb-3 text-slate-600`}
-          >
-            {item.title}
-          </Text>
-          <Text className="font-light text-center px-8 text-slate-500">
-            {item.description}
-          </Text>
+          <View className="mt-2">
+            <Text
+              className={`font-bold text-center text-[28px] px-6 mb-3 text-slate-600`}
+            >
+              {item.title}
+            </Text>
+            <Text className="font-light text-center px-8 text-slate-500">
+              {item.description}
+            </Text>
+          </View>
         </View>
-      </View>
+      )}
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignContent: "center",
-    justifyContent: "center",
-  },
-  image: {
-    alignContent: "center",
-    justifyContent: "center",
-  },
-});

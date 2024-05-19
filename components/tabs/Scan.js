@@ -11,13 +11,7 @@ import {
 import React, { useContext, useRef, useState } from "react";
 import { SearchBar } from "react-native-elements";
 import { Context } from "../contexts/Global";
-import {
-  Feather,
-  FontAwesome6,
-  Ionicons,
-  MaterialCommunityIcons,
-  MaterialIcons,
-} from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import {
   clearSearch,
   getLastFolder,
@@ -35,6 +29,7 @@ import DocumentScanPreview from "../Scan/DocumentScanPreview";
 import NewFolderModal from "../Scan/NewFolderModal";
 import FolderScanDetails from "../Scan/FolderScanDetails";
 import ScanBanner from "../Scan/ScanBanner";
+import { bgColor } from "../../constants/UI";
 
 const Stack = createStackNavigator();
 
@@ -92,7 +87,7 @@ function MainNavigatorScreen({ navigation }) {
   const [isEditDocument, setIsEditDocument] = useState(false);
 
   return (
-    <SafeAreaView className="flex-1 gap-y-2">
+    <SafeAreaView className={`flex-1 gap-y-2 bg-[${bgColor}]`}>
       <View className="search-bar mx-1 my-[-4]">
         <SearchBar
           value={search}

@@ -7,6 +7,7 @@ import OurAppsSection from "../Settings/OurAppsSection";
 import AboutSection from "../Settings/AboutSection";
 import PrivacyPolicy from "../Settings/PrivacyPolicy";
 import Terms from "../Settings/Terms";
+import { bgColor } from "../../constants/UI";
 
 const Stack = createStackNavigator();
 
@@ -25,7 +26,7 @@ export default function Settings() {
 
 function SettingsTab({ navigation }) {
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className={`flex-1 bg-[${bgColor}]`}>
       <Text className="text-center font-bold text-2xl my-2">Settings</Text>
 
       <ScrollView showsVerticalScrollIndicator="false">

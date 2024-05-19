@@ -10,6 +10,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import TemplatesLibrary from "../Templates/TemplatesLibrary";
 import TemplatePreview from "../Templates/TemplatePreview";
 import { LinearGradient } from "expo-linear-gradient";
+import { bgColor } from "../../constants/UI";
 
 const Stack = createStackNavigator();
 
@@ -31,8 +32,7 @@ export default function TemplatesScreen() {
 
 function Templates({ navigation }) {
   return (
-    <SafeAreaView className="flex-1 mx-3">
-      {/* shadow (in the class) */}
+    <SafeAreaView className={`flex-1 mx-3 bg-[${bgColor}]`}>
       <LinearGradient
         className="bg-white items-center gap-y-4 justify-between pb-4 w-full my-1 rounded-lg"
         colors={["#fff", "#fff"]}

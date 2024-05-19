@@ -157,7 +157,7 @@ function Main() {
         setScanPath,
       }}
     >
-      <GestureHandlerRootView className="flex-1">
+      <GestureHandlerRootView className="flex-1 bg-[#e6eef1]">
         <BottomSheetModalProvider>
           <Tab.Navigator
             screenOptions={() => ({

@@ -49,7 +49,7 @@ export default function NextButton({
     <View className="items-center justify-center">
       <Text
         className={`font-light bottom-12 absolute py-2 ${
-          currSlide === 5 ? "text-black" : "hidden"
+          currSlide === 5 ? "text-slate-600" : "hidden"
         }`}
       >
         Try 3 days free, then {currentOffering?.weekly?.product.priceString}

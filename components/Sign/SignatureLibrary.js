@@ -1,10 +1,4 @@
-import {
-  View,
-  SafeAreaView,
-  Image,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { View, SafeAreaView, Image, TouchableOpacity } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 // UI Imports
 import { AntDesign, MaterialIcons } from "@expo/vector-icons";
@@ -13,8 +7,6 @@ import ReactNativeBlobUtil from "react-native-blob-util";
 import { ScrollView } from "react-native-gesture-handler";
 import { Context } from "../contexts/Global";
 import { deleteSignature } from "./functions";
-import Checkbox from "expo-checkbox";
-import { actionButton } from "../../constants/UI";
 import * as FileSystem from "expo-file-system";
 import { SignatureDetails } from "./SignatureDetails";
 import DrawingCanvas from "./DrawingCanvas";
@@ -23,8 +15,6 @@ export default function DrawSignCapture({ navigation }) {
   // Signature Details Modal
   const [signatureDetailsModal, setSignatureDetailsModal] = useState(false);
   const [detailsInfo, setDetailsInfo] = useState(null);
-
-  const [checked, setChecked] = useState(false);
 
   const {
     signatureList,
@@ -61,14 +51,14 @@ export default function DrawSignCapture({ navigation }) {
                 className="flex-row items-center justify-between my-1 w-full bg-slate-50 border-gray-300 rounded-lg"
               >
                 <TouchableOpacity>
-                  <Checkbox
-                    className={`${
-                      !checked && "border-gray-400"
-                    } ml-4 p-2 rounded-full`}
-                    color={actionButton}
-                    value={checked}
-                    onValueChange={setChecked}
-                  />
+                  <TouchableOpacity
+                    className="ml-2 mr-3"
+                    onPress={() =>
+                      deleteSignature(path, signatureList, setSignatureList)
+                    }
+                  >
+                    <AntDesign name="close" size={22} color="gray" />
+                  </TouchableOpacity>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -78,18 +68,9 @@ export default function DrawSignCapture({ navigation }) {
                   <Image className="h-12 w-20" source={{ uri: path }} />
                 </TouchableOpacity>
 
-                <View className="flex-row items-center">
+                <View className="flex-row items-center ml-2 mr-3">
                   <TouchableOpacity onPress={() => showSignatureDetails(path)}>
                     <MaterialIcons name="more-horiz" size={24} color="gray" />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    className="ml-2 mr-3"
-                    onPress={() =>
-                      deleteSignature(path, signatureList, setSignatureList)
-                    }
-                  >
-                    <AntDesign name="close" size={22} color="gray" />
                   </TouchableOpacity>
                 </View>
               </View>

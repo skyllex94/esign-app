@@ -67,7 +67,7 @@ export default function OnBoarding({ navigation }) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#e6eef1] items-center justify-center">
+    <SafeAreaView className="flex-1 bg-[#e6eef1]">
       {/*bg-[#e6eef1]*/}
       <Spinner visible={purchaseSpinner} />
 
