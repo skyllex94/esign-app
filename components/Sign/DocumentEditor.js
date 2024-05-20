@@ -273,9 +273,7 @@ export default function DocumentEditor({ navigation, route }) {
             console.log("Current Page", page);
             setCurrPage(page);
           }}
-          onPageSingleTap={(page, x, y) => {
-            setFocusedElement(null);
-          }}
+          onPageSingleTap={(page, x, y) => {}}
           onError={(error) => {
             console.log(error);
           }}
@@ -599,11 +597,7 @@ export default function DocumentEditor({ navigation, route }) {
               <View className="flex-row items-center justify-center">
                 <TouchableOpacity
                   className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
-                  onPress={() =>
-                    isProMember
-                      ? setShowDatePanResponder((curr) => !curr)
-                      : showPaywall()
-                  }
+                  onPress={() => setShowDatePanResponder((curr) => !curr)}
                 >
                   <MaterialIcons name="date-range" size={24} color="black" />
                   <Text>Date</Text>
@@ -613,7 +607,9 @@ export default function DocumentEditor({ navigation, route }) {
               <View className="flex-row items-center justify-center">
                 <TouchableOpacity
                   className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
-                  onPress={() => setShowInitialsList(true)}
+                  onPress={() =>
+                    isProMember ? setShowInitialsList(true) : showPaywall()
+                  }
                 >
                   <MaterialIcons name="draw" size={24} color="black" />
                   <Text>Initials</Text>
@@ -623,7 +619,9 @@ export default function DocumentEditor({ navigation, route }) {
               <View className="flex-row items-center justify-center">
                 <TouchableOpacity
                   className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
-                  onPress={() => setShowTextList(true)}
+                  onPress={() =>
+                    isProMember ? setShowTextList(true) : showPaywall()
+                  }
                 >
                   <Ionicons name="text-sharp" size={24} color="black" />
                   <Text>Text</Text>
@@ -634,11 +632,13 @@ export default function DocumentEditor({ navigation, route }) {
                 <TouchableOpacity
                   className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
                   onPress={() =>
-                    selectImage(
-                      setImagePath,
-                      setImageArrayBuffer,
-                      setShowImageSelection
-                    )
+                    isProMember
+                      ? selectImage(
+                          setImagePath,
+                          setImageArrayBuffer,
+                          setShowImageSelection
+                        )
+                      : showPaywall()
                   }
                 >
                   <Ionicons name="image" size={24} color="black" />
@@ -649,7 +649,11 @@ export default function DocumentEditor({ navigation, route }) {
               <View className="flex-row items-center justify-center">
                 <TouchableOpacity
                   className="bg-gray-200 items-center justify-center rounded-full mt-3 py-3 px-10"
-                  onPress={() => setShowCheckbox((curr) => !curr)}
+                  onPress={() =>
+                    isProMember
+                      ? setShowCheckbox((curr) => !curr)
+                      : showPaywall()
+                  }
                 >
                   <FontAwesome name="check-square-o" size={24} color="black" />
                   <Text>Check</Text>

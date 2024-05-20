@@ -21,12 +21,17 @@ import {
 export default function OnBoardingItem({ item, navigation }) {
   const { width } = useWindowDimensions();
 
+  async function sendToMainScreen() {
+    await AsyncStorage.setItem("@isAppFirstLaunched", "false");
+    navigation.replace("Main");
+  }
+
   return (
     <SafeAreaView style={[{ width }]}>
       {item.id === 6 ? (
         <View>
           <TouchableOpacity
-            onPress={() => navigation.navigate("Main")}
+            onPress={sendToMainScreen}
             className={`close-button z-10 absolute top-4 right-4 rounded-full p-3`}
           >
             <AntDesign name="close" size={20} color="#94a3b8" />
@@ -40,7 +45,7 @@ export default function OnBoardingItem({ item, navigation }) {
             />
           </View>
 
-          <View className="mt-2">
+          <View>
             <Text
               className={`font-bold text-center text-[28px] px-6 mb-4 text-slate-600`}
             >
@@ -107,7 +112,7 @@ export default function OnBoardingItem({ item, navigation }) {
             />
           </View>
 
-          <View className="mt-2">
+          <View>
             <Text
               className={`font-bold text-center text-[28px] px-6 mb-3 text-slate-600`}
             >

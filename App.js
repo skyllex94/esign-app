@@ -28,6 +28,9 @@ import Terms from "./components/Settings/Terms";
 import PrivacyPolicy from "./components/Settings/PrivacyPolicy";
 
 import OnBoarding from "./components/OnBoarding/OnBoarding";
+// Splash screen imports
+import SplashScreen from "./components/SplashScreen/SplashScreen";
+import { Asset } from "expo-asset";
 
 // Stack Nav Wrapper, Tab Nav Secondary
 const Stack = createStackNavigator();
@@ -35,17 +38,39 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
-  const [isAppFirstOpened, setIsAppFirstOpened] = useState(true);
+  const [isAppFirstLaunched, setIsAppFirstLaunched] = useState();
+
+  const cacheResources = async () => {
+    const images = [
+      require("./assets/img/slides/slide1.jpg"),
+      require("./assets/img/slides/slide2.jpg"),
+      require("./assets/img/slides/slide3.jpg"),
+      require("./assets/img/slides/slide4.jpg"),
+      require("./assets/img/slides/slide5.jpg"),
+      require("./assets/img/slides/slide6.jpg"),
+    ];
+
+    const cacheImages = images.map((image) =>
+      Asset.fromModule(image).downloadAsync()
+    );
+
+    const splashTime = await new Promise((resolve) =>
+      setTimeout(resolve, 2000)
+    );
+
+    return Promise.all([...cacheImages, ...splashTime]);
+  };
 
   // Check if App is started for the first time
   useEffect(() => {
     async function loadApp() {
       try {
-        const value = await AsyncStorage.getItem("@isAppFirstOpened");
-        if (value === null) setIsAppFirstOpened(true);
-        else setIsAppFirstOpened(false);
+        const value = await AsyncStorage.getItem("@isAppFirstLaunched");
+        console.log("value:", value);
+        if (value === null) setIsAppFirstLaunched(true);
+        else setIsAppFirstLaunched(false);
 
-        // TODO: Load Resources
+        await cacheResources();
       } catch (err) {
         console.log("Error @checkIfAppWasLaunched", err);
       } finally {
@@ -56,10 +81,14 @@ export default function App() {
     loadApp();
   }, []);
 
+  if (!appIsReady) {
+    return <SplashScreen />;
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {isAppFirstOpened && (
+        {isAppFirstLaunched === true && (
           <Stack.Screen name="OnBoarding" component={OnBoarding} />
         )}
 

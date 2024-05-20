@@ -70,6 +70,7 @@ import { deleteResidualFiles } from "../Scan/functions";
 import LibrarySheet from "../Sign/LibrarySheet";
 import InitialsLibrary from "../Sign/Initials/InitialsLibrary";
 import useRevenueCat from "../../hooks/useRevenueCat";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createStackNavigator();
 
@@ -309,10 +310,23 @@ function Main({ navigation }) {
     navigation.navigate("GoogleDrive", { token });
   }
 
+  async function clearAsyncStorage() {
+    try {
+      await AsyncStorage.removeItem("@isAppFirstLaunched");
+      console.log("Cleared");
+    } catch (err) {
+      console.log("RemoveItem from Async Storage Error.", err);
+    }
+  }
+
   return (
     <SafeAreaView className={`flex-1 bg-[${bgColor}]`}>
       <StatusBar style="auto" />
       <Text className="text-center font-bold text-2xl my-1">SimpleSign</Text>
+
+      <TouchableOpacity onPress={clearAsyncStorage}>
+        <Text>Clear Storage</Text>
+      </TouchableOpacity>
 
       <View className="search-bar mx-1 mb-[-4]">
         <SearchBar

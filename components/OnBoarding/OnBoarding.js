@@ -8,7 +8,7 @@ import NextButton from "../OnBoarding/NextButton";
 import Purchases from "react-native-purchases";
 import useRevenueCat from "../../hooks/useRevenueCat";
 import Spinner from "react-native-loading-spinner-overlay";
-import * as StoreReview from "expo-store-review";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function OnBoarding({ navigation }) {
   const [currSlide, setCurrSlide] = useState(0);
@@ -37,7 +37,7 @@ export default function OnBoarding({ navigation }) {
       if (
         purchaserInfo.customerInfo.entitlements.active.esign_pro_subscription
       ) {
-        // await AsyncStorage.setItem("@isAppFirstLaunched", "false");
+        await AsyncStorage.setItem("@isAppFirstLaunched", "false");
       }
     } catch (e) {
       if (!e.userCancelled) setPurchaseSpinner(false);
@@ -55,11 +55,8 @@ export default function OnBoarding({ navigation }) {
     else {
       try {
         await handleWeeklyPurchase();
-        // const value = await AsyncStorage.getItem("@isAppFirstLaunched");s
-        if (value !== null) {
-          navigation.replace("Main");
-          StoreReview.requestReview();
-        }
+        const value = await AsyncStorage.getItem("@isAppFirstLaunched");
+        if (value !== null) navigation.replace("Main");
       } catch (err) {
         console.log("Error @setItem:", err);
       }

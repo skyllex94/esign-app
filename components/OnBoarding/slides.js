@@ -32,7 +32,7 @@ export default [
     title: "Build with Our Templates",
     description:
       "Looking for a specific contract to start filling-in. Your first stop should be with our 15+ included templates for different activities separated in categories to easily find and edit.",
-    image: require("../../assets/img/slides/a.jpg"),
+    image: require("../../assets/img/slides/slide5.jpg"),
   },
   {
     id: 6,
