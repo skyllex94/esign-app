@@ -16,6 +16,7 @@ import SignScreen from "./components/tabs/Sign";
 import { createStackNavigator } from "@react-navigation/stack";
 import { actionButton } from "./constants/UI";
 import {
+  createDirectory,
   getPath,
   updateDocuments,
   updateList,
@@ -38,7 +39,7 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
-  const [isAppFirstLaunched, setIsAppFirstLaunched] = useState();
+  const [isAppFirstLaunched, setIsAppFirstLaunched] = useState(null);
 
   const cacheResources = async () => {
     const images = [
@@ -67,8 +68,13 @@ export default function App() {
       try {
         const value = await AsyncStorage.getItem("@isAppFirstLaunched");
         console.log("value:", value);
-        if (value === null) setIsAppFirstLaunched(true);
+        if (value === null || undefined) setIsAppFirstLaunched(true);
         else setIsAppFirstLaunched(false);
+
+        await createDirectory("Signatures");
+        await createDirectory("Initials");
+        await createDirectory("Scanned");
+        await createDirectory("Completed");
 
         await cacheResources();
       } catch (err) {

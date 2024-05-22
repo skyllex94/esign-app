@@ -463,10 +463,7 @@ export default function DocumentEditor({ navigation, route }) {
 
                 <View className="flex-row items-start mt-2">
                   {signatureList.map((path, idx) => (
-                    <View
-                      key={idx}
-                      className="flex-row items-start mx-1 bg-slate-50 border-slate-300 border-dashed border-2 rounded-lg"
-                    >
+                    <View className="flex-row items-start mx-1 bg-slate-50 border-slate-300 border-dashed border-2 rounded-lg">
                       <TouchableOpacity
                         onPress={() =>
                           selectSignature(
@@ -479,7 +476,11 @@ export default function DocumentEditor({ navigation, route }) {
                         }
                         className="flex-row p-1"
                       >
-                        <Image className="h-12 w-20" source={{ uri: path }} />
+                        <Image
+                          key={path}
+                          className="h-12 w-20"
+                          source={{ uri: path }}
+                        />
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() =>
@@ -529,7 +530,11 @@ export default function DocumentEditor({ navigation, route }) {
                         }
                         className="flex-row p-1"
                       >
-                        <Image className="h-12 w-20" source={{ uri: path }} />
+                        <Image
+                          key={path}
+                          className="h-12 w-20"
+                          source={{ uri: path }}
+                        />
                       </TouchableOpacity>
                       <TouchableOpacity
                         onPress={() =>

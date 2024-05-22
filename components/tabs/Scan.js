@@ -149,7 +149,6 @@ function MainNavigatorScreen({ navigation }) {
                 <Ionicons name="arrow-back-sharp" size={24} color="black" />
               </TouchableOpacity>
             )}
-
             <Text className="text-[15px] m-1">Scanned Documents</Text>
           </View>
 

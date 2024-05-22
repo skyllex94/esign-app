@@ -40,6 +40,16 @@ export async function updateDocuments(dir, setList, setFilteredList, isFolder) {
   setFilteredList([...updateCompleteList]);
 }
 
+export async function createDirectory(subfolder) {
+  if (!(await RNFS.exists(`${RNFS.DocumentDirectoryPath}/${subfolder}/`))) {
+    const check = await RNFS.exists(
+      `${RNFS.DocumentDirectoryPath}/${subfolder}/`
+    );
+    console.log(check);
+    RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/${subfolder}/`);
+  }
+}
+
 export async function updateList(
   path,
   setPath,

@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Modal, TouchableOpacity } from "react-native";
-
 import DrawingCanvas from "./DrawingCanvas";
 
 export default function AddSignatureModal({

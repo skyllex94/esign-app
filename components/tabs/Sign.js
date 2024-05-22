@@ -69,7 +69,6 @@ import ChooseScanFile from "../Sign/ChooseScanFile";
 import { deleteResidualFiles } from "../Scan/functions";
 import LibrarySheet from "../Sign/LibrarySheet";
 import InitialsLibrary from "../Sign/Initials/InitialsLibrary";
-import useRevenueCat from "../../hooks/useRevenueCat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createStackNavigator();
@@ -104,7 +103,7 @@ export default function SignScreen() {
       <Stack.Screen
         name="DocumentSuccess"
         component={DocumentSuccess}
-        options={{ presentation: "card" }} //  gestureEnabled: false
+        options={{ presentation: "card" }}
       />
       <Stack.Screen
         name="GoogleDrive"
@@ -140,8 +139,6 @@ function Main({ navigation }) {
 
   const [search, setSearch] = useState(null);
   const [googleUserInfo, setGoogleUserInfo] = useState();
-
-  const { currentOffering, customerInfo, isProMember } = useRevenueCat();
 
   const [showLoadingModal, setShowLoadingModal] = useState(false);
 
@@ -324,9 +321,11 @@ function Main({ navigation }) {
       <StatusBar style="auto" />
       <Text className="text-center font-bold text-2xl my-1">SimpleSign</Text>
 
-      <TouchableOpacity onPress={clearAsyncStorage}>
-        <Text>Clear Storage</Text>
-      </TouchableOpacity>
+      {/*
+        <TouchableOpacity onPress={clearAsyncStorage}>
+          <Text>Clear Storage</Text>
+        </TouchableOpacity>
+      */}
 
       <View className="search-bar mx-1 mb-[-4]">
         <SearchBar

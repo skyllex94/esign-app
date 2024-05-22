@@ -65,7 +65,11 @@ export default function DrawSignCapture({ navigation }) {
                   className="flex-row justify-center items-center p-1 ml-4 w-60"
                   onPress={() => previewSignature(path)}
                 >
-                  <Image className="h-12 w-20" source={{ uri: path }} />
+                  <Image
+                    key={path}
+                    className="h-12 w-20"
+                    source={{ uri: path }}
+                  />
                 </TouchableOpacity>
 
                 <View className="flex-row items-center ml-2 mr-3">
