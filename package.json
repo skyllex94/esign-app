@@ -11,7 +11,9 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "eas-build-local": "eas build --platform ios --local",
-    "eas-build-dev": "eas build --profile development --platform ios"
+    "eas-build-dev": "eas build --profile development --platform ios",
+    "eas-build-pro": "eas build --platform ios",
+    "eas-submit": "eas submit -p ios --latest"
   },
   "dependencies": {
     "@config-plugins/react-native-blob-util": "^7.0.0",
