@@ -10,9 +10,21 @@
     "preview": {
       "distribution": "internal"
     },
-    "production": {}
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_GDRIVE_IOS_CLIENTID": "926245312325-otb9msahg4nice3l71uqa71gfdlborer.apps.googleusercontent.com",
+        "EXPO_PUBLIC_GDRIVE_WEB_CLIENTID": "926245312325-ovfidnn2pt43tbaj72boq6bh3gbha2sk.apps.googleusercontent.com",
+        "EXPO_PUBLIC_REVENUECAT_API_KEY": "appl_hsdXwUTMQIMmKhvBipEtoTCuYuP"
+      }
+    }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "kkanchev94@gmail.com",
+        "ascAppId": "6502412936",
+        "appleTeamId": "2A9PLXZR7S"
+      }
+    }
   }
 }
