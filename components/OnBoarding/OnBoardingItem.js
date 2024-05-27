@@ -108,7 +108,7 @@ export default function OnBoardingItem({ item, navigation }) {
             <Image
               source={item.image}
               className="items-center justify-center"
-              style={[{ width: width, height: 450 }]}
+              style={[{ width: "95%", height: 450 }]}
             />
           </View>
 

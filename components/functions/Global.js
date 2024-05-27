@@ -358,9 +358,7 @@ export const tellFriends = async () => {
 
 export async function openRequestReviewModal() {
   try {
-    if (await StoreReview.isAvailableAsync()) {
-      StoreReview.requestReview();
-    }
+    StoreReview.requestReview();
   } catch (err) {
     showMessage({
       message: "Error occurred",

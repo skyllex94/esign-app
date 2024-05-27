@@ -240,7 +240,7 @@ function Main({ navigation }) {
         dirs.DocumentDir
       }/doc${new Date().getMilliseconds()}.pdf`;
 
-      console.log("outputPath:", outputPath);
+      // console.log("outputPath:", outputPath);
       const width = parseInt(Dimensions.get("window").width);
 
       const options = {
