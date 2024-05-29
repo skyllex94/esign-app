@@ -11,7 +11,6 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import { showMessage } from "react-native-flash-message";
 import ReactNativeBlobUtil from "react-native-blob-util";
 import {
   emailDocument,
@@ -19,6 +18,7 @@ import {
   openShareOptions,
 } from "./functions";
 import * as Print from "expo-print";
+import * as StoreReview from "expo-store-review";
 
 export default function DocumentSuccess({ route, navigation }) {
   const animation = useRef(null);
@@ -44,6 +44,16 @@ export default function DocumentSuccess({ route, navigation }) {
     }
   }
 
+  function askForReview() {
+    navigation.navigate("MainSignScreen");
+
+    setTimeout(async () => {
+      if (await StoreReview.hasAction()) {
+        StoreReview.requestReview();
+      }
+    }, 2000);
+  }
+
   return (
     <SafeAreaView className="mx-4 gap-y-5">
       <StatusBar barStyle="dark-content" />
@@ -51,7 +61,7 @@ export default function DocumentSuccess({ route, navigation }) {
       <View className="flex-row pt-2 justify-end">
         <TouchableOpacity
           className={`bg-slate-300 rounded-full p-2`}
-          onPress={() => navigation.navigate("MainSignScreen")}
+          onPress={askForReview}
         >
           <AntDesign name="close" size={20} color="black" />
         </TouchableOpacity>

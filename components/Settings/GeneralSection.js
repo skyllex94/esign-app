@@ -35,13 +35,15 @@ export default function GeneralSection({ navigation }) {
         <AntDesign name="right" size={14} color="black" />
       </TouchableOpacity>
 
+      {/*
       <TouchableOpacity
-        onPress={() => setOpenPromoModal(true)}
-        className="flex-row items-center justify-between bg-white w-full rounded-lg p-3"
-      >
-        <Text className="text-slate-800">Enter Promo Code</Text>
-        <AntDesign name="right" size={14} color="black" />
+          onPress={() => setOpenPromoModal(true)}
+          className="flex-row items-center justify-between bg-white w-full rounded-lg p-3"
+        >
+          <Text className="text-slate-800">Enter Promo Code</Text>
+          <AntDesign name="right" size={14} color="black" />
       </TouchableOpacity>
+      */}
 
       <TouchableOpacity
         onPress={reportBug}

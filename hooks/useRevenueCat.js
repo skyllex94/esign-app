@@ -12,11 +12,7 @@ export default function useRevenueCat() {
   const [currentOffering, setCurrentOffering] = useState(null);
   const [customerInfo, setCustomerInfo] = useState(null);
 
-  const [tryPromoCode, setTryPromoCode] = useState(null);
-
   const activedPromoCode = false;
-
-  useEffect(() => {}, []);
 
   const isProMember = activedPromoCode
     ? activedPromoCode
@@ -46,5 +42,5 @@ export default function useRevenueCat() {
     Purchases.addCustomerInfoUpdateListener(customerInfoUpdated);
   }, []);
 
-  return { currentOffering, customerInfo, isProMember };
+  return { currentOffering, customerInfo, isProMember, activedPromoCode };
 }

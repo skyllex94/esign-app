@@ -5,7 +5,6 @@ import { TouchableOpacity } from "react-native";
 
 export default function TextField({
   textInstance,
-
   index,
   textList,
   setTextList,
@@ -13,7 +12,7 @@ export default function TextField({
   const pan = useRef(new Animated.ValueXY()).current;
   const elementLocation = React.useRef();
 
-  console.log("textInstance", textInstance);
+  // console.log("textInstance", textInstance);
 
   function resizeText(size) {
     setTextList((prevTextList) => {

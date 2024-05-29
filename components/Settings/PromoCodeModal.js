@@ -10,6 +10,10 @@ export default function PromoCodeModal({ openPromoModal, setOpenPromoModal }) {
     promoRef.current.focus();
   }, []);
 
+  function tryPromoCode() {
+    console.log(promoCode);
+  }
+
   return (
     <Modal
       animationType="slide"
@@ -35,6 +39,7 @@ export default function PromoCodeModal({ openPromoModal, setOpenPromoModal }) {
 
           <View className="flex-row items-center justify-between my-2 w-full">
             <TouchableOpacity
+              onPress={tryPromoCode}
               className={`rounded-lg bg-[${actionButton}] py-3 px-10`}
             >
               <Text className="text-[16px] text-white">Use Code</Text>
