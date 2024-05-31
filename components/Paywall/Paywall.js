@@ -22,19 +22,19 @@ import Spinner from "react-native-loading-spinner-overlay/lib";
 export default function Paywall({ navigation }) {
   const { currentOffering } = useRevenueCat();
 
-  const [loadedPaywall, setLoadedPaywall] = useState(false);
+  const [loadedPaywall, setLoadedPaywall] = useState(true);
   const [purchaseSpinner, setPurchaseSpinner] = useState(false);
 
   const [showOtherPlans, setShowOtherPlans] = useState(false);
 
   // Fetch all pricing data before displaying paywall
-  useEffect(() => {
-    if (
-      currentOffering?.weekly?.product.priceString &&
-      currentOffering?.monthly?.product.priceString
-    )
-      setLoadedPaywall(true);
-  }, [currentOffering]);
+  // useEffect(() => {
+  //   if (
+  //     currentOffering?.weekly?.product.priceString &&
+  //     currentOffering?.monthly?.product.priceString
+  //   )
+  //     setLoadedPaywall(true);
+  // }, [currentOffering]);
 
   async function getSubscription(subscription) {
     setPurchaseSpinner(true);
@@ -93,7 +93,7 @@ export default function Paywall({ navigation }) {
 
             <Image
               className="h-52 w-full rounded-bl-full rounded-b-[180px]"
-              resizeMode="stretch"
+              resizeMode="cover"
               source={require("../../assets/img/paywall_banner.png")}
             />
 

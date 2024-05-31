@@ -67,7 +67,7 @@ export default function App() {
     async function loadApp() {
       try {
         const value = await AsyncStorage.getItem("@isAppFirstLaunched");
-        console.log("value:", value);
+        // console.log("value:", value);
         if (value === null || undefined) setIsAppFirstLaunched(true);
         else setIsAppFirstLaunched(false);
 
@@ -78,7 +78,7 @@ export default function App() {
 
         await cacheResources();
       } catch (err) {
-        console.log("Error @checkIfAppWasLaunched", err);
+        // console.log("Error @checkIfAppWasLaunched", err);
       } finally {
         setAppIsReady(true);
       }

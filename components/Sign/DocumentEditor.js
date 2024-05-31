@@ -174,7 +174,7 @@ export default function DocumentEditor({ navigation, route }) {
 
   function showPaywall() {
     // editingPalette?.current.close();
-    navigation.navigate("Paywall", { editingPalette });
+    navigation.navigate("Paywall");
   }
 
   function toggleText(idx) {

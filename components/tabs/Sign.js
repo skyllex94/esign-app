@@ -14,6 +14,7 @@ import {
   FontAwesome,
   FontAwesome6,
   Ionicons,
+  SimpleLineIcons,
 } from "@expo/vector-icons";
 // Bottom Sheet Imports
 import React, {
@@ -70,6 +71,7 @@ import { deleteResidualFiles } from "../Scan/functions";
 import LibrarySheet from "../Sign/LibrarySheet";
 import InitialsLibrary from "../Sign/Initials/InitialsLibrary";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoginModal from "../Login/LoginModal";
 
 const Stack = createStackNavigator();
 
@@ -119,6 +121,11 @@ export default function SignScreen() {
         name="ChooseScanFile"
         component={ChooseScanFile}
         options={{ presentation: "modal" }}
+      />
+      <Stack.Screen
+        name="Login"
+        component={LoginModal}
+        options={{ presentation: "card" }}
       />
     </Stack.Navigator>
   );
@@ -319,7 +326,15 @@ function Main({ navigation }) {
   return (
     <SafeAreaView className={`flex-1 bg-[${bgColor}]`}>
       <StatusBar style="auto" />
-      <Text className="text-center font-bold text-2xl my-1">SimpleSign</Text>
+      <View>
+        <Text className="text-center font-bold text-2xl my-1">SimpleSign</Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Login")}
+          className="absolute p-2 right-3"
+        >
+          <FontAwesome name="user-circle-o" size={30} color="#c0c0c0" />
+        </TouchableOpacity>
+      </View>
 
       {/*
         <TouchableOpacity onPress={clearAsyncStorage}>

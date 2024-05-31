@@ -10,7 +10,7 @@ import React from "react";
 
 import { TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as StoreReview from "expo-store-review";
+
 import {
   AntDesign,
   FontAwesome6,
@@ -52,7 +52,7 @@ export default function OnBoardingItem({ item, navigation }) {
               {item.title}
             </Text>
 
-            <View className="premium-features">
+            <View className="premium-features items-center justify-center">
               <View className="flex-row items-center gap-x-5 m-1">
                 <FontAwesome6 name="toolbox" size={24} color="#334155" />
                 <View className="flex-1 gap-y-1">

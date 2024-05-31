@@ -2,19 +2,18 @@
   "expo": {
     "name": "SimpleSign",
     "slug": "esign-app",
-    "version": "1.0.2",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/icon.jpg",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#e6eef1"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "buildNumber": "1",
       "supportsTablet": true,
+      "usesAppleSignIn": true,
       "bundleIdentifier": "com.kkanchev94.esignapp",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to scan a document.",
@@ -32,6 +31,7 @@
     "plugins": [
       "@config-plugins/react-native-blob-util",
       "@config-plugins/react-native-pdf",
+      "expo-apple-authentication",
       [
         "expo-media-library",
         {

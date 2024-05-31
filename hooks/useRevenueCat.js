@@ -12,11 +12,8 @@ export default function useRevenueCat() {
   const [currentOffering, setCurrentOffering] = useState(null);
   const [customerInfo, setCustomerInfo] = useState(null);
 
-  const activedPromoCode = false;
-
-  const isProMember = activedPromoCode
-    ? activedPromoCode
-    : customerInfo?.entitlements?.active?.esign_pro_subscription;
+  const isProMember =
+    customerInfo?.entitlements?.active?.esign_pro_subscription;
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,5 +39,5 @@ export default function useRevenueCat() {
     Purchases.addCustomerInfoUpdateListener(customerInfoUpdated);
   }, []);
 
-  return { currentOffering, customerInfo, isProMember, activedPromoCode };
+  return { currentOffering, customerInfo, isProMember };
 }

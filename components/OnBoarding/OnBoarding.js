@@ -31,7 +31,7 @@ export default function OnBoarding({ navigation }) {
 
     try {
       const purchaserInfo = await Purchases.purchasePackage(
-        currentOffering.weekly
+        currentOffering?.weekly
       );
 
       if (
