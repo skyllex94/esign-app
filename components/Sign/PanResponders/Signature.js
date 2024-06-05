@@ -2,6 +2,7 @@ import { View, PanResponder, Image, Animated } from "react-native";
 import React, { useMemo, useRef } from "react";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
+import { showMessage } from "react-native-flash-message";
 
 export default function Signature({
   setShowSignaturePanResponder,
@@ -13,25 +14,34 @@ export default function Signature({
   elementSizeHeight,
   setElementSizeHeight,
 }) {
+  console.log("elementSizeHeight:", elementSizeHeight);
   const pan = useRef(new Animated.ValueXY()).current;
   const elementLocation = useRef();
 
   const panResponderResize = useMemo(
     () =>
       PanResponder.create({
-        onStartShouldSetPanResponder: () => true,
-        onPanResponderGrant: () => {},
+        // onStartShouldSetPanResponder: () => true,
+        // onPanResponderGrant: () => {},
         onMoveShouldSetPanResponder: () => true,
         onPanResponderMove: (event, gesture) => {
-          setElementSizeHeight(elementSizeHeight + gesture.dy);
-          setElementSizeWidth(elementSizeWidth + gesture.dy);
+          try {
+            setElementSizeHeight(elementSizeHeight + gesture.dy);
+            setElementSizeWidth(elementSizeWidth + gesture.dy);
+          } catch (err) {
+            console.log("err:", err);
+          }
         },
         onPanResponderEnd: (event, gesture) => {
-          setElementSizeHeight(elementSizeHeight + gesture.dy);
-          setElementSizeWidth(elementSizeWidth + gesture.dy);
+          try {
+            setElementSizeHeight(elementSizeHeight + gesture.dy);
+            setElementSizeWidth(elementSizeWidth + gesture.dy);
+          } catch (err) {
+            console.log("err:", err);
+          }
         },
       }),
-    [setElementSizeHeight]
+    []
   );
 
   const panResponderMovement = useRef(
@@ -42,56 +52,74 @@ export default function Signature({
       }),
 
       onPanResponderRelease: () => {
-        // Measure the relative x & y of the signature to the pdf canvas
-        elementLocation.current.measure((h, w, px, py, x, y) => {
-          console.log("rel_x", h, "rel_y", w, px, py, x, y);
+        try {
+          // Measure the relative x & y of the signature to the pdf canvas
+          elementLocation.current.measure((h, w, px, py, x, y) => {
+            console.log("rel_x", h, "rel_y", w, px, py, x, y);
 
-          setCoordinateX(h);
-          setCoordinateY(w);
-        });
+            setCoordinateX(h);
+            setCoordinateY(w);
+          });
 
-        pan.extractOffset();
+          pan.extractOffset();
+        } catch (err) {
+          console.log(err);
+        }
       },
     })
   ).current;
 
-  return (
-    <View className="items-center justify-center relative">
-      <Animated.View
-        ref={elementLocation}
-        style={{
-          transform: [{ translateX: pan.x }, { translateY: pan.y }],
-        }}
-        className="items-start absolute mx-auto top-10"
-      >
-        <View className="flex-row border-dashed border items-end">
-          <TouchableOpacity
-            className="absolute left-[-15] top-[-15] h-[25px] w-[25px] bg-white rounded-full"
-            onPress={() => setShowSignaturePanResponder(false)}
-          >
-            <AntDesign name="closecircle" size={25} color="red" />
-          </TouchableOpacity>
+  try {
+    if (!elementLocation) throw new Error();
+    if (!selectedSignaturePath) throw new Error();
 
-          <Image
-            source={{ uri: selectedSignaturePath }}
-            style={{ height: elementSizeHeight, width: elementSizeWidth }}
-            {...panResponderMovement.panHandlers}
-          />
+    return (
+      <View className="items-center justify-center relative">
+        <Animated.View
+          ref={elementLocation}
+          style={{
+            transform: [{ translateX: pan.x }, { translateY: pan.y }],
+          }}
+          className="items-start absolute mx-auto top-10"
+        >
+          <View className="flex-row border-dashed border items-end">
+            <TouchableOpacity
+              className="absolute left-[-15] top-[-15] h-[25px] w-[25px] bg-white rounded-full"
+              onPress={() => setShowSignaturePanResponder(false)}
+            >
+              <AntDesign name="closecircle" size={25} color="red" />
+            </TouchableOpacity>
 
-          <View
-            className="absolute items-center justify-center
-            right-[-15] bottom-[-15] h-[25px] w-[25px] bg-purple-500 rounded-full"
-            {...panResponderResize.panHandlers}
-          >
-            <FontAwesome
-              name="expand"
-              style={{ transform: [{ rotateY: "180deg" }] }}
-              size={15}
-              color="white"
-            />
+            {selectedSignaturePath && (
+              <Image
+                source={{ uri: selectedSignaturePath }}
+                style={{ height: elementSizeHeight, width: elementSizeWidth }}
+                {...panResponderMovement.panHandlers}
+              />
+            )}
+
+            <View
+              className="absolute items-center justify-center
+        right-[-15] bottom-[-15] h-[25px] w-[25px] bg-purple-500 rounded-full"
+              {...panResponderResize.panHandlers}
+            >
+              <FontAwesome
+                name="expand"
+                style={{ transform: [{ rotateY: "180deg" }] }}
+                size={15}
+                color="white"
+              />
+            </View>
           </View>
-        </View>
-      </Animated.View>
-    </View>
-  );
+        </Animated.View>
+      </View>
+    );
+  } catch (err) {
+    showMessage({
+      message: "Please try to insert object again.",
+      description: err.toString(),
+      type: "danger",
+      duration: 4000,
+    });
+  }
 }

@@ -55,6 +55,7 @@ import TextField from "./PanResponders/TextField";
 import Checkbox from "./PanResponders/Checkbox";
 // Custom hook import
 import useRevenueCat from "../../hooks/useRevenueCat";
+import { coolDownAsync } from "expo-web-browser";
 
 export default function DocumentEditor({ navigation, route }) {
   // Show current signatures
@@ -187,8 +188,30 @@ export default function DocumentEditor({ navigation, route }) {
     setTextList(updatedTextList);
   }
 
-  // TODO: Create a system where you can input obeject
-  // of different pages and save appropriately
+  function showSignature() {
+    try {
+      if (showSignaturePanResponder && selectedSignaturePath)
+        return (
+          <Signature
+            setShowSignaturePanResponder={setShowSignaturePanResponder}
+            selectedSignaturePath={selectedSignaturePath}
+            setCoordinateX={setCoordinateX}
+            setCoordinateY={setCoordinateY}
+            elementSizeWidth={elementSizeWidth}
+            setElementSizeWidth={setElementSizeWidth}
+            elementSizeHeight={elementSizeHeight}
+            setElementSizeHeight={setElementSizeHeight}
+          />
+        );
+    } catch (err) {
+      showMessage({
+        message: "Please try to insert object again.",
+        description: err.toString(),
+        type: "danger",
+        duration: 4000,
+      });
+    }
+  }
 
   return (
     <SafeAreaView className="flex-1">
@@ -281,19 +304,7 @@ export default function DocumentEditor({ navigation, route }) {
             console.log(`Link pressed: ${uri}`);
           }}
         >
-          {showSignaturePanResponder && (
-            <Signature
-              setShowSignaturePanResponder={setShowSignaturePanResponder}
-              selectedSignaturePath={selectedSignaturePath}
-              setCoordinateX={setCoordinateX}
-              setCoordinateY={setCoordinateY}
-              elementSizeWidth={elementSizeWidth}
-              setElementSizeWidth={setElementSizeWidth}
-              elementSizeHeight={elementSizeHeight}
-              setElementSizeHeight={setElementSizeHeight}
-            />
-          )}
-
+          {showSignaturePanResponder && showSignature()}
           {showDatePanResponder ? (
             <DateTime
               date={date}
