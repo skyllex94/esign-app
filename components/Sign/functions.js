@@ -17,14 +17,23 @@ export const selectSignature = async (
   setSelectedSignaturePath,
   setSignatureArrayBuffer
 ) => {
-  const signatureBase64 = await RNFS.readFile(signatureFilePath, "base64");
-  setSignatureArrayBuffer(base64ToArrayBuffer(signatureBase64));
+  try {
+    if (
+      selectedSignaturePath === signatureFilePath &&
+      selectedSignaturePath !== null &&
+      selectedSignaturePath !== undefined
+    ) {
+      setShowSignaturePanResponder((curr) => !curr);
+      return;
+    }
 
-  if (selectedSignaturePath == signatureFilePath)
-    setShowSignaturePanResponder((curr) => !curr);
-  else {
-    setSelectedSignaturePath(() => signatureFilePath);
+    const signatureBase64 = await RNFS.readFile(signatureFilePath, "base64");
+    await setSignatureArrayBuffer(base64ToArrayBuffer(signatureBase64));
+
+    await setSelectedSignaturePath(() => signatureFilePath);
     setShowSignaturePanResponder(true);
+  } catch (err) {
+    console.log("err:", err);
   }
 };
 
@@ -58,16 +67,22 @@ export const selectInitials = async (
   setSelectedInitialsPath,
   setInitialsArrayBuffer
 ) => {
+  if (
+    selectedInitialsPath !== null &&
+    selectedInitialsPath !== undefined &&
+    selectedInitialsPath === path
+  ) {
+    setShowInitials((curr) => !curr);
+    return;
+  }
+
   const initialsBase64 = await RNFS.readFile(path, "base64");
 
   // Get image ready for being inputted into the pdf document
-  setInitialsArrayBuffer(base64ToArrayBuffer(initialsBase64));
+  await setInitialsArrayBuffer(base64ToArrayBuffer(initialsBase64));
 
-  if (selectedInitialsPath == path) setShowInitials((curr) => !curr);
-  else {
-    setSelectedInitialsPath(() => path);
-    setShowInitials(true);
-  }
+  await setSelectedInitialsPath(() => path);
+  setShowInitials(true);
 };
 
 export const base64ToArrayBuffer = (base64) => {

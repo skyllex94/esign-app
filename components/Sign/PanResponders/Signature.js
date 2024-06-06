@@ -16,6 +16,7 @@ export default function Signature({
 }) {
   console.log("elementSizeHeight:", elementSizeHeight);
   const pan = useRef(new Animated.ValueXY()).current;
+  console.log("pan:", pan);
   const elementLocation = useRef();
 
   const panResponderResize = useMemo(
@@ -69,10 +70,11 @@ export default function Signature({
     })
   ).current;
 
-  try {
-    if (!elementLocation) throw new Error();
-    if (!selectedSignaturePath) throw new Error();
+  // console.log("elementLocation", elementLocation);
+  // console.log(selectedSignaturePath);
+  // console.log(panResponderMovement);
 
+  try {
     return (
       <View className="items-center justify-center relative">
         <Animated.View

@@ -188,31 +188,6 @@ export default function DocumentEditor({ navigation, route }) {
     setTextList(updatedTextList);
   }
 
-  function showSignature() {
-    try {
-      if (showSignaturePanResponder && selectedSignaturePath)
-        return (
-          <Signature
-            setShowSignaturePanResponder={setShowSignaturePanResponder}
-            selectedSignaturePath={selectedSignaturePath}
-            setCoordinateX={setCoordinateX}
-            setCoordinateY={setCoordinateY}
-            elementSizeWidth={elementSizeWidth}
-            setElementSizeWidth={setElementSizeWidth}
-            elementSizeHeight={elementSizeHeight}
-            setElementSizeHeight={setElementSizeHeight}
-          />
-        );
-    } catch (err) {
-      showMessage({
-        message: "Please try to insert object again.",
-        description: err.toString(),
-        type: "danger",
-        duration: 4000,
-      });
-    }
-  }
-
   return (
     <SafeAreaView className="flex-1">
       <StatusBar style="dark" />
@@ -304,7 +279,18 @@ export default function DocumentEditor({ navigation, route }) {
             console.log(`Link pressed: ${uri}`);
           }}
         >
-          {showSignaturePanResponder && showSignature()}
+          {showSignaturePanResponder && (
+            <Signature
+              setShowSignaturePanResponder={setShowSignaturePanResponder}
+              selectedSignaturePath={selectedSignaturePath}
+              setCoordinateX={setCoordinateX}
+              setCoordinateY={setCoordinateY}
+              elementSizeWidth={elementSizeWidth}
+              setElementSizeWidth={setElementSizeWidth}
+              elementSizeHeight={elementSizeHeight}
+              setElementSizeHeight={setElementSizeHeight}
+            />
+          )}
           {showDatePanResponder ? (
             <DateTime
               date={date}
