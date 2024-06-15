@@ -17,6 +17,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
 } from "@expo/vector-icons";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default function OnBoardingItem({ item, navigation }) {
   const { width } = useWindowDimensions();
@@ -45,7 +46,7 @@ export default function OnBoardingItem({ item, navigation }) {
             />
           </View>
 
-          <View>
+          <ScrollView>
             <Text
               className={`font-bold text-center text-[28px] px-6 mb-4 text-slate-600`}
             >
@@ -100,7 +101,7 @@ export default function OnBoardingItem({ item, navigation }) {
                 </View>
               </View>
             </View>
-          </View>
+          </ScrollView>
         </View>
       ) : (
         <View>
@@ -108,7 +109,7 @@ export default function OnBoardingItem({ item, navigation }) {
             <Image
               source={item.image}
               className="items-center justify-center"
-              style={[{ width: "95%", height: 450 }]}
+              style={[{ width: width, height: 450 }]}
             />
           </View>
 
