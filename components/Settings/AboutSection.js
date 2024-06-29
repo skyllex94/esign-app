@@ -1,5 +1,4 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import React from "react";
 import { AntDesign } from "@expo/vector-icons";
 import { tellFriends } from "../functions/Global";
 
@@ -18,7 +17,7 @@ export default function AboutSection() {
 
       <View className="flex-row items-center justify-between bg-white w-full rounded-lg p-3">
         <Text className="text-slate-800">App Version</Text>
-        <Text className="text-slate-800">1.0.9</Text>
+        <Text className="text-slate-800">1.1.1</Text>
       </View>
     </View>
   );
